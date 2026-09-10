@@ -78,13 +78,24 @@ export function ImageConvertTool({
 
   const plan = useCallback(
     ({ file }: PlanInput): ImagePlan => ({
-      options: {
-        format: to,
-        ...(lossy ? { quality: quality / 100 } : {}),
-        ...(needsBackground ? { background } : {}),
-      },
-      name: outputFileName(file.name, to),
-      mime: mimeForFormat(to),
+      candidates: [
+        {
+          options: {
+            format: to,
+            ...(lossy ? { quality: quality / 100 } : {}),
+            ...(needsBackground ? { background } : {}),
+          },
+          name: outputFileName(file.name, to),
+          mime: mimeForFormat(to),
+          format: to,
+        },
+      ],
+      /*
+       * A converter is asked for a specific format, so it must deliver that
+       * format even when the result is larger — JPG to PNG is *expected* to
+       * grow, and silently returning the JPG would be a broken conversion.
+       */
+      neverInflate: false,
     }),
     [background, lossy, needsBackground, quality, to],
   );

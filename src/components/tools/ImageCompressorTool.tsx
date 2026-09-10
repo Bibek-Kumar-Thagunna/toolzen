@@ -47,14 +47,18 @@ import { RASTER_IMAGES } from '@/lib/tools/accepts';
 
 const SLUG = 'image-compressor';
 
-/** `keep` resolves per file; the other three are literal encoder targets. */
-type FormatChoice = 'keep' | EncodableFormat;
+/**
+ * `smallest` tries the sensible formats and keeps whichever wins; `keep`
+ * resolves per file from the header; the other three are literal targets.
+ */
+type FormatChoice = 'smallest' | 'keep' | EncodableFormat;
 
 const FORMAT_LABELS: Record<FormatChoice, string> = {
+  smallest: 'Smallest file — pick the best format for me',
   keep: 'Keep the original format',
-  jpeg: 'JPG — smallest for photographs',
+  jpeg: 'JPG — for photographs',
   png: 'PNG — lossless, keeps transparency',
-  webp: 'WebP — smaller than JPG at the same quality',
+  webp: 'WebP — usually the smallest',
 };
 
 /**
@@ -70,7 +74,7 @@ function resolveKeep(sniffedFormat: string): EncodableFormat {
 }
 
 export function ImageCompressorTool() {
-  const [format, setFormat] = useState<FormatChoice>('keep');
+  const [format, setFormat] = useState<FormatChoice>('smallest');
   const [quality, setQuality] = useState(80);
 
   /**
@@ -100,14 +104,40 @@ export function ImageCompressorTool() {
 
   const plan = useCallback(
     ({ file, image, sniffed }: PlanInput): ImagePlan => {
-      const target: EncodableFormat = format === 'keep' ? resolveKeep(sniffed.format) : format;
-      return {
+      if (image.width === 0) return { skip: 'This image has no pixels to compress.' };
+
+      const candidate = (target: EncodableFormat) => ({
         options: { format: target, quality: quality / 100 },
         name: outputFileName(file.name, target, { suffix: '-compressed' }),
         mime: mimeForFormat(target),
-        // `image` is intentionally unused: compression keeps the source
-        // dimensions, so there is nothing to compute from the decoded pixels.
-        ...(image.width === 0 ? { skip: 'This image has no pixels to compress.' } : {}),
+        format: target,
+      });
+
+      /*
+       * In `smallest` mode the file's own format is tried alongside WebP, and
+       * the winner is whichever is actually smaller.
+       *
+       * WebP is in the list for every input because it wins so often: a flat UI
+       * screenshot re-encoded as PNG by a browser is routinely *larger* than the
+       * optimised PNG it came from, while the same image as WebP is a fraction
+       * of the size. Photographs it beats by roughly a third against JPEG. The
+       * cost of being wrong is one extra encode.
+       *
+       * Transparency is why the source format is still tried: JPEG cannot carry
+       * an alpha channel, so a transparent PNG must keep a candidate that can.
+       */
+      const own = resolveKeep(sniffed.format);
+      const targets: EncodableFormat[] =
+        format === 'smallest'
+          ? own === 'webp'
+            ? ['webp']
+            : [own, 'webp']
+          : [format === 'keep' ? own : format];
+
+      return {
+        candidates: targets.map(candidate),
+        // The whole promise of the tool. See `runImageBatch`.
+        neverInflate: true,
       };
     },
     [format, quality],
@@ -128,7 +158,10 @@ export function ImageCompressorTool() {
       for (const { file, sniffed } of queue) {
         if (!sniffed || sniffed.width === null || sniffed.height === null) continue;
         known += 1;
-        const target: EncodableFormat = format === 'keep' ? resolveKeep(sniffed.format) : format;
+        // `smallest` will most often land on WebP, so that is what the
+        // projection assumes. It is labelled as an estimate either way.
+        const target: EncodableFormat =
+          format === 'smallest' ? 'webp' : format === 'keep' ? resolveKeep(sniffed.format) : format;
         bytes += estimateOutputBytes(
           { width: sniffed.width, height: sniffed.height },
           target,
@@ -162,7 +195,10 @@ export function ImageCompressorTool() {
           >
             {(Object.keys(FORMAT_LABELS) as FormatChoice[]).map((choice) => {
               const unavailable =
-                choice !== 'keep' && encodable !== null && !encodable[choice];
+                choice !== 'keep' &&
+                choice !== 'smallest' &&
+                encodable !== null &&
+                !encodable[choice];
               return (
                 <option key={choice} value={choice} disabled={unavailable}>
                   {FORMAT_LABELS[choice]}
@@ -202,13 +238,29 @@ export function ImageCompressorTool() {
   const summary = useMemo(
     () => (result: ImageBatchResult) => {
       const saving = savingsSummary(result.totalBefore, result.totalAfter);
-      const settings =
-        format === 'keep'
-          ? 'original formats'
-          : (FORMAT_LABELS[format].split(' — ')[0] ?? String(format));
-      return `${humanBytes(result.totalBefore)} → ${humanBytes(result.totalAfter)} · ${saving.sentence} · ${settings}${lossless ? '' : ` at quality ${quality}`}`;
+      const kept = result.outputs.filter((out) => out.keptOriginal).length;
+
+      /*
+       * Name the formats that actually won rather than the setting that was
+       * chosen. In `smallest` mode the setting is "pick for me", so echoing it
+       * back tells the user nothing; "as WebP" tells them what they now have.
+       */
+      const wonFormats = [
+        ...new Set(result.outputs.filter((out) => !out.keptOriginal).map((out) => out.format)),
+      ];
+      const formatNote =
+        wonFormats.length === 0
+          ? ''
+          : ` · as ${wonFormats.map((f) => (f === 'jpeg' ? 'JPG' : f.toUpperCase())).join(' and ')}`;
+
+      const keptNote =
+        kept === 0
+          ? ''
+          : ` · ${kept} already ${kept === 1 ? 'was' : 'were'} as small as possible, so your original ${kept === 1 ? 'file was' : 'files were'} kept`;
+
+      return `${humanBytes(result.totalBefore)} → ${humanBytes(result.totalAfter)} · ${saving.sentence}${formatNote}${lossless ? '' : ` at quality ${quality}`}${keptNote}`;
     },
-    [format, lossless, quality],
+    [lossless, quality],
   );
 
   return (

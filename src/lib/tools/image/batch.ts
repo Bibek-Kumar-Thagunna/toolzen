@@ -58,6 +58,19 @@ export interface ImageOutput {
   size: number;
   width: number;
   height: number;
+  /**
+   * True when every candidate encode came out bigger than the file that was
+   * dropped in, so the original was handed back untouched.
+   *
+   * This is the single most important field here. A tool called "compressor"
+   * that returns a larger file has not compressed anything — it has damaged the
+   * input and charged the user a download for the privilege. Reporting the
+   * growth honestly, which is what this did before, is necessary and nowhere
+   * near sufficient: the user still ends up with the worse file.
+   */
+  keptOriginal: boolean;
+  /** Which format actually won, for the summary line. e.g. 'webp'. */
+  format: string;
 }
 
 /** A file that was left out, and the sentence explaining why. */
@@ -74,15 +87,39 @@ export interface ImageBatchResult {
   totalAfter: number;
 }
 
-/** What a tool decides, per file. */
+/** One thing to try encoding. Several may be offered; the smallest wins. */
+export interface ImageCandidate {
+  options: Omit<EncodeOptions, 'signal'>;
+  /** Output file name. The caller owns naming; see `outputFileName`. */
+  name: string;
+  mime: string;
+  /** Short label for the summary line, e.g. 'webp'. */
+  format: string;
+}
+
+/**
+ * What a tool decides, per file.
+ *
+ * `candidates` is a list rather than a single encode because "make this
+ * smaller" has no single right answer. A screenshot re-encoded as PNG through a
+ * canvas is reliably *larger* than the optimised PNG it came from — browsers
+ * ship a basic PNG writer, not `pngcrush` — while the same screenshot as WebP is
+ * a fraction of the size. A photograph is the other way round. Encoding the
+ * plausible options and keeping whichever is smallest is the only approach that
+ * is right for both, and it costs a few hundred milliseconds.
+ */
 export type ImagePlan =
   | { skip: string }
   | {
       skip?: undefined;
-      options: Omit<EncodeOptions, 'signal'>;
-      /** Output file name. The caller owns naming; see `outputFileName`. */
-      name: string;
-      mime: string;
+      candidates: ImageCandidate[];
+      /**
+       * Discard every candidate that is not smaller than the input and hand the
+       * original back untouched. On for compression and conversion-to-smaller;
+       * off for a resize or a crop, where the output is a different picture and
+       * a larger file can be exactly what was asked for.
+       */
+      neverInflate?: boolean;
     };
 
 export interface PlanInput {
@@ -156,23 +193,76 @@ export async function runImageBatch(
         continue;
       }
 
-      const encoded = await encodeImage(decoded, { ...decision.options, signal: ctx.signal });
-      if (!encoded.ok) {
-        if (FATAL.has(encoded.reason)) return { ok: false, error: encoded.error, reason: encoded.reason };
-        skipped.push({ name: file.name, reason: encoded.error });
+      // Encode every candidate and keep the smallest. A candidate this browser
+      // cannot write reports `encode_unsupported`, which is a statement about
+      // the engine rather than the file — but only fatal if it leaves us with
+      // nothing, so it is collected and judged after the loop.
+      let best: { bytes: Uint8Array; candidate: ImageCandidate; width: number; height: number } | null = null;
+      let lastError: { error: string; reason: FailureReason } | null = null;
+
+      for (const candidate of decision.candidates) {
+        await ctx.checkpoint();
+        const encoded = await encodeImage(decoded, { ...candidate.options, signal: ctx.signal });
+        if (!encoded.ok) {
+          if (encoded.reason === 'cancelled') return { ok: false, error: encoded.error, reason: encoded.reason };
+          lastError = { error: encoded.error, reason: encoded.reason };
+          continue;
+        }
+        if (best !== null && encoded.blob.size >= best.bytes.length) continue;
+        best = {
+          bytes: new Uint8Array(await encoded.blob.arrayBuffer()),
+          candidate,
+          width: encoded.size.width,
+          height: encoded.size.height,
+        };
+      }
+
+      if (best === null) {
+        if (lastError && FATAL.has(lastError.reason)) {
+          return { ok: false, error: lastError.error, reason: lastError.reason };
+        }
+        skipped.push({
+          name: file.name,
+          reason: lastError?.error ?? 'This image could not be re-encoded in any available format.',
+        });
         continue;
       }
 
-      outputs.push({
-        name: uniqueName(decision.name, used),
-        bytes: new Uint8Array(await encoded.blob.arrayBuffer()),
-        mime: encoded.blob.type || decision.mime,
-        originalName: file.name,
-        originalSize: file.size,
-        size: encoded.blob.size,
-        width: encoded.size.width,
-        height: encoded.size.height,
-      });
+      /*
+       * The guarantee: never hand back something bigger than what was dropped in.
+       *
+       * When the best encode still loses to the original, the original wins and
+       * is returned byte-for-byte — which also means no quality is lost to a
+       * pointless round trip through the decoder.
+       */
+      const inflated = decision.neverInflate === true && best.bytes.length >= file.size;
+      if (inflated) {
+        outputs.push({
+          name: uniqueName(file.name, used),
+          bytes: new Uint8Array(await file.arrayBuffer()),
+          mime: file.type || sniffed.mime,
+          originalName: file.name,
+          originalSize: file.size,
+          size: file.size,
+          width: sniffed.width ?? best.width,
+          height: sniffed.height ?? best.height,
+          keptOriginal: true,
+          format: sniffed.extension,
+        });
+      } else {
+        outputs.push({
+          name: uniqueName(best.candidate.name, used),
+          bytes: best.bytes,
+          mime: best.candidate.mime,
+          originalName: file.name,
+          originalSize: file.size,
+          size: best.bytes.length,
+          width: best.width,
+          height: best.height,
+          keptOriginal: false,
+          format: best.candidate.format,
+        });
+      }
     } finally {
       // Idempotent, and the reason a batch of twenty photographs does not
       // exhaust memory: an ImageBitmap holds its pixels outside the JS heap,

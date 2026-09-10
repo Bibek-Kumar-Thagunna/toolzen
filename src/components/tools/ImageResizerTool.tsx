@@ -142,9 +142,19 @@ export function ImageResizerTool() {
       const outFormat: EncodableFormat = format === 'keep' ? resolveKeep(sniffed.format) : format;
 
       return {
-        options: { format: outFormat, quality: quality / 100, target },
-        name: outputFileName(file.name, outFormat, { suffix: `-${target.width}x${target.height}` }),
-        mime: mimeForFormat(outFormat),
+        candidates: [
+          {
+            options: { format: outFormat, quality: quality / 100, target },
+            name: outputFileName(file.name, outFormat, {
+              suffix: `-${target.width}x${target.height}`,
+            }),
+            mime: mimeForFormat(outFormat),
+            format: outFormat,
+          },
+        ],
+        // A resize produces a different picture at a size the user asked for.
+        // Enlarging legitimately makes a bigger file; that is not a failure.
+        neverInflate: false,
       };
     },
     [format, heightText, lockAspect, mode, percent, preset, quality, widthText],
