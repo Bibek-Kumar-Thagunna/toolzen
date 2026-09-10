@@ -1,0 +1,51 @@
+/**
+ * ============================================================================
+ * CLOUDFLARE WORKERS — STATIC ASSETS
+ * ============================================================================
+ * What `npx wrangler deploy` reads. Without it the deploy command has no idea
+ * what to upload and fails.
+ *
+ * ── Why there is no `main` ────────────────────────────────────────────────
+ * A Worker config with `assets` and no `main` is a pure static site: there is
+ * no script, nothing executes per request, and Cloudflare serves the files
+ * straight from its edge. That is the point. Static asset requests are not
+ * metered, so this site costs nothing to serve at any traffic level — whereas
+ * a Worker script would put every page view through the (metered) request
+ * budget for no benefit, since all 42 pages are already prerendered HTML.
+ *
+ * Adding `main` later is what you would do to run server code. Do not add it
+ * to "make routing work" — routing is handled below.
+ *
+ * ── html_handling: why drop-trailing-slash ───────────────────────────────
+ * The export writes `out/tools/merge-pdf.html`. Visitors, the sitemap and the
+ * `<link rel="canonical">` on every page all say `/tools/merge-pdf`, with no
+ * trailing slash.
+ *
+ * `drop-trailing-slash` makes that exact URL serve the file with a 200, and
+ * redirects `/tools/merge-pdf/` to it. The default, `auto-trailing-slash`,
+ * would also work, but this states the intent: one canonical spelling per
+ * page. Two URLs serving identical content is the duplicate-content problem
+ * that splits a page's ranking signals between them.
+ *
+ * ── not_found_handling: why 404-page and not SPA ─────────────────────────
+ * `404-page` serves `out/404.html` with a real 404 status for anything that
+ * does not exist. `single-page-application` would return `index.html` with a
+ * 200 instead — which for this site would be a disaster: every mistyped URL
+ * would look to Google like another copy of the homepage, and a crawler would
+ * index dozens of soft-404s. This site is not an SPA; it is 37 real documents.
+ *
+ * ── _headers ──────────────────────────────────────────────────────────────
+ * Security headers, the CSP and the cache policy come from `public/_headers`,
+ * which the export copies to `out/_headers`. Wrangler picks it up from the
+ * assets directory automatically — it is not referenced here.
+ * ============================================================================
+ */
+{
+  "name": "toolzen",
+  "compatibility_date": "2026-09-10",
+  "assets": {
+    "directory": "./out",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
