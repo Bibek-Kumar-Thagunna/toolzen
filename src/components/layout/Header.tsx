@@ -47,6 +47,7 @@ import { MobileMenu, type CategoryLink } from './MobileMenu';
 import { NavLinks } from './NavLinks';
 import { SkipLink } from './SkipLink';
 import { ThemeToggle } from './ThemeToggle';
+import { Logo } from '@/components/Logo';
 
 export interface HeaderProps {
   /**
@@ -83,16 +84,15 @@ export function Header({ search }: HeaderProps) {
 
       <header className="sticky top-0 z-40 h-header border-b border-border-subtle bg-canvas/85 backdrop-blur">
         <Container className="flex h-full items-center gap-1">
-          {/* Wordmark. No logo file: a 10px accent diamond and the name set
-              tight is a mark, and it costs no request, scales to any density and
-              recolours with the theme. Deliberately not one of the category
-              glyphs, which would make the brand read as "Generators". */}
+          {/* The mark, inline rather than as an image file: it costs no request,
+              stays sharp at any density, and cannot arrive late and shift the
+              header. See `Logo.tsx` for why it is a stack of stones. */}
           <Link
             href={routes.home}
-            className="mr-1 flex shrink-0 items-center gap-2 rounded-sm py-1 pr-1 text-md font-semibold tracking-tight text-fg"
+            aria-label={`${brand.name} home`}
+            className="mr-1 flex shrink-0 items-center rounded-sm py-1 pr-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
           >
-            <span className="h-2.5 w-2.5 shrink-0 rotate-45 rounded-xs bg-accent" />
-            {brand.name}
+            <Logo size={26} />
           </Link>
 
           {/* Below `md` these six links live in the sheet instead. */}

@@ -40,6 +40,19 @@ const config: Config = {
           subtle: withAlpha('--c-fg-subtle'),
           onAccent: withAlpha('--c-fg-on-accent'),
         },
+        /**
+         * The primary action colour, deliberately separate from `accent`.
+         *
+         * Buttons are near-black; the accent is teal and is reserved for links,
+         * focus, active state and the mark. Collapsing the two would put a
+         * coloured button on every card and leave the accent meaning nothing.
+         */
+        primary: {
+          DEFAULT: withAlpha('--c-primary'),
+          hover: withAlpha('--c-primary-hover'),
+          active: withAlpha('--c-primary-active'),
+          fg: withAlpha('--c-primary-fg'),
+        },
         accent: {
           DEFAULT: withAlpha('--c-accent'),
           hover: withAlpha('--c-accent-hover'),

@@ -39,7 +39,7 @@ const base =
   'disabled:pointer-events-none disabled:opacity-[0.55]';
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'rounded bg-accent text-fg-onAccent hover:bg-accent-hover active:bg-accent-active',
+  primary: 'rounded bg-primary text-primary-fg hover:bg-primary-hover active:bg-primary-active',
   secondary: 'rounded border border-border bg-surface text-fg shadow-xs hover:bg-surface-hover',
   ghost: 'rounded bg-transparent text-fg hover:bg-surface-hover',
   danger: 'rounded bg-danger text-fg-onAccent hover:bg-danger/90 active:bg-danger/85',

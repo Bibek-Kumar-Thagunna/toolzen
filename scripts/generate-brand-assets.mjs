@@ -77,27 +77,41 @@ const FONT = "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Ar
 /* ─────────────────────────────── the mark ──────────────────────────────── */
 
 /**
- * The mark: a rounded square with the brand's initial knocked out of it.
+ * The mark: a stack of three balanced stones with a face on the top one.
  *
- * Deliberately simple. It has to survive being drawn at 16 pixels in a browser
- * tab, which is roughly the size of this sentence's full stop — anything with
- * interior detail becomes a smudge at that size, and a tab icon that cannot be
- * told apart from its neighbours has failed at its only job.
+ * Kept in step with `src/components/Logo.tsx` by hand — this script is plain
+ * `.mjs` and cannot import the TSX component. The geometry is the same
+ * 48-unit box, so the two can be diffed side by side.
+ *
+ * Drawn for 16 pixels first. Three stacked shapes of clearly different widths
+ * keep a readable silhouette in a browser tab; a single round stone turned
+ * into an indistinguishable dot.
+ *
+ * `maskable` insets everything to the inner 80%, because a platform may crop a
+ * maskable icon to a circle, and pads the remainder with the brand colour so
+ * the tile is opaque.
  */
-function markSvg(size, { maskable = false, background = ACCENT } = {}) {
-  // A maskable icon may be cropped to a circle by the platform, so everything
-  // that must survive lives inside the inner 80%.
-  const scale = maskable ? 0.8 : 1;
-  const box = size * scale;
-  const offset = (size - box) / 2;
-  const radius = box * (maskable ? 0.5 : 0.22);
-  const initial = escapeXml(NAME.slice(0, 1).toUpperCase());
+const STONE_DARK = '#0f766e';
+const STONE_MID = '#14b8a6';
+const STONE_LIGHT = '#5eead4';
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-  <rect width="${size}" height="${size}" fill="${maskable ? background : 'none'}"/>
-  <rect x="${offset}" y="${offset}" width="${box}" height="${box}" rx="${radius}" fill="${background}"/>
-  <text x="${size / 2}" y="${size / 2}" font-family="${FONT}" font-size="${box * 0.58}"
-        font-weight="700" fill="${PAPER}" text-anchor="middle" dominant-baseline="central">${initial}</text>
+function markSvg(size, { maskable = false, background = '#ffffff' } = {}) {
+  const scale = maskable ? 0.72 : 0.92;
+  const offset = (48 - 48 * scale) / 2;
+
+  const stones = `
+    <g transform="translate(${offset} ${offset}) scale(${scale})">
+      <ellipse cx="24" cy="40" rx="16" ry="5.4" fill="${STONE_DARK}"/>
+      <ellipse cx="24" cy="30.5" rx="12" ry="5.2" fill="${STONE_MID}"/>
+      <path d="M24 12c5.2 0 8.8 3.7 8.8 8.2 0 4.2-3.6 6.6-8.8 6.6s-8.8-2.4-8.8-6.6C15.2 15.7 18.8 12 24 12z" fill="${STONE_LIGHT}"/>
+      <circle cx="20.9" cy="19.6" r="1.35" fill="${STONE_DARK}"/>
+      <circle cx="27.1" cy="19.6" r="1.35" fill="${STONE_DARK}"/>
+      <path d="M21.4 23a3.4 3.4 0 0 0 5.2 0" stroke="${STONE_DARK}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    </g>`;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="${size}" height="${size}">
+  ${maskable ? `<rect width="48" height="48" fill="${background}"/>` : ''}
+  ${stones}
 </svg>`;
 }
 
@@ -145,7 +159,7 @@ function ogSvg({ eyebrow, title, subtitle }) {
   <rect x="0" y="0" width="1200" height="10" fill="${ACCENT}"/>
 
   <g transform="translate(80, 70)">
-    ${markSvg(56)}
+    <g transform="scale(1.1667)">${markSvg(48).replace(/<svg[^>]*>|<\/svg>/g, '')}</g>
     <text x="76" y="28" font-family="${FONT}" font-size="30" font-weight="700"
           fill="${INK}" dominant-baseline="central">${escapeXml(NAME)}</text>
     <text x="${76 + NAME.length * 18 + 18}" y="29" font-family="${FONT}" font-size="22"
@@ -173,10 +187,10 @@ writeFileSync(join(publicDir, 'icons/icon.svg'), markSvg(512));
 
 await png(markSvg(192), join(publicDir, 'icons/icon-192.png'));
 await png(markSvg(512), join(publicDir, 'icons/icon-512.png'));
-await png(markSvg(512, { maskable: true }), join(publicDir, 'icons/maskable-512.png'));
+await png(markSvg(512, { maskable: true, background: '#ffffff' }), join(publicDir, 'icons/maskable-512.png'));
 // iOS composites an apple-touch-icon onto black if it has transparency, so this
 // one is drawn on an opaque tile of its own.
-await png(markSvg(180, { maskable: true, background: ACCENT }), join(publicDir, 'icons/apple-touch-icon.png'));
+await png(markSvg(180, { maskable: true, background: '#ffffff' }), join(publicDir, 'icons/apple-touch-icon.png'));
 
 /**
  * A real multi-resolution .ico, assembled by hand.
