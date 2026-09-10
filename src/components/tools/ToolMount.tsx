@@ -91,6 +91,12 @@ const registry: Record<string, ComponentType> = {
   }),
   'merge-pdf': dynamic(() => import('./MergePdfTool').then((m) => m.MergePdfTool), { loading }),
   'split-pdf': dynamic(() => import('./SplitPdfTool').then((m) => m.SplitPdfTool), { loading }),
+  'pdf-to-jpg': dynamic(() => import('./PdfToJpgTool').then((m) => m.PdfToJpgTool), { loading }),
+  'rotate-pdf': dynamic(() => import('./RotatePdfTool').then((m) => m.RotatePdfTool), { loading }),
+  'remove-pdf-pages': dynamic(
+    () => import('./RemovePdfPagesTool').then((m) => m.RemovePdfPagesTool),
+    { loading },
+  ),
 
   // -- text -----------------------------------------------------------------
   'word-counter': dynamic(() => import('./WordCounterTool').then((m) => m.WordCounterTool), {
