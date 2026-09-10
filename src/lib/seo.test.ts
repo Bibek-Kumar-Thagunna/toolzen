@@ -107,6 +107,27 @@ test('every real title in the registry fits the SERP budget', () => {
   );
 });
 
+test('the brand is never printed twice, wherever it already appears', () => {
+  /*
+   * Regression. The homepage title is `${brand.name} — ${brand.tagline}`, which
+   * *starts* with the brand rather than ending with it. An `endsWith` guard let
+   * that through and shipped "Toolzen — Fast, private tools that just work. ·
+   * Toolzen" to production — the name twice, in a sixty-character budget.
+   */
+  const homepage = pageTitle(`${brand.name} — a tagline`);
+  assert.equal(homepage, `${brand.name} — a tagline`);
+  assert.equal(homepage.split(brand.name).length - 1, 1, 'brand should appear exactly once');
+
+  // Still appended when genuinely absent, and still not doubled at the end.
+  assert.equal(pageTitle('Word Counter'), `Word Counter · ${brand.name}`);
+  assert.equal(pageTitle(`Word Counter · ${brand.name}`), `Word Counter · ${brand.name}`);
+
+  // And the real homepage metadata, not a stand-in for it.
+  const real = pageTitle(`${brand.name} — ${brand.tagline}`);
+  assert.equal(real.split(brand.name).length - 1, 1, `homepage title repeats the brand: ${real}`);
+  assert.ok(real.length <= 60, `homepage title is ${real.length} chars: ${real}`);
+});
+
 test('the brand suffix leaves a usable budget for a page title', () => {
   // Guards the rename case from the other direction: a brand long enough to
   // squeeze page titles below ~40 characters is a branding decision with an SEO

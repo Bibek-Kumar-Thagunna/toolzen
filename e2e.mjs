@@ -11,7 +11,7 @@
  */
 import { chromium } from 'playwright';
 
-const BASE = 'http://localhost:3000';
+const BASE = process.env.BASE ?? 'http://localhost:3000';
 const results = [];
 
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });

@@ -53,11 +53,22 @@ function warnIfOverBudget(kind: string, value: string, max: number): void {
 /**
  * Compose the document title.
  *
- * The brand suffix is dropped when the page title already ends with the brand
- * name (the homepage does), so nothing ever reads "Flint · Flint".
+ * The brand suffix is dropped whenever the title already contains the brand
+ * name — wherever it sits, not only at the end.
+ *
+ * The `endsWith` version of this check shipped a homepage titled
+ * "Toolzen — Fast, private tools that just work. · Toolzen". The title began
+ * with the brand rather than ending with it, so the guard did not fire and the
+ * name was printed twice. That is not merely untidy: sixty characters is the
+ * whole SERP budget, and spending seven of them on a word already in the title
+ * pushes something useful off the end.
+ *
+ * `includes` rather than a word-boundary test because the brand is one token
+ * and a false positive costs only a missing suffix, while a false negative is
+ * the duplication this exists to stop.
  */
 export function pageTitle(title: string): string {
-  const composed = title.endsWith(brand.name) ? title : `${title}${TITLE_SEPARATOR}${brand.name}`;
+  const composed = title.includes(brand.name) ? title : `${title}${TITLE_SEPARATOR}${brand.name}`;
   warnIfOverBudget('title', composed, MAX_TITLE);
   return composed;
 }
