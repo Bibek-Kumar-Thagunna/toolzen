@@ -5,6 +5,18 @@ import { categories } from '@/lib/registry/categories';
 import { tools, toolsInCategory } from '@/lib/registry';
 
 /**
+ * Marked static explicitly.
+ *
+ * Next treats a metadata route as dynamic unless told otherwise, and under
+ * `output: "export"` it refuses to build one rather than guessing. Nothing here
+ * reads the request — the values come from the registry and the environment at
+ * build time — so declaring it is accurate, and it keeps a static export
+ * working without changing anything about the default Vercel build.
+ */
+export const dynamic = 'force-static';
+
+
+/**
  * ============================================================================
  * sitemap.xml
  * ============================================================================

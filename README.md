@@ -95,8 +95,31 @@ headline or call to action.
 
 These variables are inlined at build time, so changing one requires a redeploy.
 
-`output: 'standalone'` in `next.config.mjs` is for the Docker path; Vercel
-handles it correctly and it can stay.
+### One thing to know before you switch ads on
+
+**Vercel's free Hobby plan is for non-commercial use only.** Running AdSense
+makes the site commercial, so at that point you need either Vercel Pro ($20/mo)
+or a host whose free tier permits it.
+
+You are not locked in either way. Every page here is statically generated, so
+the whole site exports to plain HTML:
+
+```bash
+NEXT_OUTPUT=export NEXT_PUBLIC_SITE_URL=https://thetoolzen.com npm run build
+```
+
+That writes `out/` — 37 HTML files plus assets, about 13 MB — which any static
+host serves: Cloudflare Pages, Netlify, GitHub Pages, an S3 bucket. Cloudflare
+Pages in particular is free, permits commercial use, and does not meter static
+bandwidth.
+
+If you export, the security headers move out of `next.config.mjs` (a static
+export has no server to set them) and into the host's own config — a `_headers`
+file on Cloudflare Pages or Netlify. The values to copy are in `vercel.json`.
+
+`NEXT_OUTPUT=standalone` builds a self-contained Node server instead, for Docker
+or a VPS. Leaving `NEXT_OUTPUT` unset is correct for Vercel and for
+`npm start`.
 
 ## Before applying to AdSense
 
