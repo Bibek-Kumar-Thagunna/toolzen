@@ -80,7 +80,38 @@ The constraints are in the code, not in anyone's intentions:
 is not a mock advertisement — it is unclickable, says "reserved", and has no
 headline or call to action.
 
+## Deploying to Cloudflare Pages
+
+The recommended host. The site is a pure static export, so Cloudflare serves it
+with no adapter and no server: unmetered static bandwidth, and a free tier that
+permits commercial use — which matters, because Vercel's free tier does not
+(see below).
+
+1. Push the repository to GitHub.
+2. At **dash.cloudflare.com → Workers & Pages → Create → Pages**, connect the
+   repository.
+3. Build settings:
+
+   | Setting | Value |
+   |---|---|
+   | Framework preset | None |
+   | Build command | `npm run build:static` |
+   | Build output directory | `out` |
+
+4. Environment variables (Production): `NEXT_PUBLIC_SITE_URL` =
+   `https://thetoolzen.com`. For Preview, add `NEXT_PUBLIC_NOINDEX` = `true`,
+   so preview builds never compete with production in search results.
+5. **Custom domains → Set up a domain** → `thetoolzen.com`. Cloudflare shows the
+   DNS record to add at your registrar; HTTPS is issued automatically.
+
+`public/_headers` carries the security headers, the CSP and the cache policy.
+Cloudflare and Netlify both read that format. Keep it in step with the
+`headers()` function in `next.config.mjs`, which is what `npm start` and Vercel
+use — the two are maintained by hand.
+
 ## Deploying to Vercel
+
+
 
 1. Push the repository to GitHub and import it at vercel.com.
 2. Set **`NEXT_PUBLIC_SITE_URL`** to the real origin (e.g.
@@ -95,27 +126,12 @@ headline or call to action.
 
 These variables are inlined at build time, so changing one requires a redeploy.
 
-### One thing to know before you switch ads on
+### Vercel's free tier is non-commercial
 
-**Vercel's free Hobby plan is for non-commercial use only.** Running AdSense
-makes the site commercial, so at that point you need either Vercel Pro ($20/mo)
-or a host whose free tier permits it.
-
-You are not locked in either way. Every page here is statically generated, so
-the whole site exports to plain HTML:
-
-```bash
-NEXT_OUTPUT=export NEXT_PUBLIC_SITE_URL=https://thetoolzen.com npm run build
-```
-
-That writes `out/` — 37 HTML files plus assets, about 13 MB — which any static
-host serves: Cloudflare Pages, Netlify, GitHub Pages, an S3 bucket. Cloudflare
-Pages in particular is free, permits commercial use, and does not meter static
-bandwidth.
-
-If you export, the security headers move out of `next.config.mjs` (a static
-export has no server to set them) and into the host's own config — a `_headers`
-file on Cloudflare Pages or Netlify. The values to copy are in `vercel.json`.
+**Hobby is for personal, non-commercial use only.** Running AdSense makes this
+site commercial, at which point Vercel needs the Pro plan ($20/mo). That is the
+reason Cloudflare Pages is the recommendation above — and the reason the static
+export is kept working, so the choice stays open.
 
 `NEXT_OUTPUT=standalone` builds a self-contained Node server instead, for Docker
 or a VPS. Leaving `NEXT_OUTPUT` unset is correct for Vercel and for

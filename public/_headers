@@ -1,0 +1,47 @@
+# =============================================================================
+# HTTP HEADERS FOR STATIC HOSTS
+# =============================================================================
+# Read by Cloudflare Pages and by Netlify, which share this format. Ignored by
+# Vercel (which uses vercel.json) and by `npm start` (which uses the headers()
+# function in next.config.mjs).
+#
+# This file exists because a static export has no server to set headers with.
+# `next.config.mjs` skips its headers() under NEXT_OUTPUT=export — Next rejects
+# it outright in that mode — so these move here, and the two must be kept in
+# step by hand. If you change one, change the other.
+#
+# It lives in public/ so the export copies it to out/_headers, which is where
+# both hosts look. Indentation matters: the rules under a path must be indented.
+# =============================================================================
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-DNS-Prefetch-Control: on
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: geolocation=(), microphone=(), payment=(), usb=(), interest-cohort=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; object-src 'none'; img-src 'self' data: blob: https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://adservice.google.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; worker-src 'self' blob:; upgrade-insecure-requests
+
+# Permissions-Policy note: camera is deliberately NOT disabled. The mobile image
+# tools use <input capture>, so a user can shoot a photo straight into a tool.
+
+# The pdf.js worker. Its version is in the filename, written by
+# scripts/copy-pdf-worker.mjs, so `immutable` is a true statement here: an
+# upgrade produces a new URL rather than new bytes at an old one.
+/pdf/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Next's own build output is content-hashed, so it is safe to cache forever.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Icons and social cards. A day, not a year, and deliberately not `immutable`:
+# these paths are stable across a rebrand, so a long cache would leave Slack,
+# X and Google serving the old card long after the name on it changed.
+/og/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/icons/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800

@@ -16,7 +16,8 @@
     "check": "node scripts/check-integrity.mjs && node scripts/check-icons.mjs",
     "verify": "npm run check && npm run test && npm run typecheck && npm run lint && npm run build",
     "postinstall": "node scripts/copy-pdf-worker.mjs",
-    "assets": "node scripts/generate-brand-assets.mjs"
+    "assets": "node scripts/generate-brand-assets.mjs",
+    "build:static": "NEXT_OUTPUT=export next build"
   },
   "dependencies": {
     "next": "15.1.6",
