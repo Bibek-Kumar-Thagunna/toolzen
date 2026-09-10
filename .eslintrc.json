@@ -1,0 +1,11 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "@next/next/no-html-link-for-pages": "error",
+    "react/jsx-no-target-blank": "error",
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/aria-props": "error",
+    "jsx-a11y/role-has-required-aria-props": "error"
+  },
+  "ignorePatterns": ["node_modules/", ".next/", "out/", "*.test.ts"]
+}

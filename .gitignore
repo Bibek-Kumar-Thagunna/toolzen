@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+.next/
+out/
+build/
+dist/
+next-env.d.ts
+*.tsbuildinfo
+
+# Generated at install time from node_modules/pdfjs-dist by
+# scripts/copy-pdf-worker.mjs. Version-stamped, so the pattern is a glob.
+public/pdf/
+
+# NOTE: public/og/ and public/icons/ are generated too — by
+# scripts/generate-brand-assets.mjs — but they are deliberately COMMITTED,
+# unlike public/pdf/ above.
+#
+# They are inputs to the deploy rather than products of it: the metadata in
+# src/lib/seo.ts names a specific OG image for every page, and a build that
+# forgot to regenerate them ships links that unfurl as broken rectangles in
+# every chat app. Committing them means a deploy needs no image toolchain at
+# all — `sharp` stays a devDependency used by a script somebody runs after a
+# rebrand, not a build-time requirement that can fail on a new platform.
+#
+# Re-run `npm run assets` after changing the name or accent in src/lib/brand.ts
+# or globals.css, and commit what it writes.
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# Runtime / logs
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Deployment secrets
+deploy/certbot/
+deploy/**/*.pem

@@ -1,0 +1,261 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Design tokens
+   Values are space-separated RGB channels so Tailwind can apply opacity.
+   The dark theme is authored independently — it is not an inversion.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI Variable Text', 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    'Roboto Mono', monospace;
+
+  --header-h: 3.5rem;
+
+  /* Surfaces */
+  --c-canvas: 255 255 255;
+  --c-surface: 255 255 255;
+  --c-surface-raised: 255 255 255;
+  --c-surface-sunken: 246 246 245;
+  --c-surface-hover: 242 242 241;
+
+  /* Lines */
+  --c-border: 229 228 226;
+  --c-border-subtle: 239 238 236;
+  --c-border-strong: 210 208 205;
+
+  /* Text */
+  --c-fg: 22 23 26;
+  --c-fg-muted: 92 95 102;
+  --c-fg-subtle: 133 136 143;
+  --c-fg-on-accent: 255 255 255;
+
+  /* Accent — burnt amber. Dark enough that white label text clears 4.5:1. */
+  --c-accent: 192 67 11;
+  --c-accent-hover: 167 57 9;
+  --c-accent-active: 142 48 7;
+  --c-accent-subtle: 253 241 233;
+  --c-accent-border: 243 203 174;
+  --c-accent-fg: 154 54 8;
+
+  --c-ring: 192 67 11;
+  --c-shadow: 16 17 20;
+  --c-success: 21 128 61;
+  --c-success-subtle: 235 247 239;
+  --c-success-border: 183 224 197;
+  --c-success-fg: 18 107 52;
+
+  --c-warning: 161 98 7;
+  --c-warning-subtle: 254 247 231;
+  --c-warning-border: 239 220 168;
+  --c-warning-fg: 133 83 9;
+
+  --c-danger: 180 35 24;
+  --c-danger-subtle: 254 240 239;
+  --c-danger-border: 243 196 192;
+  --c-danger-fg: 161 27 18;
+
+  --c-info: 29 78 216;
+  --c-info-subtle: 238 242 254;
+  --c-info-border: 195 208 248;
+  --c-info-fg: 27 69 191;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --c-canvas: 12 13 15;
+  --c-surface: 19 20 23;
+  --c-surface-raised: 25 26 30;
+  --c-surface-sunken: 15 16 18;
+  --c-surface-hover: 30 32 37;
+
+  --c-border: 38 40 46;
+  --c-border-subtle: 29 31 36;
+  --c-border-strong: 53 56 63;
+
+  --c-fg: 236 237 239;
+  --c-fg-muted: 160 164 172;
+  --c-fg-subtle: 116 120 127;
+  /* Bright amber needs a near-black label, not white. */
+  --c-fg-on-accent: 23 13 4;
+
+  --c-accent: 249 115 22;
+  --c-accent-hover: 251 139 60;
+  --c-accent-active: 234 103 12;
+  --c-accent-subtle: 42 22 8;
+  --c-accent-border: 74 40 16;
+  --c-accent-fg: 253 186 116;
+
+  --c-ring: 251 146 60;
+  --c-shadow: 0 0 0;
+  --c-success: 16 185 129;
+  --c-success-subtle: 12 38 32;
+  --c-success-border: 23 69 58;
+  --c-success-fg: 110 231 183;
+
+  --c-warning: 245 158 11;
+  --c-warning-subtle: 42 31 6;
+  --c-warning-border: 74 56 16;
+  --c-warning-fg: 252 211 77;
+
+  --c-danger: 248 113 113;
+  --c-danger-subtle: 42 17 19;
+  --c-danger-border: 76 29 31;
+  --c-danger-fg: 252 165 165;
+
+  --c-info: 96 165 250;
+  --c-info-subtle: 14 26 51;
+  --c-info-border: 30 58 107;
+  --c-info-fg: 147 197 253;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 4rem;
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    /* Anchor links and in-page nav must not hide under the sticky header. */
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-base text-fg;
+    /* Guards against any single long token (a JWT, a base64 blob, a hash)
+       forcing horizontal scroll on a 320px viewport. */
+    overflow-wrap: break-word;
+  }
+
+  h1, h2, h3, h4 {
+    @apply text-balance font-semibold text-fg;
+  }
+
+  p, li {
+    @apply text-pretty;
+  }
+
+  /* One focus treatment for the whole product. Never removed, never invisible. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-canvas;
+  }
+
+  ::selection {
+    @apply bg-accent/20 text-fg;
+  }
+
+  /* Native form controls should adopt the accent, including checkboxes,
+     radios, range thumbs and the text cursor. */
+  html {
+    accent-color: rgb(var(--c-accent));
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  /* Honour the OS motion preference everywhere rather than per-component. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Component helpers — only for patterns that repeat across many tools.
+   ========================================================================== */
+
+@layer components {
+  .card {
+    @apply rounded-lg border border-border bg-surface;
+  }
+
+  .link {
+    @apply text-accent-fg underline decoration-accent/30 underline-offset-2
+           transition-colors hover:decoration-accent/70;
+  }
+
+  /* Long-form SEO content below the tool. Deliberately narrow measure. */
+  .prose-content {
+    @apply max-w-prose text-md leading-relaxed text-fg-muted;
+  }
+  .prose-content > * + * {
+    @apply mt-4;
+  }
+  .prose-content h2 {
+    @apply mt-10 text-xl text-fg;
+  }
+  .prose-content h3 {
+    @apply mt-8 text-lg text-fg;
+  }
+  .prose-content strong {
+    @apply font-medium text-fg;
+  }
+  .prose-content ul {
+    @apply list-disc space-y-2 pl-5;
+  }
+  .prose-content ol {
+    @apply list-decimal space-y-2 pl-5;
+  }
+  .prose-content code {
+    @apply rounded-sm bg-surface-sunken px-1 py-0.5 font-mono text-sm text-fg;
+  }
+
+  /* Numbers that update live (file sizes, counts) must not reflow the layout. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  /* Scroll containers inside tools: visible but unobtrusive. */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--c-border-strong)) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded border-[3px] border-solid border-transparent bg-border-strong bg-clip-content;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Checkerboard behind transparent PNG/WebP previews so alpha is visible
+     in both themes. */
+  .alpha-grid {
+    background-image:
+      linear-gradient(45deg, rgb(var(--c-border-subtle)) 25%, transparent 25%),
+      linear-gradient(-45deg, rgb(var(--c-border-subtle)) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgb(var(--c-border-subtle)) 75%),
+      linear-gradient(-45deg, transparent 75%, rgb(var(--c-border-subtle)) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  }
+}
