@@ -65,6 +65,18 @@ export function Slider({
       ? null
       : (formatValue?.(current) ?? `${current}${valueSuffix ?? ''}`);
 
+  // The percentage of the track to the left of the thumb. WebKit has no
+  // progress pseudo-element, so the filled portion is a gradient stop and this
+  // is the number it stops at. Clamped because a value outside min..max would
+  // otherwise produce a gradient the browser silently refuses to paint.
+  const min = readCurrent(rest.min) ?? 0;
+  const max = readCurrent(rest.max) ?? 100;
+  const position = readCurrent(value);
+  const fill =
+    position === undefined || max <= min
+      ? 0
+      : Math.min(100, Math.max(0, ((position - min) / (max - min)) * 100));
+
   return (
     <div className="flex items-center gap-3">
       <input
@@ -72,29 +84,8 @@ export function Slider({
         ref={ref}
         type="range"
         value={value}
-        className={cn(
-          'h-10 w-full min-w-0 flex-1 cursor-pointer appearance-none bg-transparent',
-          'disabled:cursor-not-allowed disabled:opacity-[0.55]',
-          // Track — WebKit and Blink.
-          '[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full',
-          '[&::-webkit-slider-runnable-track]:bg-surface-sunken',
-          // Track — Gecko.
-          '[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full',
-          '[&::-moz-range-track]:bg-surface-sunken',
-          // Thumb — WebKit and Blink. -7px re-centres a 20px thumb on a 6px track.
-          '[&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:box-border',
-          '[&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5',
-          '[&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:appearance-none',
-          '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2',
-          '[&::-webkit-slider-thumb]:border-accent [&::-webkit-slider-thumb]:bg-surface',
-          '[&::-webkit-slider-thumb]:shadow-sm',
-          // Thumb — Gecko. It centres itself on the track, so no offset here.
-          '[&::-moz-range-thumb]:box-border [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5',
-          '[&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:rounded-full',
-          '[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-accent',
-          '[&::-moz-range-thumb]:bg-surface [&::-moz-range-thumb]:shadow-sm',
-          className,
-        )}
+        style={{ ['--slider-fill' as string]: `${fill}%`, ...rest.style }}
+        className={cn('range-input flex-1', className)}
       />
       {readout === null ? null : (
         <span

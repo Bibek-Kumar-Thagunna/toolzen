@@ -90,7 +90,11 @@ export function Input({
         'transition-colors duration-fast ease-out',
         'disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-fg-subtle',
         sizeClasses[inputSize],
-        invalid ? 'border-danger' : 'border-border hover:border-border-strong',
+        // `border-strong` at rest, not on hover: a form field's boundary is
+        // what tells somebody there is a field there, so it has to be
+        // visible before the pointer arrives — and on a touch screen the
+        // pointer never arrives at all.
+        invalid ? 'border-danger' : 'border-border-strong hover:border-fg-subtle',
         iconLeft ? 'pl-9' : 'pl-3',
         suffix ? 'pr-11' : 'pr-3',
         wantsNumeric && 'tabular',

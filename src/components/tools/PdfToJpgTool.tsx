@@ -38,6 +38,7 @@ import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Slider } from '@/components/ui/Slider';
 import { FileDropzone } from '@/components/tool/FileDropzone';
 import { ToolResult } from '@/components/tool/ToolResult';
 import { ToolRunBar } from '@/components/tool/ToolRunBar';
@@ -253,9 +254,8 @@ export function PdfToJpgTool() {
                 htmlFor="pdfimg-quality"
                 labelSuffix={<span className="tabular">{quality}</span>}
               >
-                <Input
+                <Slider
                   id="pdfimg-quality"
-                  type="range"
                   min={40}
                   max={100}
                   step={1}

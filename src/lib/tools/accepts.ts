@@ -76,17 +76,50 @@ export const PNG_ONLY: AcceptSpec = {
   maxFiles: 20,
 };
 
-/** Merging: many documents in, one out. */
-export const PDF_MANY: AcceptSpec = {
-  mime: ['application/pdf', '.pdf'],
-  label: 'PDF',
-  maxBytes: 50 * MB,
+/** One picture in, a set of files out. */
+export const RASTER_IMAGE_ONE: AcceptSpec = {
+  ...RASTER_IMAGES,
+  maxFiles: 1,
+};
+
+export const WEBP_ONLY: AcceptSpec = {
+  mime: ['image/webp', '.webp'],
+  label: 'WebP',
+  maxBytes: 30 * MB,
   maxFiles: 20,
 };
 
-/** Splitting: one document in, many out. */
+/**
+ * Merging: many documents in, one out.
+ *
+ * 100 MB each is not a limit of the format or of the browser — it is the point
+ * where holding twenty of them in one tab stops being reasonable. Merging has
+ * to have every document open at once, so the ceiling here is per-file *and*
+ * effectively collective.
+ */
+export const PDF_MANY: AcceptSpec = {
+  mime: ['application/pdf', '.pdf'],
+  label: 'PDF',
+  maxBytes: 100 * MB,
+  maxFiles: 20,
+};
+
+/**
+ * One document in.
+ *
+ * Deliberately far higher than the multi-file limit, because only one file is
+ * ever in memory: the scans people actually want to compress — a hundred pages
+ * photographed at 600 DPI — routinely run past 200 MB, and refusing them is
+ * refusing the exact job the tool exists for.
+ *
+ * This is our number, not a browser limit. The real constraint is device
+ * memory, and it varies by an order of magnitude between a phone and a laptop,
+ * so the honest thing is a generous cap plus a warning on the way in rather
+ * than a low cap that turns away work that would have succeeded.
+ */
 export const PDF_ONE: AcceptSpec = {
   ...PDF_MANY,
+  maxBytes: 300 * MB,
   maxFiles: 1,
 };
 

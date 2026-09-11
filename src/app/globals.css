@@ -18,24 +18,48 @@
 
   --header-h: 3.5rem;
 
-  /* Surfaces — white, with one barely-there step below it. A minimal interface
-     separates things with a hairline and a little air, not with grey fills. */
-  --c-canvas: 255 255 255;
+  /* Surfaces.
+     ------------------------------------------------------------------------
+     The page is a soft off-white and the cards are white, rather than both
+     being 255.
+
+     Pure white everywhere is the standard look and it is genuinely
+     uncomfortable to use: the background is the largest area on the screen, so
+     at a normal monitor brightness it is the thing driving the light hitting
+     someone's eyes, and the usual response is to turn the brightness down or
+     switch to dark mode — which is the report that prompted this. Dropping the
+     canvas a few points costs nothing in cleanliness and takes the glare off.
+
+     It also buys depth for free: a white card on an off-white page separates
+     itself without needing a heavier border or a shadow, which suits a design
+     built on hairlines. `surface-sunken` then sits a step below the canvas, so
+     an inset panel still reads as inset. */
+  --c-canvas: 247 248 250;
   --c-surface: 255 255 255;
   --c-surface-raised: 255 255 255;
-  --c-surface-sunken: 250 250 251;
-  --c-surface-hover: 246 246 248;
+  --c-surface-sunken: 241 243 246;
+  --c-surface-hover: 237 240 244;
 
   /* Lines — hairlines. `border` is the workhorse and is deliberately faint:
      at 1px on white it reads as a division, not as a box. */
   --c-border: 232 232 236;
   --c-border-subtle: 241 241 244;
-  --c-border-strong: 213 213 220;
+  /* Form-control boundaries, not decorative edges. This is the token an input,
+     a select and a textarea outline themselves with, so it has to clear the 3:1
+     WCAG threshold for a user-interface component against the surface behind it
+     — 213 was 1.5:1, which is a border you can believe in only if you already
+     know it is there. `--c-border` stays a true hairline for card edges, where
+     nothing depends on seeing it. */
+  --c-border-strong: 145 145 154;
 
-  /* Text */
-  --c-fg: 10 10 12;
+  /* Text.
+     `fg` is a very dark grey rather than near-black: against a white card,
+     10/10/12 is about 19:1, which is more contrast than the eye wants for long
+     prose and reads as harsh at small sizes. 26 keeps it comfortably past 15:1
+     — far above the 4.5 required — while taking the hard edge off. */
+  --c-fg: 26 26 31;
   --c-fg-muted: 105 105 117;
-  --c-fg-subtle: 148 148 160;
+  --c-fg-subtle: 140 140 152;
   --c-fg-on-accent: 255 255 255;
 
   /* Primary action — near-black, not the accent colour.
@@ -52,6 +76,12 @@
      partly because every competitor in this niche is blue, and partly because
      it is what the mascot is made of. Teal-700 rather than a brighter step so
      white label text clears 4.5:1 when it is used as a fill. */
+  /* The groove of a range input, and anything else that needs to read as an
+     inactive channel. Deliberately NOT surface-sunken: in dark mode that sits
+     three points away from the surface it is drawn on, which made the quality
+     slider invisible on a tool card. */
+  --c-track: 146 146 154;
+
   --c-accent: 15 118 110;
   --c-accent-hover: 13 100 94;
   --c-accent-active: 12 84 79;
@@ -93,7 +123,7 @@
 
   --c-border: 38 38 45;
   --c-border-subtle: 28 28 34;
-  --c-border-strong: 56 56 64;
+  --c-border-strong: 102 102 114;
 
   --c-fg: 244 244 246;
   --c-fg-muted: 160 160 173;
@@ -107,6 +137,8 @@
   --c-primary-hover: 228 228 235;
   --c-primary-active: 208 208 217;
   --c-primary-fg: 10 10 12;
+
+  --c-track: 100 100 112;
 
   --c-accent: 45 212 191;
   --c-accent-hover: 94 234 212;
@@ -211,6 +243,86 @@
    ========================================================================== */
 
 @layer components {
+  /* ------------------------------------------------------------------------
+     Range input.
+     ------------------------------------------------------------------------
+     Written here rather than as thirty arbitrary Tailwind variants because the
+     vendor pseudo-elements need real declarations, and because two of them
+     depend on a value the component computes.
+
+     Three things this fixes over a default-styled range:
+
+       1. The groove uses --c-track, which is a visible neutral in both themes.
+         The old surface-sunken was three points from the card it sat on in dark
+         mode, so the whole control read as an empty row.
+       2. The portion to the left of the thumb is filled with the accent, so the
+         current value is legible without finding the thumb. WebKit has no
+         progress pseudo-element, so it gets a gradient stopped at --slider-fill
+         (a percentage the component sets); Gecko has ::-moz-range-progress and
+         uses that.
+       3. The thumb is solid accent with a surface-coloured ring, which reads at
+         a glance on either theme. An outlined thumb on a dark card does not.
+     -------------------------------------------------------------------------- */
+  .range-input {
+    @apply h-10 w-full min-w-0 cursor-pointer appearance-none bg-transparent;
+  }
+  .range-input:disabled {
+    @apply cursor-not-allowed opacity-[0.55];
+  }
+
+  .range-input::-webkit-slider-runnable-track {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      rgb(var(--c-accent)) 0 var(--slider-fill, 0%),
+      rgb(var(--c-track)) var(--slider-fill, 0%) 100%
+    );
+  }
+  .range-input::-moz-range-track {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: rgb(var(--c-track));
+  }
+  .range-input::-moz-range-progress {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: rgb(var(--c-accent));
+  }
+
+  /* -0.4375rem re-centres a 1.25rem thumb on a 0.375rem track. Gecko centres
+     its own thumb, so the offset is WebKit-only. `box-border` is spelled out:
+     Preflight's reset does not reach vendor pseudo-elements, so without it the
+     ring would be added outside the box and the centring would be wrong. */
+  .range-input::-webkit-slider-thumb {
+    appearance: none;
+    box-sizing: border-box;
+    margin-top: -0.4375rem;
+    height: 1.25rem;
+    width: 1.25rem;
+    cursor: grab;
+    border-radius: 9999px;
+    background: rgb(var(--c-accent));
+    border: 2px solid rgb(var(--c-surface));
+    box-shadow: 0 1px 2px rgb(var(--c-shadow) / 0.25);
+  }
+  .range-input::-moz-range-thumb {
+    box-sizing: border-box;
+    height: 1.25rem;
+    width: 1.25rem;
+    cursor: grab;
+    border-radius: 9999px;
+    background: rgb(var(--c-accent));
+    border: 2px solid rgb(var(--c-surface));
+    box-shadow: 0 1px 2px rgb(var(--c-shadow) / 0.25);
+  }
+  .range-input:active::-webkit-slider-thumb {
+    cursor: grabbing;
+  }
+  .range-input:active::-moz-range-thumb {
+    cursor: grabbing;
+  }
+
   .card {
     @apply rounded-lg border border-border bg-surface;
   }

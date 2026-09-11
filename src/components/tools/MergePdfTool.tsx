@@ -260,7 +260,7 @@ export function MergePdfTool() {
           progressLabel={(progress) => `${progress.done} of ${progress.total} added`}
           onRun={onRun}
           onCancel={run.cancel}
-          hint="Up to 20 documents, 50 MB each. Bookmarks and form fields from the original files are not carried across."
+          hint="Up to 20 documents, 100 MB each. Bookmarks and form fields from the original files are not carried across."
         />
       ) : null}
 

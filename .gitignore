@@ -48,3 +48,9 @@ Thumbs.db
 # Deployment secrets
 deploy/certbot/
 deploy/**/*.pem
+
+# Written by scripts/write-ads-txt.mjs before every build, from
+# NEXT_PUBLIC_ADSENSE_CLIENT. Deliberately NOT committed: the file is only
+# correct for one publisher id, and a stale or placeholder ads.txt tells buyers
+# that nobody is authorised to sell this inventory — which stops ads serving.
+public/ads.txt

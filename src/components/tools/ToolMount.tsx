@@ -84,6 +84,8 @@ const registry: Record<string, ComponentType> = {
   'jpg-to-png': dynamic(() => import('./JpgToPngTool').then((m) => m.JpgToPngTool), { loading }),
   'png-to-jpg': dynamic(() => import('./PngToJpgTool').then((m) => m.PngToJpgTool), { loading }),
   'png-to-webp': dynamic(() => import('./PngToWebpTool').then((m) => m.PngToWebpTool), { loading }),
+  'webp-to-jpg': dynamic(() => import('./WebpToJpgTool').then((m) => m.WebpToJpgTool), { loading }),
+  'webp-to-png': dynamic(() => import('./WebpToPngTool').then((m) => m.WebpToPngTool), { loading }),
 
   // -- pdf ------------------------------------------------------------------
   'image-to-pdf': dynamic(() => import('./ImageToPdfTool').then((m) => m.ImageToPdfTool), {
@@ -95,6 +97,13 @@ const registry: Record<string, ComponentType> = {
   'rotate-pdf': dynamic(() => import('./RotatePdfTool').then((m) => m.RotatePdfTool), { loading }),
   'remove-pdf-pages': dynamic(
     () => import('./RemovePdfPagesTool').then((m) => m.RemovePdfPagesTool),
+    { loading },
+  ),
+  'compress-pdf': dynamic(() => import('./CompressPdfTool').then((m) => m.CompressPdfTool), {
+    loading,
+  }),
+  'extract-pdf-text': dynamic(
+    () => import('./ExtractPdfTextTool').then((m) => m.ExtractPdfTextTool),
     { loading },
   ),
 
@@ -123,6 +132,9 @@ const registry: Record<string, ComponentType> = {
   'jwt-decoder': dynamic(() => import('./JwtDecoderTool').then((m) => m.JwtDecoderTool), {
     loading,
   }),
+  'url-encoder': dynamic(() => import('./UrlEncoderTool').then((m) => m.UrlEncoderTool), {
+    loading,
+  }),
   'uuid-generator': dynamic(() => import('./UuidGeneratorTool').then((m) => m.UuidGeneratorTool), {
     loading,
   }),
@@ -142,6 +154,16 @@ const registry: Record<string, ComponentType> = {
   'emi-calculator': dynamic(() => import('./EmiCalculatorTool').then((m) => m.EmiCalculatorTool), {
     loading,
   }),
+  'bmi-calculator': dynamic(() => import('./BmiCalculatorTool').then((m) => m.BmiCalculatorTool), {
+    loading,
+  }),
+  'unit-converter': dynamic(() => import('./UnitConverterTool').then((m) => m.UnitConverterTool), {
+    loading,
+  }),
+  'discount-calculator': dynamic(
+    () => import('./DiscountCalculatorTool').then((m) => m.DiscountCalculatorTool),
+    { loading },
+  ),
 
   // -- generators -----------------------------------------------------------
   'qr-code-generator': dynamic(
@@ -150,6 +172,14 @@ const registry: Record<string, ComponentType> = {
   ),
   'password-generator': dynamic(
     () => import('./PasswordGeneratorTool').then((m) => m.PasswordGeneratorTool),
+    { loading },
+  ),
+  'lorem-ipsum-generator': dynamic(
+    () => import('./LoremIpsumTool').then((m) => m.LoremIpsumTool),
+    { loading },
+  ),
+  'favicon-generator': dynamic(
+    () => import('./FaviconGeneratorTool').then((m) => m.FaviconGeneratorTool),
     { loading },
   ),
   'color-palette-generator': dynamic(

@@ -54,14 +54,19 @@ export function ToolCard({ slug, name, tagline, icon, isNew = false, className }
         className,
       )}
     >
+      {/* Tinted at rest rather than only on hover. A grid of thirty-two grey
+          tiles reads as a table of contents; the same grid with the brand
+          colour in it reads as a product, and the tint is quiet enough
+          (accent at low opacity behind an accent foreground) that it never
+          competes with the tool name beside it. */}
       <span
         className={cn(
           'flex size-9 shrink-0 items-center justify-center rounded-md',
-          'border border-border-subtle bg-surface-sunken text-fg-muted',
-          'transition-colors duration-fast group-hover:border-accent-border group-hover:bg-accent-subtle group-hover:text-accent-fg',
+          'border border-transparent bg-accent-subtle text-accent-fg',
+          'transition-colors duration-fast group-hover:border-accent-border',
         )}
       >
-        <Icon name={icon} size={18} />
+        <Icon name={icon} size={19} />
       </span>
 
       {/* `min-w-0` so the clamped tagline can actually clamp: without it this

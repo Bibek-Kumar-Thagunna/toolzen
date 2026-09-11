@@ -245,6 +245,14 @@ function loadFixtures(): Manifest {
 const manifest = loadFixtures();
 const fixtureNames = readdirSync(FIXTURES).filter((name) => name !== 'manifest.json').sort();
 
+/** `{}` when every named fixture exists, a skip reason naming those that do not. */
+function missingFixtures(...names: string[]): { skip?: string } {
+  const absent = names.filter((name) => !fixtureNames.includes(name));
+  if (absent.length === 0) return {};
+  const why = absent.map((name) => manifest.skipped[name] ?? 'not written').join('; ');
+  return { skip: `this Pillow could not write ${absent.join(', ')} — ${why}` };
+}
+
 function bytesOf(name: string): Uint8Array {
   return new Uint8Array(readFileSync(join(FIXTURES, name)));
 }
@@ -386,7 +394,12 @@ test('every fixture truncated to 4, 11 and 20 bytes comes back quietly', () => {
       if (cut === 0) assert.equal(sniffed.format, 'unknown', label);
     }
   }
-  assert.ok(fixtureNames.length >= 25, `only ${fixtureNames.length} fixtures were truncated`);
+  // The point of this number is "the fixture generator actually ran", not
+  // "this machine's Pillow can write AVIF". A build of Pillow without the
+  // optional AVIF and HEIF plugins writes three fewer files and records why in
+  // the manifest, so the count that matters is what was *attempted*.
+  const attempted = fixtureNames.length + Object.keys(manifest.skipped).length;
+  assert.ok(attempted >= 25, `only ${attempted} fixtures were attempted`);
 });
 
 test('no prefix of any fixture, of any length, can make it throw', () => {
@@ -462,11 +475,27 @@ test('transparency is read from the header, not guessed from the format', () => 
   assert.equal(sniffImage(bytesOf('webp-lossless.webp')).hasAlpha, false);
   assert.equal(sniffImage(bytesOf('tiff-rgba.tif')).hasAlpha, true, 'ExtraSamples');
   assert.equal(sniffImage(bytesOf('tiff-le.tif')).hasAlpha, false);
-  assert.equal(sniffImage(bytesOf('avif-alpha.avif')).hasAlpha, true, 'an auxiliary alpha item');
-  assert.equal(sniffImage(bytesOf('avif.avif')).hasAlpha, false, 'three channels in pixi');
   // An SVG paints onto nothing, so whatever it does not cover is transparent.
   assert.equal(sniffImage(new TextEncoder().encode('<svg xmlns="x"></svg>')).hasAlpha, true);
 });
+
+/**
+ * AVIF gets its own test because its fixtures are the ones that may not exist.
+ *
+ * Pillow only writes AVIF when it was built with the optional plugin, and a
+ * great many distribution builds are not — so on those machines there is no
+ * file to read and the assertion above would fail for a reason that has nothing
+ * to do with the sniffer. Split out, the rest of the transparency checks still
+ * run and this one reports honestly why it did not.
+ */
+test(
+  'AVIF transparency is read from the auxiliary item, not from the format',
+  missingFixtures('avif.avif', 'avif-alpha.avif'),
+  () => {
+    assert.equal(sniffImage(bytesOf('avif-alpha.avif')).hasAlpha, true, 'an auxiliary alpha item');
+    assert.equal(sniffImage(bytesOf('avif.avif')).hasAlpha, false, 'three channels in pixi');
+  },
+);
 
 test('animation is only claimed when the structure proves it', () => {
   for (const name of ['apng.png', 'gif-animated.gif', 'webp-animated.webp']) {

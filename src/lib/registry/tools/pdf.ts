@@ -169,7 +169,7 @@ export const pdfTools: Tool[] = [
     howTo: {
       title: 'How to merge PDF files',
       steps: [
-        'Add the PDFs you want to combine — up to twenty, each up to 50 MB.',
+        'Add the PDFs you want to combine — up to twenty, each up to 100 MB.',
         'Drag the files into the order you want them to appear.',
         'Remove pages that should not be in the result.',
         'Merge, then download the combined document.',
@@ -190,7 +190,7 @@ export const pdfTools: Tool[] = [
       },
       {
         title: 'No watermark and no page cap',
-        body: 'The result is the result: nothing is stamped on it, no pages are held back, and there is no queue. Twenty files of up to 50 MB each per merge, with your device’s memory as the practical ceiling beyond that.',
+        body: 'The result is the result: nothing is stamped on it, no pages are held back, and there is no queue. Twenty files of up to 100 MB each per merge, with your device’s memory as the practical ceiling beyond that.',
       },
       {
         title: 'Clear about what it cannot keep',
@@ -208,7 +208,7 @@ export const pdfTools: Tool[] = [
       },
       {
         q: 'How large a file can it handle?',
-        a: 'Fifty megabytes per PDF, twenty files at a time. The constraint you meet first on very large documents is memory rather than that number: everything is held in one browser tab, and a phone gives a tab far less room than a laptop does.',
+        a: 'A hundred megabytes per PDF, twenty files at a time. That is our number rather than a limit of the format or the browser — the real ceiling is your device\u2019s memory, since a merge has to hold every document open at once, and a phone gives a tab far less room than a laptop does.',
       },
       {
         q: 'Does the order of the files matter?',
@@ -273,7 +273,7 @@ export const pdfTools: Tool[] = [
     howTo: {
       title: 'How to split a PDF',
       steps: [
-        'Open one PDF of up to 50 MB.',
+        'Open one PDF of up to 300 MB.',
         'Let the page thumbnails render, then choose a page range, a chunk size, or tick individual pages.',
         'Check the selection against the thumbnails.',
         'Split, and download the resulting file or files.',
@@ -298,7 +298,7 @@ export const pdfTools: Tool[] = [
       },
       {
         title: 'One document at a time, deliberately',
-        body: 'Splitting acts on a single file, so the picker takes one PDF of up to 50 MB. On long scanned documents, device memory becomes the real limit before that number does.',
+        body: 'Splitting acts on a single file, so the picker takes one PDF of up to 300 MB. Only one document is ever in memory, which is why the single-file limit is three times the one for merging.',
       },
     ],
     faq: [
@@ -312,7 +312,7 @@ export const pdfTools: Tool[] = [
       },
       {
         q: 'How large a PDF can it open?',
-        a: 'Fifty megabytes. On a long scanned document the limit you meet first is memory: thumbnails for several hundred pages take real space in a tab, and a phone will give up before a laptop will.',
+        a: 'Three hundred megabytes. On a long scanned document the limit you meet first is memory rather than that number: thumbnails for several hundred pages take real space in a tab, and a phone will give up well before a laptop will.',
       },
       {
         q: 'What happens to bookmarks?',
@@ -687,6 +687,243 @@ export const pdfTools: Tool[] = [
       },
     ],
     related: ['split-pdf', 'merge-pdf', 'rotate-pdf', 'pdf-to-jpg'],
+    updated: '2026-09-10',
+  },
+  {
+    slug: 'compress-pdf',
+    name: 'Compress PDF',
+    h1: 'Compress a PDF',
+    tagline: 'Get a file under the limit, and be told honestly what it costs.',
+    category: 'pdf',
+    icon: 'compress',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'Compress PDF — Reduce File Size',
+    metaDescription:
+      'Make a PDF smaller in your browser. Repack a text document without changing a pixel, or rebuild a scan at a lower resolution. Never returns a bigger file.',
+    primaryKeyword: 'compress pdf',
+    secondaryKeywords: [
+      'reduce pdf file size',
+      'make a pdf smaller',
+      'compress pdf to 1mb',
+      'shrink scanned pdf',
+      'pdf too large to email',
+    ],
+    synonyms: [
+      'pdf compressor',
+      'reduce size of pdf',
+      'lower pdf file size',
+      'compress pdf online',
+      'squeeze pdf',
+      'pdf file too big',
+      'optimise pdf',
+      'compress pdf for upload',
+    ],
+    accepts: PDF_ONE,
+    howTo: {
+      title: 'How to compress a PDF',
+      steps: [
+        'Open the PDF you want to make smaller.',
+        'Say what is in it: mostly text, or scanned pages and photographs.',
+        'For a scan, choose how much detail to keep — the DPI and the image quality.',
+        'Compress, then download the smaller file. If nothing beat the original, you get the original back.',
+      ],
+    },
+    features: [
+      {
+        title: 'Two honest modes instead of one dishonest slider',
+        body: 'A text document and a scan need opposite treatments, and a single quality slider cannot serve both. The tool asks which one you have, in words you can answer, and applies the method that actually works on it.',
+      },
+      {
+        title: 'It never hands back a bigger file',
+        body: 'If the compressed result comes out larger than what you started with — which happens on documents that are already optimised — your original is returned untouched and the result says so plainly.',
+      },
+      {
+        title: 'Text mode changes nothing on any page',
+        body: 'The file is repacked, not redrawn: small objects are gathered into compressed streams and the producer line is dropped. Text stays selectable, vectors stay sharp, and no pixel moves.',
+      },
+      {
+        title: 'Scan mode is where the big savings live',
+        body: 'A photographed page holds far more resolution than reading needs. Redrawing each page at 150 DPI routinely takes a 20 MB scan under 2 MB, and the tool says up front that the text layer goes with it.',
+      },
+      {
+        title: 'Pages keep their real size',
+        body: 'A rebuilt A4 page comes out A4. The render resolution is converted back to points when the new page is written, so a compressed document still prints on the paper it was designed for.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'Both modes run in the browser tab. The documents people most often need to shrink — statements, contracts, passport scans for a form — never leave the device.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Why did my PDF barely get smaller?',
+        a: 'Because it is mostly text, and text is already tiny. A page of typeset words is a few kilobytes of glyph positions; there is nothing left to squeeze. Large PDFs are almost always large because of images, and if yours is a scan, the "scanned pages or photos" mode is where the real reduction is.',
+      },
+      {
+        q: 'Can I compress a PDF to exactly 1 MB?',
+        a: 'Not by naming the number. What comes out depends on what is on the pages, so the honest approach is to pick a detail level, look at the result, and step down if it is still too big. Starting at 150 DPI and dropping to 96 covers nearly every upload limit.',
+      },
+      {
+        q: 'Does compressing lose quality?',
+        a: 'In text mode, no — nothing on any page is altered. In scan mode, yes, and deliberately: pages are redrawn as JPEG images at a lower resolution, which is exactly where the saving comes from. Keep your original either way.',
+      },
+      {
+        q: 'Will the text still be selectable afterwards?',
+        a: 'In text mode it will be. In scan mode it will not, because every page becomes a picture. A warning to that effect sits above the button rather than hidden in small print, since it is the one consequence people are surprised by.',
+      },
+      {
+        q: 'Why was my original returned unchanged?',
+        a: 'Because nothing beat it. A file that has already been through an optimiser can come out larger after a second pass, and handing you that would be damage dressed up as a feature. The tool keeps whichever file is smaller, and tells you which one you got.',
+      },
+      {
+        q: 'Can it compress a password-protected PDF?',
+        a: 'No. An encrypted document cannot be read until it is decrypted. Open it in your PDF reader with the password, save an unprotected copy, and compress that.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Two completely different jobs share one word',
+        body: [
+          'When someone says a PDF is too large, the fix depends entirely on what is inside it — and the two cases have almost nothing in common.',
+          'A document that came out of a word processor stores text as glyph positions and font subsets, plus whatever vector drawing is on the page. All of that is compact already, and the only safe reduction is repacking the file’s internal structure: gathering many small objects into compressed streams and dropping metadata nobody reads. That is worth a few per cent, occasionally twenty on a badly written file, and it never changes what is on a page.',
+          'A scan is the opposite. It is a photograph of paper wrapped in a PDF, and it is enormous because it holds full-resolution images of something that is mostly white. Re-encoding those at the resolution a person actually reads at is where twenty megabytes becomes two — but it means redrawing each page as a picture, which is not a free operation.',
+          'A tool that offers one slider for both cases is guessing, and half the time it guesses wrong. This one asks.',
+        ],
+      },
+      {
+        heading: 'What a rebuild costs, stated plainly',
+        body: [
+          'Rebuilding turns every page into an image. If the document had a text layer — because it was born digital, or because someone ran OCR over the scan — that layer is gone afterwards. The text stops being selectable, stops being searchable, and stops being readable by screen readers, which is the part that rarely gets mentioned.',
+          'For a scan of a signed form that only ever needs to be looked at and emailed, none of that matters and the size reduction is dramatic. For a report someone will search through, it matters a great deal.',
+          'This is why the warning sits above the button. It is also why the mode is never selected for you: the tool cannot see what your document is for, and the wrong choice is not something you can undo from the file you get back.',
+        ],
+      },
+      {
+        heading: 'Getting under an upload limit',
+        body: [
+          'The usual reason for compressing anything is a form that refuses files over some number — 2 MB for a visa application, 5 MB for an email attachment, 10 MB for a portal that will not say why it failed.',
+          'Work downwards rather than upwards. Try the balanced setting first, look at the size, and step down only if you need to. Each halving of DPI cuts the file to roughly a quarter, so there is usually far more headroom than people expect, and going straight to the smallest setting gives away detail you did not need to spend.',
+          'If a text document is still too large after repacking, the size is coming from images embedded in it, and splitting out the pages you actually need to send is often a better answer than degrading all of them.',
+        ],
+      },
+    ],
+    related: ['split-pdf', 'merge-pdf', 'pdf-to-jpg', 'image-compressor'],
+    popular: true,
+    isNew: true,
+    updated: '2026-09-10',
+  },
+  {
+    slug: 'extract-pdf-text',
+    name: 'PDF to Text',
+    h1: 'Extract text from a PDF',
+    tagline: 'Get the words out of a document, ready to paste anywhere.',
+    category: 'pdf',
+    icon: 'file-text',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'PDF to Text — Extract Text',
+    metaDescription:
+      'Pull the text out of a PDF and copy it or save it as a .txt file. Runs in your browser, so the document is never uploaded. Says plainly when a file is a scan.',
+    primaryKeyword: 'extract text from pdf',
+    secondaryKeywords: [
+      'pdf to text',
+      'copy text from pdf',
+      'pdf to txt',
+      'get text out of a pdf',
+      'pdf text extractor',
+    ],
+    synonyms: [
+      'convert pdf to text',
+      'pdf to plain text',
+      'read text from pdf',
+      'pull words from pdf',
+      'pdf text export',
+      'save pdf as txt',
+      'pdf copy paste text',
+    ],
+    accepts: PDF_ONE,
+    howTo: {
+      title: 'How to extract text from a PDF',
+      steps: [
+        'Open your PDF, or drop it onto the page.',
+        'Leave the page box blank for the whole document, or name the pages you need.',
+        'Extract, then edit the text in the box if you want to tidy it first.',
+        'Copy it, or download it as a .txt file.',
+      ],
+    },
+    features: [
+      {
+        title: 'It tells you when there is no text',
+        body: 'A scanned document contains pictures of words, not words, so nothing can be extracted from it. Instead of an empty box that looks broken, you get a sentence explaining that the file is a scan and needs OCR.',
+      },
+      {
+        title: 'The result is editable before you take it',
+        body: 'Extraction always leaves something to tidy — a running header, a hyphen across a line break. The box is a real text field, and both Copy and Download take what you have edited rather than the raw output.',
+      },
+      {
+        title: 'Page markers when you want them',
+        body: 'Off by default, because most people are pasting a paragraph. Switch them on for a long report and each page starts with a line naming its number, so a quote can still be cited.',
+      },
+      {
+        title: 'A few pages instead of all of them',
+        body: 'Type 1-3, 7 and only those pages are read. On a three-hundred-page document that is the difference between instant and a wait.',
+      },
+      {
+        title: 'Reading order, not coordinate order',
+        body: 'Text is stored in a PDF as positioned glyph runs. Those runs are reassembled into lines using the layout breaks the document itself declares, so an ordinary single-column page comes out as readable prose.',
+      },
+      {
+        title: 'The document stays on your device',
+        body: 'Parsing happens in the tab, by the same engine your browser uses to display a PDF. Nothing about the file is transmitted, which matters when the text you are extracting is the confidential part.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Why did I get nothing back?',
+        a: 'Because the document is a scan. A page that is a photograph of paper holds no text at all — every letter is part of the image — so an extractor has nothing to read, however crisp it looks. Recovering those words needs OCR, which is character recognition on an image, and it is a different kind of tool.',
+      },
+      {
+        q: 'How do I know whether my PDF is a scan?',
+        a: 'Open it in any reader and try to select a sentence with the mouse. If the text highlights, it is real text and this tool will get it. If you can only draw a box over the page, it is an image.',
+      },
+      {
+        q: 'Why is the spacing strange in places?',
+        a: 'A PDF stores where each glyph sits, not where sentences begin and end, so line breaks and column boundaries have to be inferred. A plain single-column page comes out clean; multi-column layouts, tables and text wrapped around figures are where the guessing shows. The box is editable for exactly that reason.',
+      },
+      {
+        q: 'Can it extract text from a password-protected PDF?',
+        a: 'No. The document has to be decrypted before anything can be read from it. Open it in a reader with the password, save an unprotected copy, and use that.',
+      },
+      {
+        q: 'Does it keep bold, headings and tables?',
+        a: 'No — the output is plain text, which is what makes it paste cleanly into anything. Formatting, images and table borders are dropped. If you need the layout too, converting the pages to images preserves the look instead of the words.',
+      },
+      {
+        q: 'Is there a page limit?',
+        a: 'No fixed one. Very long documents take longer and use more memory, and the page box is there so you can read the section you need rather than all three hundred pages.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why a PDF makes this harder than it should be',
+        body: [
+          'A PDF is a description of a printed page, not a document in the sense a word processor means. It says which glyph goes at which coordinate in which font, and that is all. There is no paragraph, no sentence, and often no space character — the gap between two words can simply be two glyphs drawn a little further apart.',
+          'Extracting text therefore means reassembling prose from positions, and every extractor makes judgement calls doing it. The one here follows the layout breaks the document declares, which is right for the overwhelmingly common case of a single-column page and does not pretend to untangle complex layouts.',
+          'Two columns are the classic failure everywhere: an extractor that reads strictly by vertical position interleaves them a line at a time and produces nonsense. If your document is laid out like an academic paper, expect to do some tidying — which is why the result is handed to you in an editable box rather than as a finished file.',
+        ],
+      },
+      {
+        heading: 'The scan problem, and what actually solves it',
+        body: [
+          'A large share of the PDFs in the world came from a scanner or a phone camera, and they are images wrapped in a document container. To a person they look identical to a text document. To software they are a photograph.',
+          'No amount of extraction gets words out of one, because there are no words in the file — only pixels arranged to look like them. What is needed is OCR: software that recognises characters in an image and writes them out as text. It is a heavyweight job and an imperfect one, and a browser tool that claimed to do it without saying so would be misleading you.',
+          'If a scan is what you have, the honest paths are to run it through OCR software, or to keep it as images. Some PDFs are also hybrids — a scan with an OCR text layer already added by whoever produced it — and those extract perfectly well here.',
+        ],
+      },
+    ],
+    related: ['pdf-to-jpg', 'split-pdf', 'compress-pdf', 'word-counter'],
+    isNew: true,
     updated: '2026-09-10',
   },
 ];

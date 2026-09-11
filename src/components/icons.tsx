@@ -36,24 +36,28 @@ const paths = {
     'M9 11a1.75 1.75 0 1 0 0-3.5A1.75 1.75 0 0 0 9 11z',
     'M3.5 16.5 8.5 12l3.5 3 2.5-2 5 5',
   ],
+  // Two letterforms, not three. At the size this is actually drawn — 18 to 20
+  // pixels, beside the word "PDF" — a third letter only closes the gaps between
+  // the other two into a grey smudge. Both are 5 units tall rather than 4.5,
+  // which is the smallest that still reads as a letter rather than as texture.
   'file-pdf': [
     'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z',
     'M14 3v5h5',
-    'M8.75 18v-4.5h1.5a1.25 1.25 0 0 1 0 2.5h-1.5',
-    'M13.25 18v-4.5h2.25',
-    'M13.25 15.75h1.5',
+    'M7.5 18.5v-6h2a1.75 1.75 0 0 1 0 3.5h-2',
+    'M12.75 18.5v-6h1.75a3 3 0 0 1 0 6z',
   ],
   text: ['M4 6.5V5h16v1.5', 'M12 5v14', 'M8.5 19h7'],
   code: ['M9 8.5 5 12l4 3.5', 'M15 8.5 19 12l-4 3.5', 'M13.5 7l-3 10'],
+  // A display and four keys. The earlier drawing had six key marks 1.75 units
+  // apart, which at 20px is closer than the stroke is wide — they merged into a
+  // grey block. Four dots on a wide grid survive the reduction.
   calculator: [
     'M6.5 3h11A1.5 1.5 0 0 1 19 4.5v15a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19.5v-15A1.5 1.5 0 0 1 6.5 3z',
-    'M8.5 6.5h7v2.5h-7z',
-    'M8.25 13h2.5',
-    'M9.5 11.75v2.5',
-    'M13.25 12.25h2.5',
-    'M13.25 14h2.5',
-    'M8.25 17.5h2.5',
-    'M13.25 17.5h2.5',
+    'M8.5 6.5h7v3h-7z',
+    'M9.5 13.5h.01',
+    'M14.5 13.5h.01',
+    'M9.5 17.5h.01',
+    'M14.5 17.5h.01',
   ],
   spark: [
     'M11 5.5c.7 4 1.6 4.8 5.5 5.5-4 .7-4.8 1.6-5.5 5.5-.7-4-1.6-4.8-5.5-5.5 4-.7 4.8-1.6 5.5-5.5z',
@@ -99,12 +103,14 @@ const paths = {
   ],
   search: ['M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z', 'M15.5 15.5 20.5 20.5'],
   filter: 'M3.5 5.5h17l-6.5 7.5v6l-4-2.5v-3.5z',
+  // Two paths crossing. Same simplification as `merge`: straight diagonals hold
+  // their shape at 20px where the four curved segments this replaces did not.
   shuffle: [
-    'M4 7.5h3.5a4 4 0 0 1 3.4 1.9l3.2 5.2a4 4 0 0 0 3.4 1.9H20',
-    'M4 16.5h3.5a4 4 0 0 0 3.4-1.9l.8-1.3',
-    'M14.3 9.7l.8-1.3a4 4 0 0 1 3.4-1.9H20',
-    'M17.5 5 20 7.5 17.5 10',
-    'M17.5 14 20 16.5 17.5 19',
+    'M4 7h3.5l9 10H20',
+    'M4 17h3.5l2.5-2.8',
+    'M13 9.8 15.5 7H20',
+    'M17.5 4.5 20 7l-2.5 2.5',
+    'M17.5 14.5 20 17l-2.5 2.5',
   ],
   play: 'M8.5 5.2v13.6l11-6.8z',
   pause: ['M9.5 5v14', 'M14.5 5v14'],
@@ -131,7 +137,9 @@ const paths = {
   'chevron-right': 'M9 5.5 15.5 12 9 18.5',
   'arrow-right': ['M4 12h15.5', 'M14 6.5 19.5 12 14 17.5'],
   'arrow-left': ['M20 12H4.5', 'M10 6.5 4.5 12l5.5 5.5'],
-  'arrow-up-right': ['M6 18 18 6', 'M9.5 6H18v8.5'],
+  // Drawn corner to corner. The earlier version only spanned 12 of the 24
+  // units, so beside any other icon it looked like a smaller typeface.
+  'arrow-up-right': ['M5.5 18.5 18.5 5.5', 'M8.5 5.5h10v10'],
   menu: ['M4 7h16', 'M4 12h16', 'M4 17h16'],
   home: [
     'M3.5 10.5 12 3.5l8.5 7',
@@ -154,11 +162,11 @@ const paths = {
   ],
   keyboard: [
     'M4 6.5h16A1.5 1.5 0 0 1 21.5 8v8a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 16V8A1.5 1.5 0 0 1 4 6.5z',
-    'M6 10.25h1.5',
-    'M9.5 10.25h1.5',
-    'M13 10.25h1.5',
-    'M16.5 10.25h1.5',
-    'M7.5 13.75h9',
+    // Three keys, not four: with four the gaps were narrower than the stroke.
+    'M6.25 10.5h2',
+    'M11 10.5h2',
+    'M15.75 10.5h2',
+    'M7.5 14h9',
   ],
   'more-horizontal':
     'M7 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z',
@@ -253,14 +261,18 @@ const paths = {
     'M6.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
     'M6.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
   ],
+  // Two branches meeting at a point, then one trunk. Drawn with straight
+  // diagonals rather than the S-curves this replaces: a curve that has to turn
+  // through 45° inside four units becomes a blob at icon size, and the pair
+  // read as a fish rather than as two files becoming one.
   merge: [
-    'M4 5h3.5a3 3 0 0 1 2.6 1.5l2.4 4A3 3 0 0 0 15.1 12H20',
-    'M4 19h3.5a3 3 0 0 0 2.6-1.5l2.4-4A3 3 0 0 1 15.1 12',
+    'M3.5 6.5H9l3 5.5h8',
+    'M3.5 17.5H9l3-5.5',
     'M17 9l3 3-3 3',
   ],
   split: [
-    'M20 5h-3.5a3 3 0 0 0-2.6 1.5l-2.4 4A3 3 0 0 1 8.9 12H4',
-    'M20 19h-3.5a3 3 0 0 1-2.6-1.5l-2.4-4A3 3 0 0 0 8.9 12',
+    'M20.5 6.5H15l-3 5.5H4',
+    'M20.5 17.5H15l-3-5.5',
     'M7 9l-3 3 3 3',
   ],
   // Two half-capsules plus a connecting bar. Each arc is a true semicircle
@@ -270,21 +282,29 @@ const paths = {
     'M9.5 3.5h-1a2 2 0 0 0-2 2v4.5a2 2 0 0 1-2 2 2 2 0 0 1 2 2V18.5a2 2 0 0 0 2 2h1',
     'M14.5 3.5h1a2 2 0 0 1 2 2v4.5a2 2 0 0 0 2 2 2 2 0 0 0-2 2V18.5a2 2 0 0 1-2 2h-1',
   ],
+  // One 1 and one 0, each the full height of the grid. The four-digit version
+  // this replaces put six strokes inside 24 units; at the size a tool card
+  // draws it, that was a chequerboard rather than a number.
   binary: [
-    'M5.5 4.5h1.5v6',
-    'M4.5 10.5h4',
-    'M16 4h1a1.5 1.5 0 0 1 1.5 1.5v3.5A1.5 1.5 0 0 1 17 10.5h-1a1.5 1.5 0 0 1-1.5-1.5V5.5A1.5 1.5 0 0 1 16 4z',
-    'M6.5 13.5h1a1.5 1.5 0 0 1 1.5 1.5v3.5A1.5 1.5 0 0 1 7.5 20h-1A1.5 1.5 0 0 1 5 18.5V15a1.5 1.5 0 0 1 1.5-1.5z',
-    'M16 14h1.5v6',
-    'M15 20h4',
+    'M7.5 6.5 9.75 4.5V19.5',
+    'M6.75 19.5h6',
+    'M16.5 4.5a3.5 7.5 0 1 0 0 15 3.5 7.5 0 0 0 0-15z',
   ],
   hash: ['M9 3.5 7 20.5', 'M17 3.5 15 20.5', 'M4.5 9h15', 'M3.5 15h15'],
+  // A bow, a hole and two teeth, drawn horizontally. The diagonal version this
+  // replaces was a circle with a stick coming off it, which is the same
+  // silhouette as `search` — two icons a page can show side by side.
   key: [
-    'M15.5 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z',
-    'M11.6 12.9 3.5 21',
-    'M6.5 18l2 2',
-    'M9 15.5l2 2',
+    'M7.5 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
+    'M7.5 12h.01',
+    'M11.5 12h9',
+    'M17.5 12v3.5',
+    'M14.5 12v2.5',
   ],
+  // Three finder squares and two data blocks. A real QR code has far more
+  // modules than this, and drawing them is the mistake: below about 32px the
+  // modules stop being modules and become noise. The finder pattern is what
+  // makes the silhouette recognisable, so that is what survives.
   qr: [
     'M4 4h6v6H4z',
     'M6.25 6.25h1.5v1.5h-1.5z',
@@ -292,15 +312,8 @@ const paths = {
     'M16.25 6.25h1.5v1.5h-1.5z',
     'M4 14h6v6H4z',
     'M6.25 16.25h1.5v1.5h-1.5z',
-    'M12 4v2',
-    'M12 8v2',
-    'M4 12h2',
-    'M8 12h2',
-    'M14 14h2v2h-2z',
-    'M18 14h2v2h-2z',
-    'M16 16h2v2h-2z',
-    'M14 18h2v2h-2z',
-    'M18 18h2v2h-2z',
+    'M14 14h2.5v2.5H14z',
+    'M17.5 17.5h2.5V20h-2.5z',
   ],
   palette: [
     'M12 3.5a8.5 8.5 0 0 0 0 17c1 0 1.8-.8 1.8-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8h2.1a3.8 3.8 0 0 0 3.8-3.8c0-4-3.8-7.2-8.5-7.2z',
@@ -315,12 +328,13 @@ const paths = {
     'M12.5 5.5 18.5 11.5',
     'M17 3.4a2.5 2.5 0 0 1 3.4 3.4l-1.9 1.9-3.4-3.4z',
   ],
+  // A stick, a collar and one sparkle. The second, smaller sparkle that used to
+  // sit at the top left added nothing at size except a third thing competing
+  // for the same few pixels.
   wand: [
-    'M4 20 13.5 10.5',
-    'M12 9 15 12',
-    'M18 4.5c.35 1.9.75 2.3 2.65 2.65-1.9.35-2.3.75-2.65 2.65-.35-1.9-.75-2.3-2.65-2.65 1.9-.35 2.3-.75 2.65-2.65z',
-    'M9 4v3',
-    'M7.5 5.5h3',
+    'M3.5 20.5 14 10',
+    'M12 8 16 12',
+    'M18 3.5c.4 2.1.9 2.6 3 3-2.1.4-2.6.9-3 3-.4-2.1-.9-2.6-3-3 2.1-.4 2.6-.9 3-3z',
   ],
   type: [
     'M3.5 19.5 8.75 5.5 14 19.5',
@@ -336,19 +350,24 @@ const paths = {
     'M7.75 10.5a2.75 2.75 0 1 0 0-5.5 2.75 2.75 0 0 0 0 5.5z',
     'M16.25 19a2.75 2.75 0 1 0 0-5.5 2.75 2.75 0 0 0 0 5.5z',
   ],
+  // Horizontal, not diagonal. A ruler turned 45° puts its tick marks on the
+  // diagonal too, where each one lands between pixel rows and disappears.
   ruler: [
-    'M3.5 14.5 9.5 20.5a1.5 1.5 0 0 0 2.1 0l8.9-8.9a1.5 1.5 0 0 0 0-2.1L14.5 3.5a1.5 1.5 0 0 0-2.1 0L3.5 12.4a1.5 1.5 0 0 0 0 2.1z',
-    'M8 8.5 10.5 11',
-    'M11 5.5 13.5 8',
-    'M5.5 11.5 8 14',
+    'M4 8h16a1.5 1.5 0 0 1 1.5 1.5v5A1.5 1.5 0 0 1 20 16H4a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 4 8z',
+    'M7.5 8v3',
+    'M12 8v4',
+    'M16.5 8v3',
   ],
+  // A beam, a post, a base and two pans. The knob on top of the earlier
+  // drawing sat two units from the beam and closed up into it, which turned
+  // the whole thing into a trident.
   scale: [
-    'M12 5.5v14',
+    'M12 4.5v15',
     'M8 19.5h8',
-    'M4.5 8.5h15',
-    'M4.5 8.5 2 14.5h5z',
-    'M19.5 8.5 17 14.5h5z',
-    'M12 5.5a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5z',
+    'M4.5 8h15',
+    'M12 8V4.5',
+    'M2.5 13a3.75 3.75 0 0 0 5 0L5 8z',
+    'M16.5 13a3.75 3.75 0 0 0 5 0L19 8z',
   ],
   calendar: [
     'M4.5 6.5h15A1.5 1.5 0 0 1 21 8v11a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19V8a1.5 1.5 0 0 1 1.5-1.5z',
@@ -361,12 +380,13 @@ const paths = {
     'M3 12h18',
     'M12 3c2.5 2.4 3.9 5.6 3.9 9s-1.4 6.6-3.9 9c-2.5-2.4-3.9-5.6-3.9-9s1.4-6.6 3.9-9z',
   ],
+  // Three pips on the diagonal rather than five. Each pip is a round cap 1.75
+  // units across; five of them inside a 12-unit face leaves under three units
+  // of clear space between neighbours, which reads as a smudge, not as a face.
   dice: [
     'M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
     'M8.5 8.5h.01',
-    'M15.5 8.5h.01',
     'M12 12h.01',
-    'M8.5 15.5h.01',
     'M15.5 15.5h.01',
   ],
   table: [

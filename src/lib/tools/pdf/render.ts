@@ -237,3 +237,101 @@ export async function readPdfInfo(
         };
   }
 }
+
+/* ─────────────────────────── text extraction ────────────────────────────── */
+
+export interface ExtractedPage {
+  pageNumber: number;
+  text: string;
+}
+
+export type ExtractResult = { ok: true; pages: ExtractedPage[] } | RenderFailure;
+
+/**
+ * Pull the text layer out of a document.
+ *
+ * ── What this can and cannot do ───────────────────────────────────────────
+ * A PDF stores text as glyphs positioned on a page, not as sentences. pdf.js
+ * hands back those glyph runs with their coordinates, and reassembling them
+ * into readable lines is the whole job — done badly, a two-column paper comes
+ * out with the columns interleaved a line at a time.
+ *
+ * The heuristic here is deliberately simple and predictable: pdf.js marks the
+ * end of a laid-out line with `hasEOL`, and runs are joined in reading order
+ * with a space unless one already ends in whitespace. That is right for the
+ * overwhelmingly common case — a single-column document — and it does not
+ * pretend to reconstruct complex layouts. A tool that guesses at columns and
+ * gets it wrong is harder to use than one whose output you can predict.
+ *
+ * ── A scan has no text layer ──────────────────────────────────────────────
+ * A page that is a photograph of paper contains no glyphs at all, so it comes
+ * back empty however good the scan looks. That is not a failure to report as an
+ * error — it is a fact about the document — so empty pages are counted and
+ * named in the result, and the tool says the document needs OCR.
+ */
+export async function extractPdfText(
+  file: Blob,
+  ctx: RenderContext,
+  opts: { pages?: readonly number[] } = {},
+): Promise<ExtractResult> {
+  const pdfjs = await import('pdfjs-dist');
+  pdfjs.GlobalWorkerOptions.workerSrc = `/pdf/pdf.worker.${pdfjs.version}.min.mjs`;
+
+  let doc;
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    doc = await pdfjs.getDocument({ data: bytes, isEvalSupported: false }).promise;
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    return /password/i.test(message)
+      ? {
+          ok: false,
+          error:
+            'This PDF is password-protected, so its text cannot be read. Save an unprotected copy from your PDF reader and use that instead.',
+          reason: 'password_protected',
+        }
+      : {
+          ok: false,
+          error: 'That file could not be opened as a PDF.',
+          reason: 'corrupt_input',
+        };
+  }
+
+  const total = doc.numPages;
+  const wanted = opts.pages ?? Array.from({ length: total }, (_, i) => i + 1);
+  const out: ExtractedPage[] = [];
+
+  try {
+    for (let index = 0; index < wanted.length; index += 1) {
+      await ctx.checkpoint();
+      const pageNumber = wanted[index];
+      if (pageNumber === undefined || pageNumber < 1 || pageNumber > total) continue;
+
+      const page = await doc.getPage(pageNumber);
+      const content = await page.getTextContent();
+
+      let text = '';
+      for (const item of content.items) {
+        // `TextMarkedContent` entries carry no `str`; only real text runs do.
+        if (!('str' in item)) continue;
+        text += item.str;
+        if (item.hasEOL) text += '\n';
+        else if (!/\s$/.test(item.str)) text += ' ';
+      }
+      page.cleanup();
+
+      out.push({
+        pageNumber,
+        // Collapse the runs of spaces the joining above can leave, and trim the
+        // trailing space before each newline, without touching paragraph breaks.
+        text: text.replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').trim(),
+      });
+
+      ctx.report(index + 1, wanted.length);
+    }
+  } finally {
+    await doc.destroy();
+  }
+
+  return { ok: true, pages: out };
+}

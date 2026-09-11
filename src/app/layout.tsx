@@ -64,7 +64,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/icons/icon.svg', type: 'image/svg+xml' },
+      // `sizes: 'any'` is what tells Chrome to prefer the vector over the .ico
+      // rather than picking whichever it meets first. Both are now the same
+      // tile drawing, so either is correct — but the vector stays crisp on a
+      // high-density display and in the bookmarks bar.
+      { url: '/icons/icon.svg', type: 'image/svg+xml', sizes: 'any' },
     ],
     apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180' }],
   },

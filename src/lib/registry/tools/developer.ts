@@ -448,4 +448,109 @@ export const developerTools: Tool[] = [
     related: ['password-generator', 'json-formatter', 'slug-generator', 'qr-code-generator'],
     updated: '2026-09-03',
   },
+
+  {
+    slug: 'url-encoder',
+    name: 'URL Encoder',
+    h1: 'URL encoder and decoder',
+    tagline: 'Percent-encode a value, decode a mangled link, or pull a long URL apart.',
+    category: 'developer',
+    icon: 'globe',
+    surface: 'text',
+    processing: 'browser',
+    metaTitle: 'URL Encoder and Decoder',
+    metaDescription:
+      'Percent-encode text, decode a URL, or inspect an address parameter by parameter. Explains the difference between encoding a value and encoding a whole link.',
+    primaryKeyword: 'url encoder',
+    secondaryKeywords: [
+      'url decode',
+      'percent encoding',
+      'encodeuricomponent',
+      'query string parser',
+      'decode a link',
+    ],
+    synonyms: [
+      'url decoder',
+      'urlencode',
+      'escape url',
+      'unescape url',
+      'decode percent signs',
+      'query parameter viewer',
+      'uri encoder',
+    ],
+    howTo: {
+      title: 'How to encode or decode a URL',
+      steps: [
+        'Choose Encode, Decode, or Inspect a URL.',
+        'Paste your text or address into the box.',
+        'When encoding, say whether it is a whole address or a value going inside one.',
+        'Copy the result, or read the parameter table if you are inspecting.',
+      ],
+    },
+    features: [
+      {
+        title: 'Encoding a value and encoding an address are different',
+        body: 'A value must not be able to invent new URL structure, so its slashes and ampersands are escaped. An address must keep them. The tool asks which you mean instead of picking one and hoping.',
+      },
+      {
+        title: 'Decoding says what looked wrong',
+        body: 'Real URLs are full of half-encoded text — a stray percent sign, a double-encoded value, bytes that are not valid UTF-8. It decodes what it can and describes the rest, because refusing the input tells you nothing about the string you are holding.',
+      },
+      {
+        title: 'The inspector answers the real question',
+        body: 'Paste a long tracking link and every query parameter is listed with its decoded value, alongside the scheme, host, port, path and fragment. "What is actually in this link" is usually what you wanted to know.',
+      },
+      {
+        title: 'Plus-for-space is a switch, not a guess',
+        body: 'An HTML form sends a space as a plus sign; in a path segment a plus is a literal plus. Both are correct in their own place, so the choice is yours and it only appears where it applies.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'Encoding happens in this page. That matters here more than usual — the strings people decode are often signed links, session tokens and internal addresses.',
+      },
+    ],
+    faq: [
+      {
+        q: 'What is the difference between encodeURI and encodeURIComponent?',
+        a: 'encodeURIComponent escapes the punctuation that gives a URL its structure, because a value inside an address must not be able to create new structure. encodeURI leaves that punctuation alone, because it is escaping the address itself. Using the second on a value is how a search term containing an ampersand silently becomes two query parameters.',
+      },
+      {
+        q: 'Why does my decoded text still contain % signs?',
+        a: 'Almost always because it was encoded twice. A percent sign that is itself encoded becomes %25, so one pass leaves you with %20 as literal text. Decode again and it resolves — the warnings under the result point this out when they see it.',
+      },
+      {
+        q: 'Is + a space or a plus sign?',
+        a: 'It depends entirely on where it appears. In a query string produced by an HTML form it means a space. In a path segment, or in a data URI, it is a literal plus. Getting this backwards corrupts base64 values, which is why it is a switch here rather than a default.',
+      },
+      {
+        q: 'Which characters actually need encoding?',
+        a: 'Anything outside the unreserved set — letters, digits, and the characters hyphen, underscore, full stop and tilde — plus every reserved character when it appears in a position where it would otherwise be structural. Everything else, including every non-English character, is encoded as its UTF-8 bytes.',
+      },
+      {
+        q: 'Does this work with non-English text?',
+        a: 'Yes. Text is converted to UTF-8 bytes and each byte is percent-encoded, which is the standard behaviour — so a single accented letter usually becomes two escapes and an emoji becomes four.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why URLs need encoding at all',
+        body: [
+          'A URL is a structured string, and a small set of characters carry that structure: the colon after the scheme, the slashes between path segments, the question mark that starts the query, the ampersands between parameters, the hash before the fragment.',
+          'The moment a piece of data containing one of those characters is dropped into a URL, the structure changes meaning. A search for "cats & dogs" pasted raw into a query string becomes two parameters, one of them called " dogs". Percent-encoding exists to make data inert: each byte becomes a percent sign and two hex digits, which no parser mistakes for punctuation.',
+          'This is also a security boundary rather than a formatting nicety. A great many injection bugs begin with a value that was allowed to add structure to a URL it was only supposed to sit inside.',
+        ],
+      },
+      {
+        heading: 'Reading a link somebody sent you',
+        body: [
+          'Marketing and redirect links are frequently a URL wrapped inside another URL, with the inner one encoded so it survives the trip. The inspector unwraps the first layer and shows you each parameter decoded, which is usually enough to see where a link really goes before you follow it.',
+          'The things worth looking for are a parameter holding a full http address, which means a redirect; parameters that identify you rather than the content; and a fragment, which is never sent to the server and is often where a single-page application keeps its state.',
+          'Everything here runs on your device, so inspecting a link does not involve visiting it or handing it to anyone.',
+        ],
+      },
+    ],
+    related: ['base64-encoder', 'json-formatter', 'slug-generator', 'jwt-decoder'],
+    isNew: true,
+    updated: '2026-09-10',
+  },
 ];

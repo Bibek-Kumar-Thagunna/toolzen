@@ -1,5 +1,5 @@
 import type { Tool } from '../types';
-import { JPG_ONLY, PNG_ONLY, RASTER_IMAGES } from '../../tools/accepts.ts';
+import { JPG_ONLY, PNG_ONLY, RASTER_IMAGES, WEBP_ONLY } from '../../tools/accepts.ts';
 
 /**
  * Registry entries for the image category.
@@ -355,7 +355,7 @@ export const imageTools: Tool[] = [
     h1: 'Convert JPG to PNG',
     tagline: 'Get a lossless copy of a photo for editing, layering or a tool that insists on PNG.',
     category: 'image',
-    icon: 'file-image',
+    icon: 'swap',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'JPG to PNG Converter',
@@ -558,7 +558,7 @@ export const imageTools: Tool[] = [
     h1: 'Convert PNG to WebP',
     tagline: 'Keep the transparency and lose most of the weight, for pages that load quickly.',
     category: 'image',
-    icon: 'image',
+    icon: 'swap',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'PNG to WebP Converter',
@@ -652,5 +652,214 @@ export const imageTools: Tool[] = [
     ],
     related: ['image-compressor', 'png-to-jpg', 'image-resizer', 'jpg-to-png'],
     updated: '2026-09-03',
+  },
+  {
+    slug: 'webp-to-jpg',
+    name: 'WebP to JPG',
+    h1: 'Convert WebP to JPG',
+    tagline: 'Turn a file nothing will open into one everything will.',
+    category: 'image',
+    icon: 'swap',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'WebP to JPG Converter',
+    metaDescription:
+      'Convert WebP images to JPG in your browser, with a background colour for transparent areas. No upload, no watermark, up to 20 files at a time.',
+    primaryKeyword: 'webp to jpg',
+    secondaryKeywords: [
+      'convert webp to jpeg',
+      'webp to jpg converter',
+      'save webp as jpg',
+      'change webp to jpg',
+      'webp file won’t open',
+    ],
+    synonyms: [
+      'webp to jpeg',
+      'turn webp into jpg',
+      'webp converter',
+      'open a webp file',
+      'downloaded image is webp',
+      'convert webp photo',
+      'webp2jpg',
+    ],
+    accepts: WEBP_ONLY,
+    howTo: {
+      title: 'How to convert WebP to JPG',
+      steps: [
+        'Add your WebP files — up to twenty at a time.',
+        'If any of them have transparent areas, choose the colour that should fill them.',
+        'Set the quality, or leave it at 88.',
+        'Convert, then download the JPGs individually or all together as a ZIP.',
+      ],
+    },
+    features: [
+      {
+        title: 'Transparency is filled, not blackened',
+        body: 'JPEG has no alpha channel, and a transparent WebP encoded without a fill comes out with black where the transparency was. The background colour is a control rather than an accident, and it defaults to white.',
+      },
+      {
+        title: 'Quality set for a second-generation encode',
+        body: 'A lossy WebP has already discarded detail, and JPEG discards a different set on top. The default of 88 is a little higher than a first encode would need, which is where the visible artefacts on smooth gradients come from.',
+      },
+      {
+        title: 'Twenty files at once',
+        body: 'Drop a folder of images in and take the results away as one ZIP. Every file is converted with the same settings, so a set stays consistent.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'Decoding and encoding both happen in your browser tab. The pictures are never sent anywhere, and there is no queue to wait in.',
+      },
+      {
+        title: 'No watermark, no sign-up',
+        body: 'The output is the image and nothing else. No stamp in the corner, no cap on how many you convert, no account.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Why did I end up with a WebP in the first place?',
+        a: 'Most websites now serve WebP because it is smaller, so saving an image from a page gives you one. It is a perfectly good format — the problem is only that some older software, print workflows and upload forms do not accept it.',
+      },
+      {
+        q: 'Will converting to JPG lose quality?',
+        a: 'A little, and it is unavoidable. Both formats are lossy, so the JPEG encoder is compressing an image that has already been compressed once. At quality 88 the difference is hard to see on a photograph; on flat graphics and text, PNG is the better target.',
+      },
+      {
+        q: 'My transparent logo came out with a white box. Why?',
+        a: 'Because JPEG cannot store transparency at all — every pixel must have a colour. The white is the fill. If you need the transparency, convert to PNG instead, which keeps it.',
+      },
+      {
+        q: 'Is the JPG smaller than the WebP?',
+        a: 'Usually not. WebP is a newer format and generally beats JPEG at the same visual quality, so expect the file to grow slightly. You are converting for compatibility, not for size.',
+      },
+      {
+        q: 'How many can I convert at once?',
+        a: 'Twenty files of up to 30 MB each per batch. The practical limit before that is your device: everything is decoded in one browser tab, and a phone has far less room than a laptop.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why your downloads folder is full of WebP',
+        body: [
+          'WebP is Google’s image format, and it does its job well: at the same visual quality it is typically 25 to 35 per cent smaller than JPEG, which is why most large sites now serve it. Save a picture from a web page today and a .webp file is what you get.',
+          'That is fine until something refuses it. Older versions of Photoshop, plenty of desktop photo software, print shops, some content management systems and a surprising number of upload forms still expect JPG or PNG and nothing else.',
+          'Converting is the pragmatic answer, and the only real decision is which target. JPG for photographs; PNG for screenshots, logos and anything with transparency or hard edges.',
+        ],
+      },
+      {
+        heading: 'The transparency trap',
+        body: [
+          'This is the single thing that goes wrong most often. A WebP can have transparent areas exactly as a PNG can, and JPEG cannot represent them at all — every pixel in a JPEG has a colour.',
+          'A converter that ignores this writes zero into the colour channels wherever the image was transparent, which is black. People see a logo on a black rectangle and reasonably conclude the file is broken.',
+          'So the fill is a visible choice here. White suits almost everything; pick the page colour if the image is going onto a coloured background, and if the answer is "it must stay transparent", the conversion you want is WebP to PNG.',
+        ],
+      },
+    ],
+    related: ['webp-to-png', 'png-to-webp', 'image-compressor', 'png-to-jpg'],
+    isNew: true,
+    updated: '2026-09-10',
+  },
+  {
+    slug: 'webp-to-png',
+    name: 'WebP to PNG',
+    h1: 'Convert WebP to PNG',
+    tagline: 'Keep the transparency, and get a file every program understands.',
+    category: 'image',
+    icon: 'swap',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'WebP to PNG Converter',
+    metaDescription:
+      'Convert WebP images to PNG with transparency intact. Runs in your browser — no upload, no watermark, up to 20 files at a time.',
+    primaryKeyword: 'webp to png',
+    secondaryKeywords: [
+      'convert webp to png',
+      'webp to png converter',
+      'webp transparent to png',
+      'save webp as png',
+      'webp to png with transparency',
+    ],
+    synonyms: [
+      'turn webp into png',
+      'webp png converter',
+      'change webp to png',
+      'webp logo to png',
+      'webp2png',
+      'export webp as png',
+    ],
+    accepts: WEBP_ONLY,
+    howTo: {
+      title: 'How to convert WebP to PNG',
+      steps: [
+        'Add your WebP files — up to twenty at a time.',
+        'Check the estimated output size shown under the queue.',
+        'Convert.',
+        'Download the PNGs one by one, or all together as a ZIP.',
+      ],
+    },
+    features: [
+      {
+        title: 'Transparency survives',
+        body: 'PNG has a full alpha channel, so a cut-out stays a cut-out. Nothing is flattened onto a background colour and there is no fill to choose.',
+      },
+      {
+        title: 'Lossless from here on',
+        body: 'PNG stores exactly the pixels it is given. The conversion adds no compression loss of its own — whatever the WebP encoder already discarded stays discarded, and nothing further is lost.',
+      },
+      {
+        title: 'Honest about the size',
+        body: 'A PNG of the same image is routinely two or three times the WebP. That is expected and it is the price of the format, not a fault — the tool says so rather than presenting the growth as a surprise.',
+      },
+      {
+        title: 'Batches of twenty',
+        body: 'Convert a whole folder of images in one pass and take them away as a single ZIP, with the same settings applied to every file.',
+      },
+      {
+        title: 'Nothing leaves the tab',
+        body: 'The images are decoded and re-encoded on your own device. No upload, no queue, no account, and no watermark on what comes out.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Does converting to PNG improve the image?',
+        a: 'No. PNG is lossless, but it can only be lossless about what it receives — the detail a lossy WebP encoder threw away is not recoverable by any format. What you get is an exact, larger copy of the picture you already had.',
+      },
+      {
+        q: 'Is transparency really kept?',
+        a: 'Yes. Both formats support an alpha channel, so transparent areas come across as transparent. This is the main reason to choose PNG over JPG as the target.',
+      },
+      {
+        q: 'Why is the PNG so much bigger?',
+        a: 'Because it is lossless and WebP is usually not. A photograph can easily go from 300 KB to over a megabyte. If size matters more than compatibility, keep the WebP; if it is a screenshot or flat graphic, the growth is much smaller.',
+      },
+      {
+        q: 'Should I pick PNG or JPG?',
+        a: 'PNG if the image has transparency, text, sharp edges or flat colour — screenshots, logos, diagrams. JPG if it is a photograph and the file size matters, accepting a second round of compression.',
+      },
+      {
+        q: 'Are my images uploaded anywhere?',
+        a: 'No. The conversion happens in your browser using its own image encoder. Closing the tab is the deletion step.',
+      },
+    ],
+    content: [
+      {
+        heading: 'When PNG is the right target',
+        body: [
+          'The choice between PNG and JPG for a converted WebP is decided by what is in the picture, not by preference. PNG stores pixels exactly, which makes it the correct answer for anything with hard edges: screenshots, user-interface captures, logos, diagrams, line art, and any image with a transparent background.',
+          'JPEG works by discarding fine detail, and on that kind of image the fine detail is the edges of letters and shapes — which is why text converted to JPEG at a modest quality picks up a faint grey halo around every character.',
+          'For a photograph the reasoning inverts. Photographs are full of subtle gradient and grain, JPEG compresses that efficiently, and a PNG of the same photograph can be five times larger with no visible gain.',
+        ],
+      },
+      {
+        heading: 'Lossless does not mean restored',
+        body: [
+          'It is easy to read "lossless" as "better", and for this conversion it does not mean that. Almost every WebP found on a website is lossy: its encoder analysed the picture and threw away the parts a person is least likely to notice. That decision is baked into the file.',
+          'Converting to PNG preserves the result of that decision perfectly. It does not undo it — no format can reconstruct detail that is no longer present, and any tool claiming to is guessing at pixels.',
+          'What you gain is portability and an alpha channel that survives further editing. If you plan to edit the image repeatedly, working in PNG from here is genuinely worth it, because each save no longer adds another generation of loss.',
+        ],
+      },
+    ],
+    related: ['webp-to-jpg', 'png-to-webp', 'image-compressor', 'jpg-to-png'],
+    isNew: true,
+    updated: '2026-09-10',
   },
 ];

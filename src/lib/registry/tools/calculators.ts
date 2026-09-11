@@ -447,4 +447,335 @@ export const calculatorTools: Tool[] = [
     related: ['percentage-calculator', 'date-difference-calculator', 'age-calculator'],
     updated: '2026-09-03',
   },
+
+  {
+    slug: 'bmi-calculator',
+    name: 'BMI Calculator',
+    h1: 'BMI calculator',
+    tagline: 'Work out your body mass index, and see plainly what the number does and does not mean.',
+    category: 'calculators',
+    icon: 'scale',
+    surface: 'form',
+    processing: 'browser',
+    metaTitle: 'BMI Calculator — Metric and Imperial',
+    metaDescription:
+      'Calculate BMI in kg and cm or in pounds, stones, feet and inches. Shows the WHO bands, your healthy weight range, and what BMI cannot tell you.',
+    primaryKeyword: 'bmi calculator',
+    secondaryKeywords: [
+      'body mass index',
+      'bmi chart',
+      'healthy weight for my height',
+      'bmi in kg and cm',
+      'bmi feet and inches',
+    ],
+    synonyms: [
+      'calculate bmi',
+      'what is my bmi',
+      'body mass index calculator',
+      'bmi checker',
+      'ideal weight calculator',
+      'am i overweight',
+      'bmi metric',
+    ],
+    howTo: {
+      title: 'How to calculate your BMI',
+      steps: [
+        'Enter your weight and choose kilograms, pounds or stones.',
+        'Enter your height. Choosing feet gives you separate feet and inches boxes.',
+        'Read the figure, and the World Health Organization band it falls in.',
+        'Check the healthy weight range for your height underneath.',
+      ],
+    },
+    features: [
+      {
+        title: 'What the number means, next to the number',
+        body: 'BMI is a population screening ratio, not a diagnosis. It compares weight with height and nothing else, so it cannot tell muscle from fat and takes no account of age, sex, ethnicity or build. That sentence sits under the result, not behind a tooltip.',
+      },
+      {
+        title: 'No red and green',
+        body: 'The bands are shown as a table with your row marked. Colouring a figure red turns a screening ratio into a verdict on a person, which is exactly the reading this tool is trying to avoid.',
+      },
+      {
+        title: 'Feet and inches are two boxes',
+        body: 'Five foot nine is 5.75 feet, not 5.9 — a division most calculators leave to the reader, and the commonest way to get a wrong BMI. Type the feet and the inches separately and the conversion is done for you.',
+      },
+      {
+        title: 'The healthy weight range for your height',
+        body: 'The BMI formula run backwards: what BMI 18.5 to 24.9 actually weighs at your height, in both kilograms and pounds, plus the signed distance from where you are to the nearest edge.',
+      },
+      {
+        title: 'The WHO’s own band names',
+        body: 'Severe, moderate and mild thinness, normal range, pre-obese and the three obese classes — the labels the World Health Organization uses, rather than the softer ones most calculators substitute.',
+      },
+      {
+        title: 'The working is shown',
+        body: 'Weight in kilograms divided by height in metres squared, with your figures substituted in. Nothing is hidden behind the answer.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Is BMI accurate for me?',
+        a: 'It is accurate as arithmetic and limited as a measure. BMI was designed to describe populations, not individuals: it knows only your weight and your height, so a muscular athlete and a sedentary person of the same build get the same number. Treat it as one rough indicator among several, and speak to a health professional about anything that matters.',
+      },
+      {
+        q: 'What is a healthy BMI?',
+        a: 'The World Health Organization puts the normal range at 18.5 to just under 25 for adults. Public-health guidance usually quotes 18.5 to 24.9, which is a hair narrower — both figures appear here, and they answer slightly different questions.',
+      },
+      {
+        q: 'Does this work for children?',
+        a: 'No. A child or teenager’s BMI has to be read against age-and-sex percentile charts, because the same number means different things at eight and at thirty-eight. This calculator uses the adult bands only.',
+      },
+      {
+        q: 'Why does my BMI differ from another site?',
+        a: 'Almost always a rounding or a unit-conversion difference — particularly height in feet, where 5 ft 9 in is 5.75 and not 5.9. The figure here is rounded to two decimals and the band is chosen from that rounded figure, so the number and the label always agree.',
+      },
+      {
+        q: 'What is BMI Prime?',
+        a: 'Your BMI divided by 25, so 1.00 sits exactly on the top of the normal band. It makes "how far above or below the range am I" a single ratio rather than a subtraction, which is why clinicians sometimes prefer it.',
+      },
+      {
+        q: 'Is my data sent anywhere?',
+        a: 'No. The arithmetic runs in this page. Your height and weight are never transmitted and never stored.',
+      },
+    ],
+    content: [
+      {
+        heading: 'What BMI actually measures',
+        body: [
+          'Body mass index is weight in kilograms divided by height in metres squared. That is the whole formula, and its simplicity is both why it is used everywhere and why it is so often misread.',
+          'It was devised in the nineteenth century to describe the distribution of body types across a population, and it is genuinely useful for that: at the scale of a country, BMI tracks health outcomes well enough to guide policy. What it was never built to do is assess one person, because it has no way to know what the weight is made of.',
+          'The practical consequence is that a rugby player and someone carrying the same weight as fat share a BMI, and so do a tall person and a short one whose health risks differ. The number is a starting point for a conversation, not the end of one.',
+        ],
+      },
+      {
+        heading: 'Reading the bands without alarm',
+        body: [
+          'The cut-offs — 18.5, 25, 30, 35 and 40 — are round numbers chosen for convenience, and nothing changes about a body as it crosses one. A BMI of 24.9 and a BMI of 25.1 describe almost identical people; only the label changes.',
+          'That is why the bands appear here as a plain table with your row marked, rather than as a coloured gauge. A red figure implies a judgement that the arithmetic cannot support.',
+          'If the number concerns you, the useful next steps are measurements BMI cannot capture — waist circumference, blood pressure, blood sugar — and a conversation with a doctor who can see the rest of the picture.',
+        ],
+      },
+    ],
+    related: ['percentage-calculator', 'unit-converter', 'age-calculator'],
+    popular: true,
+    isNew: true,
+    updated: '2026-09-10',
+  },
+  {
+    slug: 'unit-converter',
+    name: 'Unit Converter',
+    h1: 'Unit converter',
+    tagline: 'Length, weight, temperature and eight more — with the whole category listed underneath.',
+    category: 'calculators',
+    icon: 'ruler',
+    surface: 'form',
+    processing: 'browser',
+    metaTitle: 'Unit Converter — Length, Weight, More',
+    metaDescription:
+      'Convert length, weight, temperature, volume, area, speed, time, data, pressure, energy and angle. Shows the amount in every unit of the category at once.',
+    primaryKeyword: 'unit converter',
+    secondaryKeywords: [
+      'cm to inches',
+      'kg to lbs',
+      'celsius to fahrenheit',
+      'metric to imperial',
+      'measurement converter',
+    ],
+    synonyms: [
+      'convert units',
+      'measurement conversion',
+      'imperial to metric',
+      'conversion calculator',
+      'km to miles',
+      'ml to cups',
+      'convert temperature',
+    ],
+    howTo: {
+      title: 'How to convert units',
+      steps: [
+        'Choose what you are measuring — length, weight, temperature and so on.',
+        'Type the amount and pick the unit it is in.',
+        'Pick the unit you want it in, or press Swap to go the other way.',
+        'Read the answer, or the table underneath for every other unit in that category.',
+      ],
+    },
+    features: [
+      {
+        title: 'Every unit in the category, at once',
+        body: 'Under the answer is the same amount in every other unit of that kind. Someone converting a running distance usually wants metres too; someone converting a recipe wants millilitres and cups.',
+      },
+      {
+        title: 'Temperature is handled properly',
+        body: 'Every other unit here is a pure ratio. Fahrenheit is not — it has its zero in a different place — so the conversion scales and then shifts. A converter that treats °F as a ratio gets every temperature except −40 wrong, and wrong in a way that looks plausible.',
+      },
+      {
+        title: 'Decimal and binary bytes, both labelled',
+        body: 'A kilobyte is 1,000 bytes and a kibibyte is 1,024, which is the entire reason a "500 GB" drive shows up as 465 GB in an operating system. Both are here, each saying which it is.',
+      },
+      {
+        title: 'The reverse is exact',
+        body: 'Every conversion goes through the category’s base unit in both directions, so converting back gives you the number you started with rather than something a rounding error away from it.',
+      },
+      {
+        title: 'Real precision, without the noise',
+        body: 'Results keep ten significant figures — enough to write 1,609.344 in full — and the floating-point artefacts that make a converter look broken, the 1.0000000000000002, never reach the page.',
+      },
+      {
+        title: 'Nothing is sent anywhere',
+        body: 'Every ratio is in the page. There is no lookup, no API and no delay, and it keeps working with no connection.',
+      },
+    ],
+    faq: [
+      {
+        q: 'How many centimetres are in an inch?',
+        a: 'Exactly 2.54, by international agreement since 1959. That definition makes a foot exactly 30.48 cm and a mile exactly 1,609.344 m — these are definitions rather than measurements, which is why the figures here are exact rather than rounded.',
+      },
+      {
+        q: 'Why does my hard drive show less space than it says on the box?',
+        a: 'Because two different kilobytes are in play. Storage is sold in decimal units where 1 GB is 1,000,000,000 bytes; most operating systems display binary units where 1 GiB is 1,073,741,824. Nothing is missing — a 500 GB drive is 465 GiB of the same bytes. Both units are in the data category here.',
+      },
+      {
+        q: 'Is a pound a unit of weight or of mass?',
+        a: 'Strictly, mass — one pound is exactly 0.45359237 kilograms. In everyday use "weight" and "mass" are used interchangeably on Earth, where the difference does not show up, so both live in the same category here.',
+      },
+      {
+        q: 'Why does converting back not always give a round number?',
+        a: 'It should, and here it does: both directions pass through the same base unit, so the round trip returns to where it started. Converters that store one ratio per pair rather than one per unit are where the drift comes from.',
+      },
+      {
+        q: 'Can it convert currency?',
+        a: 'No, deliberately. Exchange rates change by the minute and would need a live feed, which would mean sending your figures to a server — the one thing every tool here avoids. Everything in this converter is a fixed physical ratio that will still be true next year.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why everything goes through a base unit',
+        body: [
+          'A category with twelve units has sixty-six possible pairs, and storing a ratio for each is how converters end up disagreeing with themselves — convert kilometres to miles and back, and you land a hair away from where you began.',
+          'The fix is to store one number per unit: how much of the base unit it is worth. A conversion is then two operations, into the base and out of it, and the reverse is the same two in the other order. Sixty-six pairs become twelve facts, and the round trip is exact by construction.',
+          'Temperature is the one category where that is not quite enough, because Celsius and Fahrenheit do not share a zero. Those units carry an offset that is applied after the scaling, which is why −40 is the single temperature where the two scales agree.',
+        ],
+      },
+      {
+        heading: 'The conversions people get wrong',
+        body: [
+          'Feet and inches are the classic. Five foot nine is 5.75 feet, not 5.9, because nine inches is three quarters of a foot — an error that quietly ruins height conversions and BMI calculations everywhere.',
+          'Fluid ounces are worse: a US fluid ounce and an imperial one are different sizes, and so are the pints and gallons built from them. A recipe written in one and cooked in the other is off by about a fifth.',
+          'And nautical miles are not miles. A nautical mile is one minute of latitude, 1,852 metres exactly, which is why a boat’s speed in knots is not a car’s speed in miles per hour.',
+        ],
+      },
+    ],
+    related: ['bmi-calculator', 'percentage-calculator', 'discount-calculator'],
+    popular: true,
+    isNew: true,
+    updated: '2026-09-10',
+  },
+  {
+    slug: 'discount-calculator',
+    name: 'Discount Calculator',
+    h1: 'Discount calculator',
+    tagline: 'What you actually pay, what you actually save, and why stacked discounts disappoint.',
+    category: 'calculators',
+    icon: 'scissors',
+    surface: 'form',
+    processing: 'browser',
+    metaTitle: 'Discount Calculator — Sale Price and Tax',
+    metaDescription:
+      'Work out a sale price with tax, find the percentage off from two prices, or stack discounts. Shows the working, and why 20% then 20% is not 40% off.',
+    primaryKeyword: 'discount calculator',
+    secondaryKeywords: [
+      'percent off calculator',
+      'sale price calculator',
+      'how much did i save',
+      'stacked discounts',
+      'price before discount',
+    ],
+    synonyms: [
+      'work out a discount',
+      'calculate percent off',
+      'sale price with tax',
+      'gst calculator',
+      'vat calculator',
+      'markdown calculator',
+      'coupon calculator',
+    ],
+    howTo: {
+      title: 'How to work out a discount',
+      steps: [
+        'Pick the question you are asking — take a percentage off, find the percentage, work backwards, or stack discounts.',
+        'Type the price and the percentage.',
+        'Add sales tax, VAT or GST if the price does not already include it.',
+        'Read the total, and the working underneath if you want to check it.',
+      ],
+    },
+    features: [
+      {
+        title: 'Tax on either side of the discount',
+        body: 'A shop’s own sale charges tax on the reduced price. A manufacturer’s coupon is taxed on the full price in several US states, because the shop is reimbursed. The two give different totals, so the question is asked rather than assumed.',
+      },
+      {
+        title: 'Stacked discounts, with the honest arithmetic',
+        body: 'Twenty per cent off and then another twenty is thirty-six per cent off, not forty — the second discount is charged on what the first one left. Both figures are shown side by side.',
+      },
+      {
+        title: 'Four questions, not one',
+        body: 'Take a percentage off a price, find what percentage a "was £80, now £60" ticket represents, work back to the original price from a sale price, or stack several discounts in order.',
+      },
+      {
+        title: '"You save" that includes the tax',
+        body: 'When tax follows the discount, the tax on the money you saved is saved too. The saving is measured against the same basket at full price, which is what the question actually means.',
+      },
+      {
+        title: 'Rounded the way a till rounds',
+        body: 'Every step is rounded to two decimal places as it goes, so the figures on the page add up exactly rather than approximately — which is what makes them match the receipt.',
+      },
+      {
+        title: 'No currency, on purpose',
+        body: 'The arithmetic is identical in rupees, dollars, pounds and euros. Leaving the symbol out means the tool is never wrong about which country you are in.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Why is 20% off then 20% off not 40% off?',
+        a: 'Because the second discount is taken from a smaller number. Twenty per cent off £100 leaves £80, and twenty per cent off £80 is £16, not £20 — so the pair take £36, which is 36% off. The stacking mode shows both numbers so the gap is visible rather than surprising.',
+      },
+      {
+        q: 'Should tax be charged before or after the discount?',
+        a: 'Usually after — a shop reducing its own price collects tax on the price it actually charges. The exception is a manufacturer’s coupon in some US states, where the shop is reimbursed for the difference and tax is due on the pre-coupon price. If your receipt disagrees with this calculator, that setting is almost always why.',
+      },
+      {
+        q: 'How do I find the original price from a sale price?',
+        a: 'Divide by one minus the discount: £60 after 25% off was £80, because £60 ÷ 0.75 = £80. Subtracting 25% from the sale price instead is the common mistake, and it gives £45. The "Price before the sale" mode does it correctly.',
+      },
+      {
+        q: 'Can I use this for GST or VAT?',
+        a: 'Yes. The tax field is a plain percentage, so 18% GST, 20% VAT and 8.25% sales tax all work the same way. Leave it at zero if the price you typed already includes the tax.',
+      },
+      {
+        q: 'Why does "you save" show more than the discount?',
+        a: 'Because you also avoid the tax on the amount discounted. Twenty per cent off a £100 item with 20% tax saves £20 of price and £4 of tax — £24 in total, which is what you would really have paid otherwise.',
+      },
+    ],
+    content: [
+      {
+        heading: 'The percentage that is not the percentage',
+        body: [
+          'Shops are fond of arrangements that sound larger than they are. "An extra 20% off sale prices" reads as an addition, and it is a multiplication: each discount applies to whatever the last one left, so they compound downwards rather than adding up.',
+          'The rule is easy once you see it. Multiply what remains, not what is removed: 20% off leaves 80%, and 80% of 80% is 64% — so 36% has gone, not 40%. Three 10% discounts leave 72.9% and take 27.1%, not 30%.',
+          'The gap grows with the size of the discounts. Two 50% discounts leave a quarter of the price rather than nothing at all, which is the version of this arithmetic everyone can check in their head.',
+        ],
+      },
+      {
+        heading: 'Working backwards from a sale price',
+        body: [
+          'The other reliable trap is reversing a discount. If a jacket is £60 after 25% off, its original price was not £75, and it certainly was not £60 plus 25%. The £60 is 75% of the original, so the original is £60 ÷ 0.75 = £80.',
+          'The same reasoning undoes tax. A £120 total that includes 20% VAT came from £100, because £120 is 120% of the pre-tax price — dividing by 1.2 recovers it, while taking 20% off £120 gives £96 and is simply wrong.',
+          'Both are one division, and both are done in the wrong direction constantly, including on price tags.',
+        ],
+      },
+    ],
+    related: ['percentage-calculator', 'unit-converter', 'emi-calculator'],
+    isNew: true,
+    updated: '2026-09-10',
+  },
 ];

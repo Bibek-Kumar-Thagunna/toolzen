@@ -37,12 +37,19 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Field } from '@/components/ui/Field';
 import { Select } from '@/components/ui/Select';
 import { Slider } from '@/components/ui/Slider';
+import { Switch } from '@/components/ui/Switch';
 import { ImageBatchShell, type SniffedFile } from '@/components/tool/ImageBatchShell';
 import { humanBytes } from '@/lib/files/bytes';
-import type { ImagePlan, ImageBatchResult, PlanInput } from '@/lib/tools/image/batch';
+import type {
+  ImageBatchResult,
+  ImageCandidate,
+  ImagePlan,
+  PlanInput,
+} from '@/lib/tools/image/batch';
 import { canEncodeFormat, type EncodableFormat } from '@/lib/tools/image/codec';
 import { estimateOutputBytes } from '@/lib/tools/image/dimensions';
 import { mimeForFormat, outputFileName, savingsSummary } from '@/lib/tools/image/format';
+import { indexedPngEncoder } from '@/lib/tools/image/png';
 import { RASTER_IMAGES } from '@/lib/tools/accepts';
 
 const SLUG = 'image-compressor';
@@ -100,7 +107,26 @@ export function ImageCompressorTool() {
     };
   }, []);
 
+  /*
+   * Colour reduction — the only thing that actually shrinks a PNG.
+   *
+   * A canvas can only rewrite a PNG's pixels losslessly, and a PNG that came out
+   * of any competent encoder has no lossless saving left; that is why re-encoding
+   * one routinely produces a *larger* file. The real saving is a palette: 256
+   * colours and one index per pixel instead of four bytes per pixel, which is
+   * what `indexedPngEncoder` writes and what the well-known PNG services do.
+   *
+   * On by default because this tool is called "compress" and the person pressing
+   * the button asked for a smaller file. It is lossy, so it is a visible switch
+   * with the trade-off written next to it, and it only ever *competes* — the
+   * batch runner keeps whichever candidate is genuinely smallest.
+   */
+  const [reduceColors, setReduceColors] = useState(true);
+  const [colors, setColors] = useState(128);
+
   const lossless = format === 'png';
+  /** Can a PNG come out of this run at all? Only then is the switch relevant. */
+  const pngPossible = format === 'png' || format === 'smallest' || format === 'keep';
 
   const plan = useCallback(
     ({ file, image, sniffed }: PlanInput): ImagePlan => {
@@ -134,13 +160,36 @@ export function ImageCompressorTool() {
             : [own, 'webp']
           : [format === 'keep' ? own : format];
 
+      const candidates: ImageCandidate[] = targets.map(candidate);
+
+      // The indexed-PNG candidate, added whenever PNG is a possible output and
+      // colour reduction is on. It is one more thing to try, not a replacement:
+      // on a screenshot it wins by a wide margin, on a photograph WebP beats it
+      // and it is discarded.
+      if (reduceColors && targets.includes('png')) {
+        candidates.push({
+          // `options` is unused by a candidate that brings its own encoder; it
+          // is filled in so the candidate is still describable in one shape.
+          options: { format: 'png' as const, quality: 1 },
+          name: outputFileName(file.name, 'png', { suffix: '-compressed' }),
+          mime: mimeForFormat('png'),
+          format: 'png',
+          encode: indexedPngEncoder({
+            colors,
+            // Dither photographic material, where flat quantization bands are
+            // obvious; leave flat graphics alone, where it would only add noise.
+            dither: sniffed.format === 'jpeg',
+          }),
+        });
+      }
+
       return {
-        candidates: targets.map(candidate),
+        candidates,
         // The whole promise of the tool. See `runImageBatch`.
         neverInflate: true,
       };
     },
-    [format, quality],
+    [colors, format, quality, reduceColors],
   );
 
   /**
@@ -230,9 +279,51 @@ export function ImageCompressorTool() {
             onChange={(event) => setQuality(Number(event.target.value))}
           />
         </Field>
+
+        {/* Only shown when a PNG can actually come out of the run — on a
+            JPG-to-JPG compression it would be a control that does nothing. */}
+        {pngPossible ? (
+          <div className="sm:col-span-2">
+            <label className="flex items-start gap-3 text-sm">
+              <Switch
+                checked={reduceColors}
+                disabled={busy}
+                label="Shrink PNGs by reducing colours"
+                onCheckedChange={setReduceColors}
+              />
+              <span className="text-fg-muted">
+                <span className="block font-medium text-fg">Shrink PNGs by reducing colours</span>
+                The only thing that makes a PNG meaningfully smaller. Screenshots, logos and
+                diagrams typically drop by 60–80% with no visible change; photographs lose real
+                gradient detail. Turn it off to keep a PNG pixel-for-pixel identical.
+              </span>
+            </label>
+
+            {reduceColors ? (
+              <div className="mt-3">
+                <Field
+                  label="Colours to keep"
+                  htmlFor="compressor-colors"
+                  labelSuffix={<span className="tabular">{colors}</span>}
+                  hint="Fewer colours means a smaller file. Below about 64, flat areas start to band."
+                >
+                  <Slider
+                    id="compressor-colors"
+                    min={8}
+                    max={256}
+                    step={8}
+                    value={colors}
+                    disabled={busy}
+                    onChange={(event) => setColors(Number(event.target.value))}
+                  />
+                </Field>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     ),
-    [encodable, estimate, format, lossless, quality],
+    [colors, encodable, estimate, format, lossless, pngPossible, quality, reduceColors],
   );
 
   const summary = useMemo(

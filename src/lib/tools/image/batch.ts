@@ -87,6 +87,19 @@ export interface ImageBatchResult {
   totalAfter: number;
 }
 
+/**
+ * An encoder that is not `canvas.toBlob`.
+ *
+ * The one that exists today writes indexed PNGs, which a canvas cannot do at
+ * all — and which is the only way to make a PNG meaningfully smaller. It gets
+ * the decoded image and returns finished bytes, so the batch runner still owns
+ * the comparison, the never-inflate rule and the naming.
+ */
+export type CustomEncoder = (
+  image: DecodedImage,
+  signal: AbortSignal,
+) => Promise<{ ok: true; bytes: Uint8Array; width: number; height: number } | { ok: false; error: string; reason: FailureReason }>;
+
 /** One thing to try encoding. Several may be offered; the smallest wins. */
 export interface ImageCandidate {
   options: Omit<EncodeOptions, 'signal'>;
@@ -95,6 +108,11 @@ export interface ImageCandidate {
   mime: string;
   /** Short label for the summary line, e.g. 'webp'. */
   format: string;
+  /**
+   * Used instead of the canvas encoder when present. `options` is then ignored
+   * for the encode itself and kept only so a candidate is still describable.
+   */
+  encode?: CustomEncoder;
 }
 
 /**
@@ -202,18 +220,39 @@ export async function runImageBatch(
 
       for (const candidate of decision.candidates) {
         await ctx.checkpoint();
-        const encoded = await encodeImage(decoded, { ...candidate.options, signal: ctx.signal });
-        if (!encoded.ok) {
-          if (encoded.reason === 'cancelled') return { ok: false, error: encoded.error, reason: encoded.reason };
-          lastError = { error: encoded.error, reason: encoded.reason };
+
+        // A custom encoder returns bytes directly; the canvas path returns a
+        // Blob. Both are normalised here so the comparison below sees one shape.
+        let produced:
+          | { ok: true; bytes: Uint8Array; width: number; height: number }
+          | { ok: false; error: string; reason: FailureReason };
+        if (candidate.encode) {
+          produced = await candidate.encode(decoded, ctx.signal);
+        } else {
+          const encoded = await encodeImage(decoded, { ...candidate.options, signal: ctx.signal });
+          produced = encoded.ok
+            ? {
+                ok: true,
+                bytes: new Uint8Array(await encoded.blob.arrayBuffer()),
+                width: encoded.size.width,
+                height: encoded.size.height,
+              }
+            : { ok: false, error: encoded.error, reason: encoded.reason };
+        }
+
+        if (!produced.ok) {
+          if (produced.reason === 'cancelled') {
+            return { ok: false, error: produced.error, reason: produced.reason };
+          }
+          lastError = { error: produced.error, reason: produced.reason };
           continue;
         }
-        if (best !== null && encoded.blob.size >= best.bytes.length) continue;
+        if (best !== null && produced.bytes.length >= best.bytes.length) continue;
         best = {
-          bytes: new Uint8Array(await encoded.blob.arrayBuffer()),
+          bytes: produced.bytes,
           candidate,
-          width: encoded.size.width,
-          height: encoded.size.height,
+          width: produced.width,
+          height: produced.height,
         };
       }
 

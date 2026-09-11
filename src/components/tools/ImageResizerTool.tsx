@@ -34,6 +34,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Field } from '@/components/ui/Field';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Slider } from '@/components/ui/Slider';
 import { Switch } from '@/components/ui/Switch';
 import { Tabs } from '@/components/ui/Tabs';
 import { ImageBatchShell, type SniffedFile } from '@/components/tool/ImageBatchShell';
@@ -289,9 +290,8 @@ export function ImageResizerTool() {
                   : 'Applies to JPG and WebP output.'
               }
             >
-              <Input
+              <Slider
                 id="resize-quality"
-                type="range"
                 min={1}
                 max={100}
                 step={1}

@@ -128,6 +128,33 @@ function hasCommand(command: string): boolean {
   return found;
 }
 
+/**
+ * The external PDF tooling this file validates against.
+ *
+ * qpdf reads every object and cross-reference offset; poppler's pdfinfo and
+ * pdftoppm read the metadata and actually render the pages. Together they are
+ * the second opinion that makes these integration tests worth having, and they
+ * are not optional to the *assertions* — nothing here is relaxed to get past a
+ * failure.
+ *
+ * They are optional to the *machine*, though. On a fresh clone, a CI image or a
+ * laptop without poppler installed, a missing developer tool is not a defect in
+ * the writer, and a suite that goes red for one teaches people to ignore red —
+ * which is how a real failure gets waved through. So these tests skip, loudly
+ * and by name, when the tools are absent.
+ *
+ * Install them with: apt install qpdf poppler-utils  (or: brew install qpdf poppler)
+ */
+const PDF_TOOLS = ['qpdf', 'pdfinfo', 'pdftoppm'] as const;
+
+/** `{}` when every tool is present, a skip reason when any is missing. */
+function needsPdfTools(): { skip?: string } {
+  const missing = PDF_TOOLS.filter((command) => !hasCommand(command));
+  return missing.length === 0
+    ? {}
+    : { skip: `not installed on this machine: ${missing.join(', ')} — install qpdf and poppler-utils to run this` };
+}
+
 function run(command: string, args: string[]): { status: number; stdout: string; stderr: string } {
   const result = spawnSync(command, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   if (result.error) assert.fail(`${command} could not be run: ${result.error.message}`);
@@ -236,7 +263,7 @@ function pageFor(image: PdfPageSpec['image'], size = A4): PdfPageSpec {
   };
 }
 
-test('a one-page JPEG PDF passes qpdf --check and pdfinfo agrees about it', async () => {
+test('a one-page JPEG PDF passes qpdf --check and pdfinfo agrees about it', needsPdfTools(), async () => {
   const jpeg = fixture('baseline-rgb.jpg');
   const bytes = await build([pageFor({ kind: 'jpeg', bytes: jpeg, width: 640, height: 480 })], {
     title: 'One page',
@@ -284,7 +311,7 @@ test('the JPEG bitstream goes in untouched, which is what makes it lossless', as
   assert.match(text, new RegExp(`/Length ${jpeg.length} >>\\nstream`), '/Length is the real stream length');
 });
 
-test('a three-page mixed JPEG and raw document checks out end to end', async () => {
+test('a three-page mixed JPEG and raw document checks out end to end', needsPdfTools(), async () => {
   const pages: PdfPageSpec[] = [
     pageFor({ kind: 'jpeg', bytes: fixture('baseline-rgb.jpg'), width: 640, height: 480 }),
     pageFor({ kind: 'jpeg', bytes: fixture('gray.jpg'), width: 320, height: 200 }),
@@ -325,7 +352,7 @@ test('a three-page mixed JPEG and raw document checks out end to end', async () 
   assert.deepEqual(Array.from(raw.subarray(0, 3)), [0, 0, 200], 'first pixel survives the round trip');
 });
 
-test('RGBA becomes an image plus a soft mask, and the clear half shows the page', async () => {
+test('RGBA becomes an image plus a soft mask, and the clear half shows the page', needsPdfTools(), async () => {
   // A "fit" page at 72 dpi maps one pixel to one point to one rendered pixel, so
   // the sampled coordinates below are the image's own pixels.
   const size = resolvePageSize('fit', 'auto', { width: 64, height: 48 });
@@ -361,7 +388,7 @@ test('RGBA becomes an image plus a soft mask, and the clear half shows the page'
   assert.ok(red > 240 && green < 70 && blue < 70, `the opaque half is red, got ${points[1].join(',')}`);
 });
 
-test('a 50-page document checks out, and the repeated image is stored once', async () => {
+test('a 50-page document checks out, and the repeated image is stored once', needsPdfTools(), async () => {
   const jpeg = fixture('baseline-rgb.jpg');
   const page = pageFor({ kind: 'jpeg', bytes: jpeg, width: 640, height: 480 });
   const pages = Array.from({ length: 50 }, () => page);
@@ -389,7 +416,7 @@ test('a 50-page document checks out, and the repeated image is stored once', asy
   assert.equal(mixedText.match(/\/DCTDecode/g)?.length, 2, 'described differently means stored separately');
 });
 
-test('the rendered page is not blank, and a solid colour comes out as that colour', async () => {
+test('the rendered page is not blank, and a solid colour comes out as that colour', needsPdfTools(), async () => {
   const red = fixture('red.jpg');
   const size = resolvePageSize('fit', 'auto', { width: 200, height: 200 });
   const redPath = save(
@@ -428,7 +455,7 @@ test('the rendered page is not blank, and a solid colour comes out as that colou
   );
 });
 
-test('the y coordinate is measured from the bottom of the page, as poppler sees it', async () => {
+test('the y coordinate is measured from the bottom of the page, as poppler sees it', needsPdfTools(), async () => {
   // The end-to-end proof of the coordinate convention. A red square aligned to
   // the bottom of an A4 page must appear in the *lower* part of the raster — and
   // a raster's own row 0 is its top, so this fails loudly if y were treated as a
@@ -517,7 +544,7 @@ test('the cross-reference table points exactly at each object', async () => {
   }
 });
 
-test('metadata: brackets escaped, non-ASCII in UTF-16, dates in PDF form', async () => {
+test('metadata: brackets escaped, non-ASCII in UTF-16, dates in PDF form', needsPdfTools(), async () => {
   const jpeg = fixture('red.jpg');
   const page = pageFor({ kind: 'jpeg', bytes: jpeg, width: 200, height: 200 });
 
@@ -568,7 +595,7 @@ async function refusal(pages: PdfPageSpec[], what: string): Promise<string> {
   return result.error;
 }
 
-test('impossible documents are refused with an explanation, not a broken PDF', async () => {
+test('impossible documents are refused with an explanation, not a broken PDF', needsPdfTools(), async () => {
   const jpeg = fixture('baseline-rgb.jpg');
   const good = pageFor({ kind: 'jpeg', bytes: jpeg, width: 640, height: 480 });
 
@@ -642,7 +669,7 @@ test('estimatePdfBytes is an upper bound, and cheap enough to call before writin
   assert.ok(estimatePdfBytes([]) > 0, 'an empty document still has a header, a catalog and a trailer');
 });
 
-test('browserDeflate uses the platform stream, and its output is real zlib', async () => {
+test('browserDeflate uses the platform stream, and its output is real zlib', needsPdfTools(), async () => {
   assert.notEqual(typeof CompressionStream, 'undefined', 'Node 22 has CompressionStream, so this path is testable here');
 
   const platform = browserDeflate();
@@ -674,7 +701,7 @@ test('browserDeflate uses the platform stream, and its output is real zlib', asy
   assert.ok((stats.mean as number[])[2] > 120, 'the blue channel survived the round trip through CompressionStream');
 });
 
-test('an Adobe CMYK JPEG needs /Decode, and without it the page is a negative', async () => {
+test('an Adobe CMYK JPEG needs /Decode, and without it the page is a negative', needsPdfTools(), async () => {
   const cmyk = fixture('cmyk.jpg');
   // The page is exactly the image, edge to edge: the render can then be compared
   // pixel for pixel with PIL's own conversion, with no margin to explain away.

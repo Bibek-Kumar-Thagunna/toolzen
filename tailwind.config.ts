@@ -29,6 +29,7 @@ const config: Config = {
           sunken: withAlpha('--c-surface-sunken'),
           hover: withAlpha('--c-surface-hover'),
         },
+        track: withAlpha('--c-track'),
         border: {
           DEFAULT: withAlpha('--c-border'),
           strong: withAlpha('--c-border-strong'),

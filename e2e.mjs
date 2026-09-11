@@ -6,7 +6,8 @@
  * tested says nothing about whether the components wired to them work: every
  * bug this found was in the wiring, not in the maths.
  *
- *   npm start            (in one shell)
+ *   npm i -D playwright   (once)
+ *   npm start             (in one shell)
  *   node e2e.mjs         (in another)
  */
 import { chromium } from 'playwright';

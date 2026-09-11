@@ -115,6 +115,74 @@ function markSvg(size, { maskable = false, background = '#ffffff' } = {}) {
 </svg>`;
 }
 
+/* ─────────────────────────── the app icon ──────────────────────────────── */
+
+/**
+ * The mark as an icon: white stones knocked out of a solid brand tile.
+ *
+ * ── Why this is a different drawing, not the logo scaled down ─────────────
+ * A browser tab draws 16 pixels. The logo above is three teal stones on
+ * transparency with a face on the top one, and at 16px every one of those
+ * decisions works against it: the pale top stone falls to near-white, the face
+ * is sub-pixel, and on a transparent background the whole thing has no
+ * silhouette at all — on a dark tab strip it reads as a faint smudge and on a
+ * light one as nothing. Rendered and looked at, it was a blob.
+ *
+ * A solid tile fixes all three. The shape is constant whatever is behind it,
+ * the brand colour does the identifying, and white-on-teal is the highest
+ * contrast pairing the palette has. The stones become three white bands of
+ * clearly different widths, which is a silhouette that survives to 16px.
+ *
+ * The face is dropped here on purpose. It is a grace note for the header at
+ * 26 pixels; at 16 it is noise competing with the only thing that reads.
+ *
+ * ── Gaps are the whole design ─────────────────────────────────────────────
+ * The bands are separated by about 2.8 units of the 48-unit grid, which is a
+ * whole pixel at 16px and two on a retina screen. Any tighter and the three
+ * stones merge into one white lump — which is exactly the failure the logo had.
+ *
+ * `maskable` shrinks the stones into the inner 80% that a platform is
+ * guaranteed not to crop, while the tile stays full-bleed.
+ */
+/**
+ * The 16-pixel entry, drawn on a 16-unit grid.
+ *
+ * Scaling the 48-unit drawing down to 16 puts every edge and every gap on a
+ * third of a pixel, and the rasteriser resolves that as grey mush — the gaps
+ * between the stones come out under one pixel and the three shapes merge.
+ *
+ * So the smallest size gets its own geometry, with the gaps set to a little
+ * over a whole pixel and the shapes sized to land on the grid. This is the
+ * ordinary practice for icon sets and it is the difference between a mark and
+ * a smudge at the one size everybody actually sees.
+ *
+ * No corner radius either: rounding a 16-pixel tile removes roughly a pixel
+ * from each corner and the silhouette — the whole point of the tile — softens.
+ */
+function tinyIconSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <rect width="16" height="16" fill="${STONE_DARK}"/>
+  <ellipse cx="8" cy="12.9" rx="5.2" ry="1.5" fill="#ffffff"/>
+  <ellipse cx="8" cy="9" rx="3.6" ry="1.3" fill="#ffffff" opacity="0.92"/>
+  <circle cx="8" cy="4.2" r="2.4" fill="#ffffff" opacity="0.82"/>
+</svg>`;
+}
+
+function iconSvg(size, { maskable = false, rounded = true } = {}) {
+  const scale = maskable ? 0.8 : 1;
+  const offset = (48 - 48 * scale) / 2;
+  const radius = rounded ? 10 : 0;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="${size}" height="${size}">
+  <rect width="48" height="48" rx="${radius}" fill="${STONE_DARK}"/>
+  <g transform="translate(${offset} ${offset}) scale(${scale})">
+    <ellipse cx="24" cy="37" rx="14.5" ry="4.8" fill="#ffffff"/>
+    <ellipse cx="24" cy="25.5" rx="10.5" ry="4.2" fill="#ffffff" opacity="0.92"/>
+    <circle cx="24" cy="12.5" r="6" fill="#ffffff" opacity="0.82"/>
+  </g>
+</svg>`;
+}
+
 /* ──────────────────────────── the OG card ──────────────────────────────── */
 
 /**
@@ -183,14 +251,18 @@ mkdirSync(join(publicDir, 'og/tool'), { recursive: true });
 mkdirSync(join(publicDir, 'og/category'), { recursive: true });
 
 // -- icons --------------------------------------------------------------------
-writeFileSync(join(publicDir, 'icons/icon.svg'), markSvg(512));
+// Every icon is the tile drawing, never the logo: see `iconSvg`. A browser
+// rasterises this SVG at 16px for the tab just as it does the .ico, so the
+// vector has to be the legible-at-16px design too.
+writeFileSync(join(publicDir, 'icons/icon.svg'), iconSvg(512));
 
-await png(markSvg(192), join(publicDir, 'icons/icon-192.png'));
-await png(markSvg(512), join(publicDir, 'icons/icon-512.png'));
-await png(markSvg(512, { maskable: true, background: '#ffffff' }), join(publicDir, 'icons/maskable-512.png'));
-// iOS composites an apple-touch-icon onto black if it has transparency, so this
-// one is drawn on an opaque tile of its own.
-await png(markSvg(180, { maskable: true, background: '#ffffff' }), join(publicDir, 'icons/apple-touch-icon.png'));
+await png(iconSvg(192), join(publicDir, 'icons/icon-192.png'));
+await png(iconSvg(512), join(publicDir, 'icons/icon-512.png'));
+// Maskable: full-bleed tile, stones inside the guaranteed-safe inner 80%.
+await png(iconSvg(512, { maskable: true }), join(publicDir, 'icons/maskable-512.png'));
+// iOS rounds the corners itself and composites transparency onto black, so this
+// one is square and fully opaque.
+await png(iconSvg(180, { rounded: false }), join(publicDir, 'icons/apple-touch-icon.png'));
 
 /**
  * A real multi-resolution .ico, assembled by hand.
@@ -202,8 +274,9 @@ await png(markSvg(180, { maskable: true, background: '#ffffff' }), join(publicDi
  */
 await writeIco(
   [
-    { size: 16, data: await sharp(Buffer.from(markSvg(16))).png().toBuffer() },
-    { size: 32, data: await sharp(Buffer.from(markSvg(32))).png().toBuffer() },
+    { size: 16, data: await sharp(Buffer.from(tinyIconSvg())).png().toBuffer() },
+    { size: 32, data: await sharp(Buffer.from(iconSvg(32))).png().toBuffer() },
+    { size: 48, data: await sharp(Buffer.from(iconSvg(48))).png().toBuffer() },
   ],
   join(publicDir, 'favicon.ico'),
 );

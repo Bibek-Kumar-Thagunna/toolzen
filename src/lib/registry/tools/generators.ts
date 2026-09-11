@@ -1,4 +1,5 @@
 import type { Tool } from '../types';
+import { RASTER_IMAGE_ONE } from '../../tools/accepts.ts';
 
 /**
  * Generators.
@@ -343,5 +344,236 @@ export const generatorTools: Tool[] = [
     ],
     related: ['image-compressor', 'png-to-webp', 'qr-code-generator'],
     updated: '2026-09-03',
+  },
+  {
+    slug: 'favicon-generator',
+    name: 'Favicon Generator',
+    h1: 'Generate a favicon',
+    tagline: 'Turn one image into the icon files a site needs, and the four lines that load them.',
+    category: 'generators',
+    icon: 'star',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'Favicon Generator — ICO and PNG',
+    metaDescription:
+      'Make favicon.ico plus the Apple and Android icons from one image, with the HTML to paste. Runs in your browser — no upload, no sign-up, no watermark.',
+    primaryKeyword: 'favicon generator',
+    secondaryKeywords: [
+      'make a favicon',
+      'png to ico',
+      'favicon.ico generator',
+      'apple touch icon',
+      'website icon generator',
+    ],
+    synonyms: [
+      'create favicon',
+      'convert image to favicon',
+      'site icon generator',
+      'tab icon',
+      'ico converter',
+      'favicon from png',
+      'browser icon maker',
+    ],
+    accepts: RASTER_IMAGE_ONE,
+    howTo: {
+      title: 'How to generate a favicon',
+      steps: [
+        'Add a square image — 512 pixels or larger gives the best result.',
+        'Pick the background colour used for the iPhone icon, since iOS cannot show transparency.',
+        'Generate, and check the 16-pixel preview: that is the size a browser tab draws.',
+        'Download the ZIP, put the files in your site root, and paste the markup into your <head>.',
+      ],
+    },
+    features: [
+      {
+        title: 'Four files, not twenty',
+        body: 'An ICO for desktop browsers, two PNGs for Android, and one Apple touch icon. That is everything a browser released this decade looks for — the rest of what generators produce is metadata for platforms that no longer exist.',
+      },
+      {
+        title: 'Three real sizes inside the ICO',
+        body: 'A tab draws 16 pixels, a bookmarks bar 32, some Windows views 48. Each one is encoded separately rather than left to the operating system to scale, which is the difference between a legible mark and a smudge.',
+      },
+      {
+        title: 'The iPhone icon is flattened on purpose',
+        body: 'iOS composites a transparent home-screen icon onto black, which is why generated icon sets so often arrive as a dark tile. Here the Apple icon is always filled with a colour you choose.',
+      },
+      {
+        title: 'You can see the 16-pixel version before you ship it',
+        body: 'Every size is previewed at its real dimensions. A logo that reads perfectly at 128 pixels is often unrecognisable at 16, and that is worth finding out here rather than in a browser tab.',
+      },
+      {
+        title: 'The markup comes with it',
+        body: 'The four link tags are shown on the page and included in the download, so there is no hunting for which rel attribute goes with which file.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'Every size is drawn by your own browser and the ICO is assembled in the tab. A logo that is not public yet does not have to be sent to a stranger to become a favicon.',
+      },
+    ],
+    faq: [
+      {
+        q: 'What size image should I start with?',
+        a: 'Square, and at least 512 pixels on each side. Everything is scaled down from your source, and scaling up cannot invent detail — a 64-pixel logo will produce a soft 512-pixel icon and the tool says so when it happens.',
+      },
+      {
+        q: 'My image is not square. What happens?',
+        a: 'It is cropped to a centred square, because every icon slot a browser has is square. If the important part of your logo is off-centre, crop it yourself first so you control what survives.',
+      },
+      {
+        q: 'Why does the ICO contain three images?',
+        a: 'Because different places draw the icon at different sizes, and an image encoded at its final size always looks better than one scaled at draw time. The ICO format exists precisely to carry several — 16, 32 and 48 covers everything that asks.',
+      },
+      {
+        q: 'Do I still need favicon.ico in 2026?',
+        a: 'Yes, and mostly for one reason: browsers request /favicon.ico from your site root whether you reference it or not. Having it there stops a 404 on every page load, and it is still what several desktop contexts use.',
+      },
+      {
+        q: 'Why is my transparent logo on a coloured square?',
+        a: 'Only the Apple touch icon is, and it has to be — iOS ignores transparency in a home-screen icon and fills it with black. The ICO and the Android PNGs keep the transparency your image had.',
+      },
+      {
+        q: 'Will this work on an old Windows machine?',
+        a: 'The icons inside the ICO are PNGs, which every browser and Windows version since Vista reads. Windows XP shows nothing for a PNG-payload icon; if that genuinely matters, you need a BMP-payload ICO from desktop software.',
+      },
+    ],
+    content: [
+      {
+        heading: 'What a site actually needs today',
+        body: [
+          'Favicon advice has accumulated for twenty-five years and almost none of it has been retired, which is why the typical generator hands back a folder of twenty files and a block of markup nobody can explain.',
+          'The current requirement is short. A favicon.ico in your site root covers desktop browsers and the automatic request every browser makes for that path. A 192-pixel and a 512-pixel PNG, referenced from a web app manifest, cover Android home screens and install prompts. One apple-touch-icon covers iOS. Everything else — Windows tile XML, six Apple sizes, the Safari mask icon — is answering questions no shipping browser asks any more.',
+          'Fewer files also means fewer things to forget when the logo changes, which is the actual maintenance cost of an icon set.',
+        ],
+      },
+      {
+        heading: 'Designing for sixteen pixels',
+        body: [
+          'A favicon is drawn at about the size of a full stop, and that constraint is unforgiving in a way that is hard to picture from a full-size logo. Fine lines disappear. Text becomes texture. Two shapes of similar weight merge into one blob.',
+          'Marks that survive have a strong silhouette and very few elements — often a single letter, or one shape at high contrast. If your logo is a wordmark, using its first letter alone is usually better than shrinking the whole thing.',
+          'This is why the preview shows the real 16-pixel render rather than a scaled-down picture of it. Looking at that one image for a few seconds before you ship is the entire quality-control step, and it catches the problem while it is still cheap to fix.',
+        ],
+      },
+      {
+        heading: 'Where the files go',
+        body: [
+          'Put every generated file in the root of your site, so they are reachable at /favicon.ico, /icon-192.png and so on, then paste the link tags into the <head> of your pages — in a shared layout or template rather than each page individually.',
+          'Browsers cache favicons aggressively and sometimes ignore a fresh copy for days. If a change does not appear, load the icon URL directly and force-refresh it, or check in a private window before concluding something is wrong with the file.',
+          'If your framework has its own convention — a file in a specific directory, or generated metadata — prefer that over the manifest here; two manifests referenced from one page is a conflict rather than a belt-and-braces.',
+        ],
+      },
+    ],
+    related: ['image-compressor', 'png-to-webp', 'image-cropper', 'qr-code-generator'],
+    popular: true,
+    isNew: true,
+    updated: '2026-09-10',
+  },
+
+  {
+    slug: 'lorem-ipsum-generator',
+    name: 'Lorem Ipsum Generator',
+    h1: 'Lorem ipsum generator',
+    tagline: 'Placeholder text in the amount and shape your layout needs.',
+    category: 'generators',
+    icon: 'text',
+    surface: 'form',
+    processing: 'browser',
+    metaTitle: 'Lorem Ipsum Generator',
+    metaDescription:
+      'Generate lorem ipsum by words, sentences or paragraphs, with or without the classic opening, and optionally wrapped in HTML paragraph tags.',
+    primaryKeyword: 'lorem ipsum generator',
+    secondaryKeywords: [
+      'lorem ipsum',
+      'placeholder text',
+      'dummy text generator',
+      'filler text',
+      'lorem ipsum paragraphs',
+    ],
+    synonyms: [
+      'dummy text',
+      'sample text generator',
+      'greeking text',
+      'placeholder copy',
+      'lipsum',
+      'mock text',
+      'filler copy for design',
+    ],
+    howTo: {
+      title: 'How to generate lorem ipsum',
+      steps: [
+        'Choose paragraphs, sentences or words, and how many you need.',
+        'Turn on the classic opening if the text should be recognisable as filler.',
+        'Turn on HTML tags if it is going straight into a template.',
+        'Copy the text, or download it as a .txt file.',
+      ],
+    },
+    features: [
+      {
+        title: 'Words, sentences or paragraphs',
+        body: 'Ask for what your layout is measured in. Sentence and paragraph lengths vary the way real prose does, so a column of it looks like text rather than like a block.',
+      },
+      {
+        title: 'The classic opening is optional',
+        body: '"Lorem ipsum dolor sit amet" is instantly recognisable as filler — right when showing a client a layout, wrong when testing how ordinary prose wraps. It is a switch, and it is off by default.',
+      },
+      {
+        title: 'HTML paragraphs on request',
+        body: 'Wrapping each paragraph in a p tag is the one thing everyone does by hand after copying, so it is a toggle here.',
+      },
+      {
+        title: 'No repeated words in a row',
+        body: 'The generator will not place a word next to itself, which is the giveaway that makes cheaper filler look mechanical when you actually read it.',
+      },
+      {
+        title: 'Generate again for a different draft',
+        body: 'The same settings with a fresh draw, as many times as you like — useful when a particular paragraph happens to break awkwardly in your layout.',
+      },
+      {
+        title: 'Runs in the page',
+        body: 'No request, no delay, no limit on how many times you press the button, and it works with no connection.',
+      },
+    ],
+    faq: [
+      {
+        q: 'What is lorem ipsum?',
+        a: 'Scrambled Latin, derived from a first-century BC text by Cicero, used as placeholder copy since at least the 1500s. Its usefulness is that it has roughly the letter distribution and word lengths of European prose while carrying no meaning — so people look at the layout rather than reading the words.',
+      },
+      {
+        q: 'Why not just type "text text text"?',
+        a: 'Because repeated words produce an unnaturally even texture, and a designer judging line length, rag and colour is judging exactly that texture. Filler that reads like prose from three feet away is doing its job; filler that reads like a pattern is not.',
+      },
+      {
+        q: 'Should I ever ship a page with lorem ipsum on it?',
+        a: 'It happens constantly and it is always embarrassing. Search your codebase for "lorem" before a launch — and be aware that filler in a live page can be indexed, which occasionally puts nonsense Latin into a search result for a real business.',
+      },
+      {
+        q: 'Is the text always the same?',
+        a: 'No. Each press of "Generate again" produces a different draft from the same settings. The first draft on the page is fixed so it is identical for everyone who loads it, which keeps the page fast to render.',
+      },
+      {
+        q: 'Can I get more than 500 paragraphs?',
+        a: 'Not in one go. Five hundred is far past the point where placeholder text is telling you anything about a layout, and generating more mostly wastes your browser’s memory. Run it twice if you genuinely need a longer sample.',
+      },
+    ],
+    content: [
+      {
+        heading: 'What placeholder text is for',
+        body: [
+          'Filler exists to stop people reading. When a draft carries real copy, everyone in the room discusses the copy — and the question on the table was whether the column is too wide, whether the line height is right, whether the heading has enough room to breathe.',
+          'That is why nonsense Latin works better than English nonsense: it has the right shape and no meaning at all. Word lengths and letter frequencies are close enough to English, French, German and Spanish that the block of text sits on the page the way real text will.',
+          'It is also why filler should be honest about being filler in a client presentation. Text that could be mistaken for a draft of the real thing invites feedback on words nobody wrote.',
+        ],
+      },
+      {
+        heading: 'Choosing the right amount',
+        body: [
+          'Match the filler to the slot. A card that will hold two lines should be tested with two lines, and with three, because the interesting question is what happens when it overflows.',
+          'For body copy, three or four paragraphs is usually enough to judge measure and rhythm; more of it tells you nothing new. For headings and buttons, the useful test is the longest plausible real string rather than an average one — a navigation item that fits at "Home" and breaks at "Frequently asked questions" is a bug waiting for launch day.',
+          'And test with the shortest case too. Layouts that only look right when full are a common and avoidable failure.',
+        ],
+      },
+    ],
+    related: ['word-counter', 'case-converter', 'password-generator', 'slug-generator'],
+    isNew: true,
+    updated: '2026-09-10',
   },
 ];

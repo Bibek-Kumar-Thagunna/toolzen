@@ -100,13 +100,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
  * passport scan to someone's server" is the question a first-time visitor is
  * actually asking, and answering it after the file picker is too late.
  */
-function Promises({ browserProcessed }: { browserProcessed: boolean }) {
+function Promises({
+  browserProcessed,
+  takesFiles,
+}: {
+  browserProcessed: boolean;
+  takesFiles: boolean;
+}) {
   // `promises` is `as const`, so its members are string *literal* types and an
   // inferred array of them fights any `string` annotation. Widening each entry
   // as it goes in is the one spelling that satisfies both the array type and
   // the narrowing predicate.
   const candidates: (string | null)[] = [
-    browserProcessed ? promises.browserOnly : null,
+    browserProcessed ? (takesFiles ? promises.browserOnly : promises.browserOnlyNoFile) : null,
     promises.noAccount,
     promises.free,
   ];
@@ -183,7 +189,10 @@ export default async function ToolPage({ params }: PageProps) {
                 title={tool.h1}
                 description={tool.tagline}
               />
-              <Promises browserProcessed={tool.processing === 'browser'} />
+              <Promises
+                browserProcessed={tool.processing === 'browser'}
+                takesFiles={tool.accepts !== undefined}
+              />
             </div>
 
             {/* The tool. Nothing between it and the heading. */}

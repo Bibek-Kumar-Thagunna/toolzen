@@ -62,6 +62,13 @@ export const brand = {
  */
 export const promises = {
   browserOnly: 'Processed in your browser — your file is never uploaded.',
+  /**
+   * The same claim for a tool that takes no file. A calculator promising that
+   * "your file" is never uploaded is a copy bug on every page that has no file
+   * picker on it, and it reads as boilerplate — which is the opposite of what
+   * these three lines are for.
+   */
+  browserOnlyNoFile: 'Worked out in your browser — nothing you type is sent anywhere.',
   noAccount: 'No account, no email, no sign-up.',
   free: 'Free, with no watermarks and no artificial limits.',
 } as const;

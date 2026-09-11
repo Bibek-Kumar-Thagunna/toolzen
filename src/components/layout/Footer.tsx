@@ -43,6 +43,7 @@
 import Link from 'next/link';
 
 import { Icon } from '@/components/icons';
+import { Logo } from '@/components/Logo';
 import { brand, promises } from '@/lib/brand';
 import { categoriesWithTools, toolCount, tools } from '@/lib/registry';
 import { routes } from '@/lib/site';
@@ -80,10 +81,9 @@ export function Footer() {
     <footer className="border-t border-border-subtle bg-surface-sunken">
       <Container className="py-10 sm:py-12">
         <div className="max-w-sm">
-          <div className="flex items-center gap-2 text-md font-semibold tracking-tight text-fg">
-            <span className="h-2.5 w-2.5 shrink-0 rotate-45 rounded-xs bg-accent" />
-            {brand.name}
-          </div>
+          {/* The same mark as the header, one size down. A footer that uses a
+              different glyph reads as a different site. */}
+          <Logo size={24} />
           <p className="mt-2.5 text-sm text-fg-muted">{brand.tagline}</p>
         </div>
 
