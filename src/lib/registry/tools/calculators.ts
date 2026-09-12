@@ -19,7 +19,7 @@ export const calculatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Percentage Calculator with Steps',
     metaDescription:
-      'Work out a percentage of a number, a percentage change, a reverse percentage and more, with the formula and every step shown.',
+      'A percentage calculator for a percentage of a number, a percentage change, a reverse percentage and more, with the formula and every step shown.',
     primaryKeyword: 'percentage calculator',
     secondaryKeywords: [
       'percentage change',
@@ -97,6 +97,14 @@ export const calculatorTools: Tool[] = [
         q: 'Is anything I type sent to a server?',
         a: 'No. The arithmetic runs in this page, so your figures never leave your device and nothing is stored between visits. It also keeps working if you lose your connection.',
       },
+      {
+        q: 'Is the percentage calculator free, and is there a limit?',
+        a: 'Free, unlimited and with nothing to install. It recalculates as you type rather than on a button, so there is no per-use count and no upgrade that unlocks a larger number.',
+      },
+      {
+        q: 'Do I need an account, and are my figures sent anywhere?',
+        a: 'No account and no upload. The arithmetic happens in the page, which matters more than it sounds: people put salaries, invoice totals and margins into a percentage box, and none of those should land in a server log.',
+      },
     ],
     content: [
       {
@@ -123,7 +131,7 @@ export const calculatorTools: Tool[] = [
         ],
       },
     ],
-    related: ['emi-calculator', 'date-difference-calculator', 'age-calculator'],
+    related: ['emi-calculator', 'date-difference-calculator', 'age-calculator', 'bmi-calculator', 'discount-calculator'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -138,7 +146,7 @@ export const calculatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Age Calculator: Years, Months and Days',
     metaDescription:
-      'Find an exact age in years, months and days from a date of birth, plus total days, the next birthday and the weekday it falls on.',
+      'An age calculator that gives an exact age in years, months and days from a date of birth, plus total days, the next birthday and the weekday it falls on.',
     primaryKeyword: 'age calculator',
     secondaryKeywords: ['date of birth', 'how old am i', 'exact age', 'next birthday', 'age in days'],
     synonyms: [
@@ -209,6 +217,18 @@ export const calculatorTools: Tool[] = [
         q: 'Is the date of birth I type stored or sent anywhere?',
         a: 'No. The calculation runs in this page, so the date never leaves your device and nothing is kept once you close the tab. A date of birth is sensitive enough to be worth saying plainly.',
       },
+      {
+        q: 'Is the age calculator free, and is there any catch?',
+        a: 'Free, with no account, no watermark on anything you copy out, and no limit on how many dates you check. There is nothing to buy, because there is nothing here that costs us anything to run.',
+      },
+      {
+        q: 'Is my date of birth stored or sent anywhere?',
+        a: 'No. The calculation is calendar arithmetic done in the page, and a date of birth is a piece of identity data that has no business being transmitted to work out how old somebody is. Nothing is logged and nothing persists after you close the tab.',
+      },
+      {
+        q: 'Is my date of birth uploaded anywhere?',
+        a: 'No. The whole calculation is calendar arithmetic done in the page, and nothing is transmitted — a date of birth is identity data and there is no reason for it to travel to work out somebody’s age.',
+      },
     ],
     content: [
       {
@@ -228,7 +248,7 @@ export const calculatorTools: Tool[] = [
         ],
       },
     ],
-    related: ['date-difference-calculator', 'qr-code-generator', 'percentage-calculator'],
+    related: ['date-difference-calculator', 'qr-code-generator', 'percentage-calculator', 'bmi-calculator'],
     updated: '2026-09-03',
   },
   {
@@ -242,7 +262,7 @@ export const calculatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Date Difference Calculator',
     metaDescription:
-      'Count the days between two dates, in years, months and days or as a plain total, and count working days with your own holiday list.',
+      'A date difference calculator for the days between two dates — in years, months and days or as a total — and working days with your own holiday list.',
     primaryKeyword: 'date difference calculator',
     secondaryKeywords: [
       'days between two dates',
@@ -315,6 +335,14 @@ export const calculatorTools: Tool[] = [
         q: 'Does anything I type leave my device?',
         a: 'No. Both counts, including the holiday list, run in this page, and nothing is stored between visits.',
       },
+      {
+        q: 'Is it free, and is there a limit on the date range?',
+        a: 'Free, and the range is limited only by the calendar itself — dates centuries apart work fine. Nothing is metered and no result is truncated to push you towards a paid version.',
+      },
+      {
+        q: 'Do I need an account, and are the dates uploaded?',
+        a: 'No account, and nothing is sent. Project deadlines, contract dates and court dates all get typed into this kind of box, so the working is done entirely in the page and no server sees which dates you compared.',
+      },
     ],
     content: [
       {
@@ -348,7 +376,7 @@ export const calculatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'EMI Calculator and Amortisation Table',
     metaDescription:
-      'Estimate a reducing-balance EMI, the total interest and a month-by-month amortisation schedule that reconciles to the last cent.',
+      'An EMI calculator for reducing-balance loans, with the total interest and a month-by-month amortisation schedule that reconciles to the last cent.',
     primaryKeyword: 'emi calculator',
     secondaryKeywords: [
       'monthly instalment',
@@ -425,6 +453,14 @@ export const calculatorTools: Tool[] = [
         q: 'Do the loan figures I type leave my device?',
         a: 'No. The instalment, the schedule and the comparison all run in this page, so amounts and rates stay on your machine and nothing is stored between visits.',
       },
+      {
+        q: 'Is the EMI calculator free, and is the schedule limited?',
+        a: 'Free, and the full amortisation schedule is shown — every month of it, not the first twelve with the rest behind a payment. There is no account and no cap on how many loans you model.',
+      },
+      {
+        q: 'Are my loan amount and income sent anywhere?',
+        a: 'No. The formula runs in the page and nothing is transmitted. Loan figures are financial data, and a calculator that posts them to a server has quietly collected a profile of what you can afford and when you are shopping for credit.',
+      },
     ],
     content: [
       {
@@ -444,7 +480,7 @@ export const calculatorTools: Tool[] = [
         ],
       },
     ],
-    related: ['percentage-calculator', 'date-difference-calculator', 'age-calculator'],
+    related: ['percentage-calculator', 'date-difference-calculator', 'age-calculator', 'discount-calculator'],
     updated: '2026-09-03',
   },
 
@@ -459,7 +495,7 @@ export const calculatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'BMI Calculator — Metric and Imperial',
     metaDescription:
-      'Calculate BMI in kg and cm or in pounds, stones, feet and inches. Shows the WHO bands, your healthy weight range, and what BMI cannot tell you.',
+      'A BMI calculator for kg and cm or pounds, stones, feet and inches. Shows the WHO bands, your healthy weight range, and what BMI cannot tell you.',
     primaryKeyword: 'bmi calculator',
     secondaryKeywords: [
       'body mass index',
@@ -536,6 +572,18 @@ export const calculatorTools: Tool[] = [
       {
         q: 'Is my data sent anywhere?',
         a: 'No. The arithmetic runs in this page. Your height and weight are never transmitted and never stored.',
+      },
+      {
+        q: 'Is the BMI calculator free, and do I need to sign up?',
+        a: 'Free, with no sign-up, no email and no result withheld. The number, the band it falls in and the working are all shown at once rather than after an address is handed over.',
+      },
+      {
+        q: 'Is my height and weight stored or uploaded?',
+        a: 'No. Both are health data, and this calculator neither transmits nor remembers them — the arithmetic happens in the page and nothing survives the tab closing. There is no profile being built and no list being sold.',
+      },
+      {
+        q: 'Is there a limit on how many times I can use it?',
+        a: 'No limit of any kind. It recalculates as you type, as often as you like, and nothing counts the uses because nothing identifies you between visits.',
       },
     ],
     content: [
@@ -646,6 +694,14 @@ export const calculatorTools: Tool[] = [
         q: 'Can it convert currency?',
         a: 'No, deliberately. Exchange rates change by the minute and would need a live feed, which would mean sending your figures to a server — the one thing every tool here avoids. Everything in this converter is a fixed physical ratio that will still be true next year.',
       },
+      {
+        q: 'Is the unit converter free, and is there a limit on conversions?',
+        a: 'Free and unlimited across every category it covers. Nothing counts your conversions and no unit is reserved for a paid tier — the whole table of related units is shown on every result.',
+      },
+      {
+        q: 'Do I need an account, and does it work offline?',
+        a: 'No account, and yes — the conversion factors are in the page itself, so once it has loaded the tool keeps working with the internet switched off. Nothing about what you converted is uploaded either way.',
+      },
     ],
     content: [
       {
@@ -662,6 +718,14 @@ export const calculatorTools: Tool[] = [
           'Feet and inches are the classic. Five foot nine is 5.75 feet, not 5.9, because nine inches is three quarters of a foot — an error that quietly ruins height conversions and BMI calculations everywhere.',
           'Fluid ounces are worse: a US fluid ounce and an imperial one are different sizes, and so are the pints and gallons built from them. A recipe written in one and cooked in the other is off by about a fifth.',
           'And nautical miles are not miles. A nautical mile is one minute of latitude, 1,852 metres exactly, which is why a boat’s speed in knots is not a car’s speed in miles per hour.',
+        ],
+      },
+      {
+        heading: 'The conversions that are exact, and the ones that are not',
+        body: [
+          'Some conversion factors are definitions rather than measurements. An inch is exactly 25.4 millimetres, a mile is exactly 1,609.344 metres, a pound is exactly 0.45359237 kilograms — these were fixed by international agreement, and a converter that gives you anything else is wrong rather than imprecise. Round-tripping through them should return exactly the number you started with.',
+          'Temperature is the one that trips people up, because it is the only common conversion with an offset as well as a ratio. Celsius to Fahrenheit is not a multiplication: 0 °C is 32 °F, not 0 °F. A converter that treats it as a pure ratio returns 180 for 100 °C instead of 212, which is the classic bug in a hand-written one. The same distinction matters for a temperature difference, where the offset should not be applied at all.',
+          'And a few things that look like units are not fixed at all. A cup is a different volume in the United States, the United Kingdom and Australia; a ton depends on which country is asking; fuel economy inverts — more miles per gallon is fewer litres per hundred kilometres, so the conversion is a division rather than a multiplication.',
         ],
       },
     ],
@@ -681,7 +745,7 @@ export const calculatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Discount Calculator — Sale Price and Tax',
     metaDescription:
-      'Work out a sale price with tax, find the percentage off from two prices, or stack discounts. Shows the working, and why 20% then 20% is not 40% off.',
+      'A discount calculator for sale price with tax, the percentage off from two prices, or stacked discounts. Shows why 20% then 20% is not 40% off.',
     primaryKeyword: 'discount calculator',
     secondaryKeywords: [
       'percent off calculator',
@@ -755,6 +819,18 @@ export const calculatorTools: Tool[] = [
         q: 'Why does "you save" show more than the discount?',
         a: 'Because you also avoid the tax on the amount discounted. Twenty per cent off a £100 item with 20% tax saves £20 of price and £4 of tax — £24 in total, which is what you would really have paid otherwise.',
       },
+      {
+        q: 'Is the discount calculator free, and is anything limited?',
+        a: 'Free, with every mode available and no watermark on anything you copy. Stacked discounts, tax and the real-versus-naive comparison are all shown — none of it is held back for a paid version.',
+      },
+      {
+        q: 'Do I need an account, and are my prices sent anywhere?',
+        a: 'No account and no upload. Retail margins and supplier pricing get worked out in boxes like this one, so nothing is transmitted — the whole calculation happens on your device as you type.',
+      },
+      {
+        q: 'How many discounts can I stack, and is there a limit?',
+        a: 'Stack as many as you like — type them as a list and every one is applied in turn, with the true combined percentage shown next to the figure people expect. There is no cap and no metered usage.',
+      },
     ],
     content: [
       {
@@ -771,6 +847,14 @@ export const calculatorTools: Tool[] = [
           'The other reliable trap is reversing a discount. If a jacket is £60 after 25% off, its original price was not £75, and it certainly was not £60 plus 25%. The £60 is 75% of the original, so the original is £60 ÷ 0.75 = £80.',
           'The same reasoning undoes tax. A £120 total that includes 20% VAT came from £100, because £120 is 120% of the pre-tax price — dividing by 1.2 recovers it, while taking 20% off £120 gives £96 and is simply wrong.',
           'Both are one division, and both are done in the wrong direction constantly, including on price tags.',
+        ],
+      },
+      {
+        heading: 'Two discounts are never the sum of the two discounts',
+        body: [
+          'This is the single most useful thing on the page, and it catches people constantly: 20% off and then another 20% off is not 40% off. The second discount applies to the already-reduced price, so 100 becomes 80, and then 80 becomes 64 — a real saving of 36%, not 40. The gap widens as the discounts get bigger. Three 30% discounts sound like 90% off and are actually 65.7%.',
+          'The same arithmetic runs the other way and costs more money. A price increased by 10% and then reduced by 10% does not return to where it started — it lands 1% below, because the reduction applies to the larger number. Anyone reconciling a supplier price list against last year’s has met this.',
+          'Tax is the other place order matters. A discount applied before tax and a discount applied after tax give different totals, and which is correct depends on the jurisdiction and on whether the listed price already includes tax. Getting it the wrong way round on an invoice is a small error that an auditor will find.',
         ],
       },
     ],

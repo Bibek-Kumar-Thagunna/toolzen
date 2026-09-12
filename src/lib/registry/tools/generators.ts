@@ -21,7 +21,7 @@ export const generatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'QR Code Generator — SVG and PNG',
     metaDescription:
-      'Make a QR code for a link, Wi-Fi network, contact card or event. Download a true vector SVG, or a PNG at the exact pixel size you need.',
+      'A QR code generator for a link, Wi-Fi network, contact card or event. Download a true vector SVG, or a PNG at the exact pixel size you need. No expiry.',
     primaryKeyword: 'qr code generator',
     secondaryKeywords: [
       'wi-fi qr code',
@@ -99,6 +99,14 @@ export const generatorTools: Tool[] = [
         q: 'Does anything I type reach a server?',
         a: 'No. The encoder is JavaScript running in this page, and the tool makes no network request while generating a code, which you can confirm in the network tab of your browser devtools. That is also why it keeps working offline.',
       },
+      {
+        q: 'Is the QR generator free, and does the code have a watermark or expire?',
+        a: 'Free, unmarked and permanent. The code encodes your data directly, so it never expires and never redirects through us — unlike a “free” dynamic QR service, where the code points at their server and stops working when the trial does.',
+      },
+      {
+        q: 'Do I need an account, and how many codes can I make?',
+        a: 'No account and no limit. Nothing counts your codes, because nothing tracks you — and nothing about the URL or text you encoded is sent anywhere, which matters when the code is for an unreleased page or a private wifi password.',
+      },
     ],
     content: [
       {
@@ -118,7 +126,7 @@ export const generatorTools: Tool[] = [
         ],
       },
     ],
-    related: ['password-generator', 'color-palette-generator', 'image-to-pdf'],
+    related: ['password-generator', 'color-palette-generator', 'image-to-pdf', 'favicon-generator', 'lorem-ipsum-generator'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -133,7 +141,7 @@ export const generatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Password Generator and Strength Check',
     metaDescription:
-      'Generate a random password or a passphrase in your browser, with an entropy figure you can check and no character-frequency bias.',
+      'A password generator for random passwords and passphrases, run in your browser, with an entropy figure you can check and no character-frequency bias.',
     primaryKeyword: 'password generator',
     secondaryKeywords: [
       'random password',
@@ -211,6 +219,14 @@ export const generatorTools: Tool[] = [
         q: 'Do the crack-time figures mean my password will last that long?',
         a: 'No. They are arithmetic on an assumed guess rate. A real attacker may have a leaked hash, a fast or a deliberately slow hash function, a reuse list, or your password already sitting in a breach corpus. Use the numbers to compare two passwords, not to predict a date.',
       },
+      {
+        q: 'Is the password generator free, and is there a limit?',
+        a: 'Free, with no account and no cap on how many you generate. Every option — length, character sets, passphrases — is available, because a password generator with a paid tier is selling you weaker passwords for free.',
+      },
+      {
+        q: 'Are the passwords generated on a server, or could they be uploaded?',
+        a: 'Neither. They come from your browser’s cryptographic random source, in the page, and are never transmitted or stored. A password that travelled over a network before you used it is not a secret, which is the whole problem with generating one on somebody else’s machine.',
+      },
     ],
     content: [
       {
@@ -230,7 +246,7 @@ export const generatorTools: Tool[] = [
         ],
       },
     ],
-    related: ['uuid-generator', 'qr-code-generator', 'jwt-decoder'],
+    related: ['uuid-generator', 'qr-code-generator', 'jwt-decoder', 'color-palette-generator', 'favicon-generator'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -245,7 +261,7 @@ export const generatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Color Palette Generator with Contrast',
     metaDescription:
-      'Build a color palette from one starting color, with harmony rules, a Tailwind-style 50-950 scale, WCAG contrast and color blindness previews.',
+      'A color palette generator that builds from one starting color, with harmony rules, a Tailwind-style 50-950 scale, WCAG contrast and color blindness previews.',
     primaryKeyword: 'color palette generator',
     secondaryKeywords: [
       'color harmony',
@@ -323,6 +339,14 @@ export const generatorTools: Tool[] = [
         q: 'Do my colors get uploaded anywhere?',
         a: 'No. The color math, the contrast figures and the simulations all run in this page, so an unreleased brand palette stays on your machine and nothing is kept between visits.',
       },
+      {
+        q: 'Is the palette generator free, and are exports watermarked?',
+        a: 'Free, and what you copy out is plain colour values — hex, RGB, HSL — with nothing appended. There is no export limit and no branded swatch sheet.',
+      },
+      {
+        q: 'Do I need an account, and is anything uploaded?',
+        a: 'No account, and no. Palettes are generated by colour maths running in the page, so an unreleased brand scheme you are experimenting with never reaches a server and is not saved to any gallery.',
+      },
     ],
     content: [
       {
@@ -342,13 +366,13 @@ export const generatorTools: Tool[] = [
         ],
       },
     ],
-    related: ['image-compressor', 'png-to-webp', 'qr-code-generator'],
+    related: ['image-compressor', 'png-to-webp', 'qr-code-generator', 'lorem-ipsum-generator'],
     updated: '2026-09-03',
   },
   {
     slug: 'favicon-generator',
     name: 'Favicon Generator',
-    h1: 'Generate a favicon',
+    h1: 'Favicon generator for every size a site needs',
     tagline: 'Turn one image into the icon files a site needs, and the four lines that load them.',
     category: 'generators',
     icon: 'star',
@@ -356,7 +380,7 @@ export const generatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Favicon Generator — ICO and PNG',
     metaDescription:
-      'Make favicon.ico plus the Apple and Android icons from one image, with the HTML to paste. Runs in your browser — no upload, no sign-up, no watermark.',
+      'A favicon generator that makes favicon.ico plus the Apple and Android icons from one image, with the HTML to paste. No upload, no sign-up, no watermark.',
     primaryKeyword: 'favicon generator',
     secondaryKeywords: [
       'make a favicon',
@@ -435,6 +459,14 @@ export const generatorTools: Tool[] = [
         q: 'Will this work on an old Windows machine?',
         a: 'The icons inside the ICO are PNGs, which every browser and Windows version since Vista reads. Windows XP shows nothing for a PNG-payload icon; if that genuinely matters, you need a BMP-payload ICO from desktop software.',
       },
+      {
+        q: 'Is the favicon generator free, and is the icon watermarked?',
+        a: 'Free, and the icons are your image at each size with nothing added. A watermarked favicon would be absurd — it is sixteen pixels across — but the same sites that mark everything else do mark these.',
+      },
+      {
+        q: 'Do I need an account, and is my logo uploaded?',
+        a: 'No account, and your logo stays on your device. It is resized by your own browser, which means an unreleased brand mark is not sitting in somebody’s upload folder while you decide whether you like it.',
+      },
     ],
     content: [
       {
@@ -479,7 +511,7 @@ export const generatorTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Lorem Ipsum Generator',
     metaDescription:
-      'Generate lorem ipsum by words, sentences or paragraphs, with or without the classic opening, and optionally wrapped in HTML paragraph tags.',
+      'A lorem ipsum generator for words, sentences or paragraphs, with or without the classic opening, and optionally wrapped in HTML paragraph tags.',
     primaryKeyword: 'lorem ipsum generator',
     secondaryKeywords: [
       'lorem ipsum',
@@ -553,6 +585,18 @@ export const generatorTools: Tool[] = [
         q: 'Can I get more than 500 paragraphs?',
         a: 'Not in one go. Five hundred is far past the point where placeholder text is telling you anything about a layout, and generating more mostly wastes your browser’s memory. Run it twice if you genuinely need a longer sample.',
       },
+      {
+        q: 'Is it free, and how much text can I generate?',
+        a: 'Free, with no limit on paragraphs or regenerations. Nothing is counted and no trailing credit line is appended to the placeholder text — which would be a particularly annoying thing to find in a layout later.',
+      },
+      {
+        q: 'Do I need an account, and is the text generated on a server?',
+        a: 'No account, and no. The word list and the sentence assembly are both in the page, so it works with the internet disconnected and there is no request anywhere in the process.',
+      },
+      {
+        q: 'Is a credit line or watermark added to the generated text?',
+        a: 'No. What you copy is placeholder text and nothing else. A trailing credit line is a genuinely irritating thing to discover in a layout three weeks later, so nothing is appended.',
+      },
     ],
     content: [
       {
@@ -569,6 +613,14 @@ export const generatorTools: Tool[] = [
           'Match the filler to the slot. A card that will hold two lines should be tested with two lines, and with three, because the interesting question is what happens when it overflows.',
           'For body copy, three or four paragraphs is usually enough to judge measure and rhythm; more of it tells you nothing new. For headings and buttons, the useful test is the longest plausible real string rather than an average one — a navigation item that fits at "Home" and breaks at "Frequently asked questions" is a bug waiting for launch day.',
           'And test with the shortest case too. Layouts that only look right when full are a common and avoidable failure.',
+        ],
+      },
+      {
+        heading: 'Why placeholder text is nonsense on purpose',
+        body: [
+          'Lorem ipsum is scrambled Latin, and the scrambling is the point. Real text is read, and a designer showing a layout with real sentences in it gets feedback on the sentences — the wording, the claims, the tone — rather than on the thing being reviewed, which is the shape of the page. Text you cannot read forces attention onto line length, spacing, hierarchy and rhythm.',
+          'It also has the right texture. A block of English has a characteristic distribution of word lengths and a familiar rate of spaces, and Latin is close enough to it that a paragraph of lorem ipsum wraps and greys out on the page much as the real copy will. Repeating one word, or using random letters, does not — a column of “asdf asdf asdf” looks nothing like prose and will mislead you about how the layout breathes.',
+          'The two habits worth keeping: use the amount of text the real content will actually be, because a design tested with three paragraphs and shipped with nine is a design that has not been tested; and never let placeholder text reach production. Searching a finished project for “lorem” before launch takes a second and has saved a great many people from a live page that opens with “dolor sit amet”.',
         ],
       },
     ],

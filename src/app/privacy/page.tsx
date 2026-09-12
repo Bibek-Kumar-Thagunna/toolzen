@@ -15,12 +15,27 @@
  * are here too, in their own headed sections.
  *
  * ── The one rule for editing this file ─────────────────────────────────────
- * Every sentence must be checkable against the code. "We do not upload your
- * files" is true because there is no upload endpoint in the repository and the
- * integrity check fails a browser-processed tool whose engine references
- * `fetch`. If a future change makes a sentence here false, the sentence changes
- * in the same commit — a privacy policy that has drifted from the software is
- * worse than none, because people have relied on it.
+ * Every sentence must be checkable against the code. If a future change makes
+ * a sentence here false, the sentence changes in the same commit — a privacy
+ * policy that has drifted from the software is worse than none, because people
+ * have relied on it.
+ *
+ * Three of the claims are load-bearing enough that memory is not good enough,
+ * so `scripts/check-integrity.mjs` enforces them and the build fails if they
+ * stop being true (see `checkPrivacyClaims`):
+ *
+ *   "your files are never uploaded"   no tool engine or component may
+ *                                     reference fetch, XMLHttpRequest,
+ *                                     WebSocket, EventSource or sendBeacon.
+ *   "your password is never sent"     the same check covers the locking tools.
+ *   "your password is never stored"   the locking modules may not reference
+ *                                     localStorage, sessionStorage, indexedDB
+ *                                     or document.cookie — which is what stops
+ *                                     a well-meant "remember this password"
+ *                                     from quietly falsifying this page.
+ *
+ * The narrower storage rule is deliberate. Other tools do remember a
+ * preference locally, and the "what stays on your device" section says so.
  *
  * `/privacy` is in `AD_FREE_ROUTES`. An advertisement beside a privacy
  * commitment reads as a contradiction, and it is.
@@ -48,7 +63,7 @@ const description = `How ${brand.name} handles your data: the files you open in 
  * date is supposed to tell a returning reader whether the terms they agreed to
  * have moved.
  */
-const LAST_UPDATED = '10 September 2026';
+const LAST_UPDATED = '12 September 2026';
 
 export const metadata: Metadata = buildMetadata({
   title,
@@ -76,8 +91,10 @@ export default function PrivacyPage() {
       <Alert variant="info" title="The short version" className="mt-6">
         The files you open in a tool on this site are processed by your own browser and are never
         uploaded to us. We have no accounts, ask for no personal details, and store nothing about
-        you on our servers. If advertising is switched on, Google may set cookies in your browser —
-        that is the one third party involved, and the section below explains it.
+        you on our servers. If you lock a file with a password, that password never leaves your
+        device — which also means we cannot open the file for you, ever. If advertising is switched
+        on, Google may set cookies in your browser — that is the one third party involved, and the
+        section below explains it.
       </Alert>
 
       <Prose className="mt-8">
@@ -108,6 +125,59 @@ export default function PrivacyPage() {
           place the browser-processing badge appears now. As of the date above, none does.
         </p>
 
+        <h2>Passwords, and files you lock</h2>
+        <p>
+          Two tools on this site encrypt and decrypt files: <strong>Password Protect Files</strong>{' '}
+          and <strong>Unlock a File</strong>. They deserve their own section, because a tool whose
+          whole purpose is keeping something private has to be exact about what happens to the
+          secret.
+        </p>
+        <ul>
+          <li>
+            <strong>Your password is never transmitted.</strong> It is used inside the page, by your
+            browser&rsquo;s own cryptography, to derive a key. There is no request that carries it,
+            because there is no server to carry it to.
+          </li>
+          <li>
+            <strong>Your password is never stored.</strong> Not on a server, and not on your device
+            either — nothing is written to local storage, and there is deliberately no
+            &ldquo;remember this password&rdquo; option. It exists in the page while you are on it
+            and is gone when you leave.
+          </li>
+          <li>
+            <strong>We hold no key.</strong> There is no master password, no recovery code, no key
+            escrow and no back door. The key is derived from your password and from nothing else.
+          </li>
+          <li>
+            <strong>We cannot open your file, and neither can anyone who compels us.</strong> A
+            locked file is not recoverable by us under any circumstances — not for you if you forget
+            the password, and not for a law-enforcement request, a subpoena or a court order. There
+            is nothing to hand over. This is a property of how the software is built, not a policy
+            we could change our mind about.
+          </li>
+          <li>
+            <strong>We do not know you used the tool at all</strong>, beyond an anonymous page view
+            if analytics are enabled. Not what you locked, not how many files, not their names, not
+            their contents.
+          </li>
+        </ul>
+        <p>
+          Two things about the files themselves are worth knowing, because they are properties of
+          the formats rather than of this site. An encrypted <code>.zip</code> keeps its list of
+          file names readable without the password — that is how the format works, so anyone holding
+          the archive can see what is in it even though they cannot read it. A{' '}
+          <code>.tzlock</code> hides its file names inside the encryption, but the optional password
+          reminder is stored in the clear and can be read by anyone who has the file, which is why
+          the form says to make it a nudge rather than the answer.
+        </p>
+        <p>
+          The claim in this section is testable, and testing it is fair. Open the tool, disconnect
+          from the internet, and lock or unlock a file. It works offline, because nothing was ever
+          going to be sent. For a <code>.tzlock</code> there is also a{' '}
+          <a href="/unlock.html">standalone unlocker</a>: one self-contained page you can save and
+          use with no internet connection and no involvement from this site at all.
+        </p>
+
         <h2>What we do not collect</h2>
         <ul>
           <li>
@@ -117,6 +187,11 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>No file contents or file names.</strong> See the section above.
+          </li>
+          <li>
+            <strong>No passwords.</strong> Neither the ones you type into the locking tools nor the
+            ones the password generator produces for you. Nothing on this site has ever received a
+            password and nothing stores one.
           </li>
           <li>
             <strong>No text you type or paste.</strong> What you put into a text tool, a calculator

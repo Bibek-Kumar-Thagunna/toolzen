@@ -24,7 +24,7 @@ export const fileTools: Tool[] = [
   {
     slug: 'password-protect-files',
     name: 'Password Protect Files',
-    h1: 'Put a password on a file',
+    h1: 'Password protect your files',
     tagline: 'Lock any file or folder of files with AES-256, so only someone with the password can open it.',
     category: 'files',
     icon: 'lock',
@@ -32,7 +32,7 @@ export const fileTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Password Protect Files — AES-256',
     metaDescription:
-      'Lock files with a password using AES-256, in your browser. Produce a standard encrypted zip, or a file only openable on Toolzen. Nothing is uploaded.',
+      'Password protect files with AES-256, in your browser. Produce a standard encrypted zip, or a file only openable on Toolzen. Nothing is uploaded, ever.',
     primaryKeyword: 'password protect files',
     secondaryKeywords: [
       'encrypt a file',
@@ -116,6 +116,18 @@ export const fileTools: Tool[] = [
         q: 'How big a file can it handle?',
         a: 'Up to 100 MB per file and twenty files at once, with a total of 200 MB for a .tzlock. These are limits of what a browser tab can hold in memory rather than of the format, and they are checked before anything starts rather than failing halfway through.',
       },
+      {
+        q: 'Is it free to password-protect a file, and is there a watermark or a limit?',
+        a: 'Free, with nothing added to your files and no count of how many you lock. A watermark is not even possible here: the tool encrypts the bytes you gave it and never decodes or redraws them, so what comes out decrypts to exactly what went in.',
+      },
+      {
+        q: 'Do I need an account to lock a file?',
+        a: 'No, and an account would be worse than useless for this. A service holding an account holding your files is a service that can be compelled to open them. Nothing here knows who you are, which is why we cannot help you if the password is lost.',
+      },
+      {
+        q: 'Is anything uploaded when I lock a file?',
+        a: 'Nothing at all — not the files and not the password. The encryption runs in the tab using your browser’s own cryptography, and you can prove it: switch off your internet connection and lock a file anyway. It works, because there was never a server involved.',
+      },
     ],
     content: [
       {
@@ -150,7 +162,7 @@ export const fileTools: Tool[] = [
   {
     slug: 'unlock-file',
     name: 'Unlock a File',
-    h1: 'Open a password-protected file',
+    h1: 'Open a password-protected zip or locked file',
     tagline: 'Open an encrypted zip or a Toolzen locked file with its password, straight in your browser.',
     category: 'files',
     icon: 'key',
@@ -237,6 +249,14 @@ export const fileTools: Tool[] = [
         q: 'The password is definitely right and it still fails.',
         a: 'Then the file is probably damaged. Both formats authenticate their contents, so a byte changed by a truncated download or a mail server that mangled the attachment makes the file refuse to open. Ask for it again, ideally as a link rather than an attachment.',
       },
+      {
+        q: 'Is it free to open a password-protected zip, and is there a limit?',
+        a: 'Free, with no cap on file size beyond the 300 MB a browser tab can hold, and no watermark or alteration to the files that come out — they are the originals, decrypted, byte for byte.',
+      },
+      {
+        q: 'Do I need an account, and is my file uploaded to be opened?',
+        a: 'No account, and nothing is uploaded — not the archive and not the password. Most “open a protected zip online” services send both to a server, which is an odd thing to do with a file somebody deliberately encrypted.',
+      },
     ],
     content: [
       {
@@ -252,6 +272,14 @@ export const fileTools: Tool[] = [
         body: [
           'The files that come out are ordinary, unencrypted files in your downloads folder, which is usually the least protected place on the machine. If the contents were sensitive enough to be sent locked, move them somewhere appropriate and clear the downloads folder afterwards.',
           'It is also worth telling the sender how the file arrived. If it came as an old-style ZipCrypto archive, or with the password in the same message, they probably think they did the secure thing — and the next file will come the same way unless somebody mentions it.',
+        ],
+      },
+      {
+        heading: 'What to check before you assume the password is wrong',
+        body: [
+          'Passwords for archives are case sensitive and space sensitive, and the two most common failures are a trailing space picked up when the password was copied out of a message, and a capital letter lost when it was typed on a phone keyboard. Both look exactly like a wrong password. Pasting rather than typing, and then using the reveal button to look at what actually landed in the box, resolves most of them in a few seconds.',
+          'The second thing to check is whether the file arrived intact. Both formats this tool reads carry an authentication code over their contents, which means a single byte changed in transit makes the file refuse to open — correctly, because a file that has been altered should not be trusted. Mail servers that rewrite attachments and downloads that stopped early are the usual causes, and the fix is to get the file again, ideally as a link rather than an attachment.',
+          'If neither is the problem, the password is genuinely wrong, and there is no way round that. Encryption that could be bypassed by the people who wrote the tool would not be encryption. Ask whoever sent it.',
         ],
       },
     ],

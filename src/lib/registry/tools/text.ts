@@ -14,7 +14,7 @@ export const textTools: Tool[] = [
   {
     slug: 'word-counter',
     name: 'Word Counter',
-    h1: 'Count words and characters',
+    h1: 'Word counter for essays, posts and captions',
     tagline: 'See the length of your text the way the thing measuring it will see it.',
     category: 'text',
     icon: 'list',
@@ -22,7 +22,7 @@ export const textTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Word Counter — Characters and Words',
     metaDescription:
-      'Count words, characters, sentences and paragraphs as you type, with reading time, keyword density and the longest word. Nothing is sent anywhere.',
+      'A word counter that counts characters, sentences and paragraphs as you type, with reading time, keyword density and the longest word. Nothing is uploaded.',
     primaryKeyword: 'word counter',
     secondaryKeywords: [
       'character count',
@@ -102,6 +102,14 @@ export const textTools: Tool[] = [
         q: 'Is my text stored anywhere?',
         a: 'No. It lives in the page while the tab is open and goes when you close it. There is no upload, no draft saved on a server and nothing logged.',
       },
+      {
+        q: 'Is the word counter free, and is there a limit on how much text?',
+        a: 'Free, with no cap on length — paste an entire manuscript if you want. Counting happens as you type rather than on a button, so there is no per-use meter to run out of and nothing to upgrade.',
+      },
+      {
+        q: 'Do I need an account, and does my writing get sent anywhere?',
+        a: 'No account, and the text never leaves the box. Nothing is submitted, nothing is logged, and no draft of yours is stored — which matters when the thing being counted is unpublished work or a document under embargo.',
+      },
     ],
     content: [
       {
@@ -134,7 +142,8 @@ export const textTools: Tool[] = [
     slug: 'case-converter',
     name: 'Case Converter',
     h1: 'Convert text case',
-    tagline: 'Retype nothing: put a heading, a list or a variable name into the case you need.',
+    tagline:
+      'Retype nothing: put a heading, a list or a variable name into the case you need.',
     category: 'text',
     icon: 'type',
     surface: 'text',
@@ -220,6 +229,14 @@ export const textTools: Tool[] = [
         q: 'Is there a length limit?',
         a: 'None fixed. Conversion happens in the page, so the limit is what your browser will hold; ordinary documents convert as fast as you can click.',
       },
+      {
+        q: 'Is it free, and is there a limit on the text I can convert?',
+        a: 'Free and unmetered. There is no length limit beyond what your browser will comfortably lay out in a text box, and no watermark or trailing credit line appended to the converted text.',
+      },
+      {
+        q: 'Do I need to sign up, and is my text uploaded?',
+        a: 'No sign-up, and nothing is uploaded. The conversion is a few lines of string handling running in the page, so it happens the instant you type — there is no round trip to wait for and no server that ever sees the words.',
+      },
     ],
     content: [
       {
@@ -237,6 +254,14 @@ export const textTools: Tool[] = [
           'Title Case is the one with real disagreement behind it. Guides differ over which short words stay lowercase and how to treat longer prepositions, so the list used here is deliberately the short conventional one. Read the output rather than trusting any tool to speak for your house style.',
         ],
       },
+      {
+        heading: 'Why the same text converts differently in different tools',
+        body: [
+          'Changing case sounds like it should have one right answer, and for plain English it does. Everywhere else it gets interesting. Title case is the clearest example: which words stay lowercase depends on which style guide you follow, and they genuinely disagree — some lowercase every preposition, some only the short ones, some capitalise the last word whatever it is. A converter has to pick a convention, and knowing which one it picked is the difference between a headline you can paste and one you have to fix.',
+          'Then there are the languages where case is not a simple mapping. Turkish has a dotted and a dotless i, and uppercasing them the English way produces the wrong letter — a bug famous enough to have broken real software. German ß uppercases to two characters. Greek final sigma changes shape depending on where it sits in the word. Modern browsers handle these correctly, which is one of the quieter advantages of doing the conversion in the page rather than with a hand-rolled function on a server.',
+          'The formats programmers use — camelCase, snake_case, kebab-case — are a different job again, because they have to split the text into words first, and the rules for where a word boundary sits in “parseHTMLDocument” are not obvious.',
+        ],
+      },
     ],
     related: ['slug-generator', 'word-counter', 'remove-duplicate-lines', 'json-formatter'],
     updated: '2026-09-03',
@@ -252,7 +277,7 @@ export const textTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Remove Duplicate Lines from Text',
     metaDescription:
-      'Delete repeated lines from a list, keeping the first or the last copy. Options for case, trimming and blank lines, with a count of what was removed.',
+      'Remove duplicate lines from a list, keeping the first or the last copy. Options for case, trimming and blank lines, with a count of what was taken out.',
     primaryKeyword: 'remove duplicate lines',
     secondaryKeywords: [
       'delete duplicate lines',
@@ -331,6 +356,14 @@ export const textTools: Tool[] = [
         q: 'Is anything uploaded?',
         a: 'No. The text is processed in the tab, so a customer list or a set of internal hostnames does not leave your machine.',
       },
+      {
+        q: 'Is it free, and how many lines can it handle?',
+        a: 'Free, with no line limit imposed by the tool. Very large lists slow down because the whole thing is laid out in a text box, but nothing truncates your input at a thousand lines to sell you the rest.',
+      },
+      {
+        q: 'Do I need an account, and is my list uploaded?',
+        a: 'No account, and no. People de-duplicate email lists, customer records and log extracts here — exactly the data that should not be pasted into a stranger’s server — so the work is done in the page and nothing is transmitted.',
+      },
     ],
     content: [
       {
@@ -361,7 +394,7 @@ export const textTools: Tool[] = [
   {
     slug: 'slug-generator',
     name: 'Slug Generator',
-    h1: 'Generate a URL slug',
+    h1: 'URL slug generator',
     tagline: 'Turn a headline into a tidy web address that survives being pasted anywhere.',
     category: 'text',
     icon: 'link',
@@ -369,7 +402,7 @@ export const textTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Slug Generator for URLs',
     metaDescription:
-      'Turn a title into a clean URL slug. Accents are folded, Cyrillic and Greek are transliterated, and anything dropped is listed rather than hidden.',
+      'A URL slug generator that folds accents, transliterates Cyrillic and Greek, and lists anything it had to drop rather than hiding it. Free, with no sign-up.',
     primaryKeyword: 'slug generator',
     secondaryKeywords: [
       'url slug',
@@ -448,6 +481,14 @@ export const textTools: Tool[] = [
       {
         q: 'Which separator should I use?',
         a: 'A hyphen is the convention for URLs and what most software expects. Underscores are common in file names. Choosing nothing runs the words together, which is compact and harder to read.',
+      },
+      {
+        q: 'Is the slug generator free, and is there a usage limit?',
+        a: 'Free, unmetered and unbranded. Generate as many as you like; nothing counts them, because nothing on this site knows who you are or keeps a record between visits.',
+      },
+      {
+        q: 'Do I need an account, and does my title get uploaded?',
+        a: 'No account and no upload. Titles are often the first thing known about an unannounced product or article, so the transliteration and stripping all happen in the page rather than being posted to anything.',
       },
     ],
     content: [

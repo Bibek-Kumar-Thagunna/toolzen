@@ -29,7 +29,7 @@ import { routes } from '@/lib/site';
 const title = 'Terms of Use';
 const description = `The terms that apply to using ${brand.name}: free to use, no account, no warranty, and you keep every right to your own files.`;
 
-const LAST_UPDATED = '10 September 2026';
+const LAST_UPDATED = '12 September 2026';
 
 export const metadata: Metadata = buildMetadata({
   title,
@@ -92,6 +92,23 @@ export default function TermsPage() {
           Work from a copy. Because processing happens on your device and nothing is stored, there
           is no version history to fall back on and no way for us to recover a file you have
           replaced. A tool that produces a new file is not a backup of the old one.
+        </p>
+
+        <h2>A lost password cannot be recovered</h2>
+        <p>
+          The locking tools encrypt with a key derived from the password you type, on your own
+          device. We never receive that password and we hold no key of our own, so there is nothing
+          we could use to help you — a locked file whose password is forgotten is permanently
+          unreadable, by us and by everyone. That is what makes the tool worth using, and it is also
+          the risk you take by using it. Write the password down somewhere safe before you send the
+          file, and check that the file opens before you delete the original.
+        </p>
+        <p>
+          Encryption is one part of keeping something private, not the whole of it. How you share
+          the password, who you share it with, and whether the password is strong enough are yours
+          to judge. The tool shows an estimate of how long a password would take to guess; it is an
+          estimate made under pessimistic assumptions and not a guarantee about any particular
+          attacker.
         </p>
 
         <h2>Your files stay yours</h2>

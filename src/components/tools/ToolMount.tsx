@@ -91,6 +91,13 @@ const registry: Record<string, ComponentType> = {
     { loading },
   ),
 
+  'compress-jpeg': dynamic(() => import('./FormatVariants').then((m) => m.CompressJpegTool), {
+    loading,
+  }),
+  'compress-png': dynamic(() => import('./FormatVariants').then((m) => m.CompressPngTool), {
+    loading,
+  }),
+
   // -- pdf ------------------------------------------------------------------
   'image-to-pdf': dynamic(() => import('./ImageToPdfTool').then((m) => m.ImageToPdfTool), {
     loading,
@@ -111,6 +118,9 @@ const registry: Record<string, ComponentType> = {
     { loading },
   ),
   'pdf-to-pptx': dynamic(() => import('./PdfToPptxTool').then((m) => m.PdfToPptxTool), { loading }),
+  'jpg-to-pdf': dynamic(() => import('./FormatVariants').then((m) => m.JpgToPdfTool), { loading }),
+  'png-to-pdf': dynamic(() => import('./FormatVariants').then((m) => m.PngToPdfTool), { loading }),
+  'pdf-to-png': dynamic(() => import('./FormatVariants').then((m) => m.PdfToPngTool), { loading }),
 
   // -- files ----------------------------------------------------------------
   'password-protect-files': dynamic(

@@ -176,3 +176,14 @@ export const LOCKED_FILE_ONE: AcceptSpec = {
   maxBytes: 300 * MB,
   maxFiles: 1,
 };
+
+/**
+ * Single-format variants for the pages that target one conversion.
+ *
+ * A page titled "JPG to PDF" that quietly accepts a WebP has misdescribed
+ * itself, so the variant tools narrow the dropzone to match their own name.
+ * The counts match the general-purpose specs they mirror, since the memory
+ * cost is per decode and does not change with the format.
+ */
+export const JPG_ONLY_MANY: AcceptSpec = { ...JPG_ONLY, maxFiles: 50 };
+export const PNG_ONLY_MANY: AcceptSpec = { ...PNG_ONLY, maxFiles: 50 };

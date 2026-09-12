@@ -53,6 +53,17 @@ import { readPdfInfo, renderPdfPages, type RenderedPage } from '@/lib/tools/pdf/
 
 const SLUG = 'pdf-to-jpg';
 
+/**
+ * `pdf-to-png` is its own page because it is its own question: PNG is lossless
+ * and keeps text edges crisp, JPEG is smaller and blurs them, and somebody
+ * searching for one has already decided. The variant opens on PNG rather than
+ * merely mentioning it, so the default is the answer they came for.
+ */
+export interface PdfToImageProps {
+  slug?: string;
+  defaultFormat?: FormatValue;
+}
+
 /** Named for the job, not the number. See the header. */
 const QUALITY_LEVELS = [
   { dpi: 96, label: 'Screen — small files, fine for viewing' },
@@ -79,17 +90,17 @@ interface Output {
   ext: string;
 }
 
-export function PdfToJpgTool() {
+export function PdfToJpgTool({ slug = SLUG, defaultFormat = 'image/jpeg' }: PdfToImageProps = {}) {
   const [opened, setOpened] = useState<Opened | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
   const [opening, setOpening] = useState(false);
   const [dpi, setDpi] = useState(150);
-  const [format, setFormat] = useState<FormatValue>('image/jpeg');
+  const [format, setFormat] = useState<FormatValue>(defaultFormat);
   const [quality, setQuality] = useState(85);
   const [rangeText, setRangeText] = useState('');
 
-  const run = useToolRun<Output>(SLUG);
-  const markStarted = useToolStarted(SLUG);
+  const run = useToolRun<Output>(slug);
+  const markStarted = useToolStarted(slug);
 
   const onFiles = useCallback(
     (files: File[]) => {
@@ -187,7 +198,7 @@ export function PdfToJpgTool() {
       }
     >
       {!opened ? (
-        <FileDropzone slug={SLUG} accept={PDF_ONE} disabled={opening} onFiles={onFiles} />
+        <FileDropzone slug={slug} accept={PDF_ONE} disabled={opening} onFiles={onFiles} />
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -298,7 +309,7 @@ export function PdfToJpgTool() {
 
       {result ? (
         <ToolResult
-          slug={SLUG}
+          slug={slug}
           title={`${result.pages.length} ${result.pages.length === 1 ? 'image' : 'images'} ready`}
           summary={`${humanBytes(result.pages.reduce((sum, p) => sum + p.bytes.length, 0))} in total · ${dpi} DPI`}
           download={{

@@ -50,9 +50,33 @@ import { canEncodeFormat, type EncodableFormat } from '@/lib/tools/image/codec';
 import { estimateOutputBytes } from '@/lib/tools/image/dimensions';
 import { mimeForFormat, outputFileName, savingsSummary } from '@/lib/tools/image/format';
 import { indexedPngEncoder } from '@/lib/tools/image/png';
+import type { AcceptSpec } from '@/lib/registry/types';
 import { RASTER_IMAGES } from '@/lib/tools/accepts';
 
 const SLUG = 'image-compressor';
+
+/**
+ * The format-specific variants.
+ *
+ * "compress jpeg" and "compress png" are not the same job, and giving them one
+ * page was hiding that. A JPEG shrinks by re-encoding at a lower quality and
+ * the slider is the whole interface. A PNG cannot be compressed that way at
+ * all — it is lossless, and the only real lever is reducing the number of
+ * colours so it can be stored as an indexed image, which is a different
+ * control answering a different question.
+ *
+ * So each variant accepts only its own format and opens on the setting that
+ * actually helps it. Locking the format is a real narrowing, not a label: it
+ * is what lets the page stop asking "which format do you want out?" when the
+ * answer is already in the question the visitor typed.
+ */
+export interface ImageCompressorProps {
+  slug?: string;
+  accept?: AcceptSpec;
+  /** Fixes the output format and hides the chooser. */
+  lockFormat?: EncodableFormat;
+  hint?: string;
+}
 
 /**
  * `smallest` tries the sensible formats and keeps whichever wins; `keep`
@@ -80,8 +104,13 @@ function resolveKeep(sniffedFormat: string): EncodableFormat {
   return 'png';
 }
 
-export function ImageCompressorTool() {
-  const [format, setFormat] = useState<FormatChoice>('smallest');
+export function ImageCompressorTool({
+  slug = SLUG,
+  accept = RASTER_IMAGES,
+  lockFormat,
+  hint = 'Up to 20 images at a time, 30 MB each. Everything happens on your device.',
+}: ImageCompressorProps = {}) {
+  const [format, setFormat] = useState<FormatChoice>(lockFormat ?? 'smallest');
   const [quality, setQuality] = useState(80);
 
   /**
@@ -246,6 +275,10 @@ export function ImageCompressorTool() {
   const controls = useCallback(
     (queue: SniffedFile[], busy: boolean) => (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {/* Hidden when the page is already the answer: a tool called "Compress
+            PNG" asking which format you want out is asking a question the
+            visitor answered before they arrived. */}
+        {lockFormat ? null : (
         <Field
           label="Save as"
           htmlFor="compressor-format"
@@ -276,7 +309,13 @@ export function ImageCompressorTool() {
             })}
           </Select>
         </Field>
+        )}
 
+        {/* Gone entirely on a page locked to a lossless format. A disabled
+            slider explaining that it does nothing is still a slider, and this
+            page's whole argument is that the quality control is not the one
+            that compresses a PNG. */}
+        {lockFormat === 'png' ? null : (
         <Field
           label="Quality"
           htmlFor="compressor-quality"
@@ -304,6 +343,7 @@ export function ImageCompressorTool() {
             onChange={(event) => setQuality(Number(event.target.value))}
           />
         </Field>
+        )}
 
         {/* Only shown when a PNG can actually come out of the run — on a
             JPG-to-JPG compression it would be a control that does nothing. */}
@@ -348,7 +388,7 @@ export function ImageCompressorTool() {
         ) : null}
       </div>
     ),
-    [colors, encodable, estimate, format, lossless, pngPossible, quality, reduceColors],
+    [colors, encodable, estimate, format, lockFormat, lossless, pngPossible, quality, reduceColors],
   );
 
   const summary = useMemo(
@@ -381,9 +421,9 @@ export function ImageCompressorTool() {
 
   return (
     <ImageBatchShell
-      slug={SLUG}
+      slug={slug}
       label="Compress images"
-      accept={RASTER_IMAGES}
+      accept={accept}
       runLabel="Compress images"
       archiveLabel="compressed-images"
       controls={controls}
@@ -392,7 +432,7 @@ export function ImageCompressorTool() {
         `${result.outputs.length} ${result.outputs.length === 1 ? 'image' : 'images'} compressed`
       }
       summary={summary}
-      hint="Up to 20 images at a time, 30 MB each. Everything happens on your device."
+      hint={hint}
       note={(_file, sniffed) =>
         sniffed && sniffed.width !== null && sniffed.height !== null
           ? `${sniffed.width} × ${sniffed.height} px`

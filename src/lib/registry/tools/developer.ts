@@ -19,7 +19,7 @@ export const developerTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'JSON Formatter and Validator',
     metaDescription:
-      'Format, validate and minify JSON in your browser. Errors name the line and column, and large integer ids are checked for precision loss.',
+      'A JSON formatter that validates and minifies in your browser. Errors name the line and column, and large integer ids are checked for precision loss.',
     primaryKeyword: 'json formatter',
     secondaryKeywords: [
       'json validator',
@@ -94,6 +94,18 @@ export const developerTools: Tool[] = [
         q: 'Does sorting keys change the meaning of my document?',
         a: 'For an object, no: key order carries no meaning in JSON, and consumers that depend on it are relying on an accident. Array order is different and is never touched. If the document is signed or hashed, sorting will change the bytes and therefore the signature.',
       },
+      {
+        q: 'Is the JSON formatter free, and is there a size limit?',
+        a: 'Free, with a four-megabyte ceiling on a dropped file — which is about where a browser stops laying out one text box instantly rather than where a paid tier would start. Pasted text has no limit at all.',
+      },
+      {
+        q: 'Do I need an account, and is my JSON sent to a server?',
+        a: 'No account, and nothing is sent. This is the one worth checking on any formatter you use: JSON pasted into a debugging tool routinely contains API keys, tokens and customer records, and most online formatters post it to a backend.',
+      },
+      {
+        q: 'Is there a watermark or a comment added to the formatted JSON?',
+        a: 'No. What you copy out is valid JSON and nothing else — no credit comment at the top, no injected key. Some formatters add one, which then breaks strict parsers downstream.',
+      },
     ],
     content: [
       {
@@ -135,7 +147,7 @@ export const developerTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Base64 Encoder and Decoder',
     metaDescription:
-      'Encode and decode Base64 in your browser, including the URL-safe alphabet. Padding, line wrapping and binary files are all handled.',
+      'A Base64 encoder and decoder that runs in your browser, including the URL-safe alphabet. Padding, line wrapping and binary files are all handled.',
     primaryKeyword: 'base64 encoder',
     secondaryKeywords: [
       'base64 decoder',
@@ -210,6 +222,18 @@ export const developerTools: Tool[] = [
         q: 'Does the text I paste get sent to a server?',
         a: 'No. Encoding and decoding both run in this page, so nothing is transmitted and nothing is stored. That is also why there is no size limit beyond what your browser can hold in memory.',
       },
+      {
+        q: 'Is it free, and is there a limit on what I can encode?',
+        a: 'Free, with an eight-megabyte ceiling per file because the encoded result is a third larger again and has to sit in a text box. Text you paste in has no limit, and nothing is metered.',
+      },
+      {
+        q: 'Do I need an account, and is my data uploaded?',
+        a: 'No account, and no. Base64 is what people reach for when moving credentials, certificates and small binaries around, so the encoding is done by your browser’s own routine and the data never becomes a request.',
+      },
+      {
+        q: 'Is anything appended to the encoded output?',
+        a: 'No — no watermark, no trailing marker, no line of attribution. The output is exactly the Base64 of your input, which matters because anything extra makes it decode to the wrong bytes.',
+      },
     ],
     content: [
       {
@@ -229,7 +253,7 @@ export const developerTools: Tool[] = [
         ],
       },
     ],
-    related: ['jwt-decoder', 'json-formatter', 'image-compressor'],
+    related: ['jwt-decoder', 'json-formatter', 'image-compressor', 'url-encoder'],
     updated: '2026-09-03',
   },
   {
@@ -243,7 +267,7 @@ export const developerTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'JWT Decoder and Claims Inspector',
     metaDescription:
-      'Decode a JWT header and payload in your browser, read every claim in plain words, and check an HS256 signature with your own secret.',
+      'A JWT decoder that reads the header and payload in your browser, explains every claim in plain words, and checks an HS256 signature with your own secret.',
     primaryKeyword: 'jwt decoder',
     secondaryKeywords: [
       'decode a jwt',
@@ -317,6 +341,14 @@ export const developerTools: Tool[] = [
         q: 'What does the alg none header mean?',
         a: 'It means the token claims to need no signature at all. Several libraries once honoured that claim, so an attacker could take a valid token, change the payload, set alg to none and be believed. Any modern verifier rejects it, and so does this tool.',
       },
+      {
+        q: 'Is the JWT decoder free, and is there any limit?',
+        a: 'Free and unlimited. Decode as many tokens as you like — there is no per-day count, because there is no account to count against and nothing that persists between page loads.',
+      },
+      {
+        q: 'Do I need an account, and is my token sent anywhere?',
+        a: 'No account, and the token never leaves the page. This is the single most important thing about a JWT tool: a token pasted into a website that posts it to a server has been handed to that server, and it is a live credential until it expires.',
+      },
     ],
     content: [
       {
@@ -336,7 +368,7 @@ export const developerTools: Tool[] = [
         ],
       },
     ],
-    related: ['base64-encoder', 'json-formatter', 'uuid-generator', 'password-generator'],
+    related: ['base64-encoder', 'json-formatter', 'uuid-generator', 'password-generator', 'url-encoder'],
     updated: '2026-09-03',
   },
   {
@@ -350,7 +382,7 @@ export const developerTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'UUID Generator: v4, v7, NanoID',
     metaDescription:
-      "Generate version 4 and version 7 UUIDs in bulk, or a NanoID or ObjectId, using your browser's own cryptographic random source.",
+      'A UUID generator for version 4 and version 7 in bulk, plus NanoID and ObjectId, using your browser’s own cryptographic random source. Free and unlimited.',
     primaryKeyword: 'uuid generator',
     secondaryKeywords: [
       'v4 uuid',
@@ -426,6 +458,14 @@ export const developerTools: Tool[] = [
         q: 'Are the ids generated on a server?',
         a: 'No. They are produced in your tab by your own browser, so no list of them exists anywhere and none of them has been transmitted. That also means a v7 timestamp reflects your device clock.',
       },
+      {
+        q: 'Is the UUID generator free, and how many can I generate?',
+        a: 'Free, and as many as you want in a sitting. There is no daily allowance, because nothing identifies you between visits — the only limit is how many your browser will write into the box at once.',
+      },
+      {
+        q: 'Do I need an account, and are the UUIDs generated on a server?',
+        a: 'No account, and no. They come from your browser’s cryptographic random source in the page, which means nobody else has ever seen the identifiers you just produced — not a log file, not a queue, not us.',
+      },
     ],
     content: [
       {
@@ -460,7 +500,7 @@ export const developerTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'URL Encoder and Decoder',
     metaDescription:
-      'Percent-encode text, decode a URL, or inspect an address parameter by parameter. Explains the difference between encoding a value and encoding a whole link.',
+      'A URL encoder and decoder that also inspects an address parameter by parameter. Explains the difference between encoding a value and encoding a whole link.',
     primaryKeyword: 'url encoder',
     secondaryKeywords: [
       'url decode',
@@ -529,6 +569,14 @@ export const developerTools: Tool[] = [
       {
         q: 'Does this work with non-English text?',
         a: 'Yes. Text is converted to UTF-8 bytes and each byte is percent-encoded, which is the standard behaviour — so a single accented letter usually becomes two escapes and an emoji becomes four.',
+      },
+      {
+        q: 'Is it free, and is there a limit on the URL encoder?',
+        a: 'Free with no limit and no watermark. Encode, decode and inspect as many addresses as you want; nothing is counted and there is no paid tier that unlocks longer input.',
+      },
+      {
+        q: 'Do I need an account, and is the address uploaded?',
+        a: 'No account, and nothing is submitted. URLs carry session tokens, signed links and tracking parameters in their query strings, so the encoding and the inspection both happen in the page and no address is logged.',
       },
     ],
     content: [

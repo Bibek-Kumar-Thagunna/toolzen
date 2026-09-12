@@ -281,6 +281,91 @@ function checkToolCoverage() {
   }
 }
 
+/**
+ * ============================================================================
+ * THE PRIVACY CLAIMS, ENFORCED
+ * ============================================================================
+ * /privacy tells people three things that are properties of the code rather
+ * than promises about our conduct: files are not uploaded, passwords are never
+ * transmitted, and passwords are never stored. A privacy policy that has
+ * drifted from the software is worse than none, because people have relied on
+ * it — so the claims are checked here instead of being maintained by memory.
+ *
+ * ── Network ───────────────────────────────────────────────────────────────
+ * No tool engine and no tool component may reference an API that can send
+ * data off the device. This is what makes "there is no endpoint that receives
+ * your file" a fact about the repository rather than an assurance: a tool that
+ * acquired one would fail the build before it could ship.
+ *
+ * ── Storage, for the locking tools only ───────────────────────────────────
+ * Narrower on purpose. Other tools legitimately remember a preference in local
+ * storage, and saying otherwise would be the drift this check exists to stop.
+ * The locking tools are different: the page says a password is never written
+ * anywhere, and a "remember this password" convenience added in good faith two
+ * years from now would quietly make that false.
+ *
+ * ── Comments are stripped first ───────────────────────────────────────────
+ * Every one of these words appears in the prose above and in the module
+ * headers, which explain at length why the code does not use them. Scanning
+ * raw source would flag the explanations along with the violations, and a
+ * check that cries wolf gets deleted.
+ * ============================================================================
+ */
+const NETWORK_APIS = [
+  ['fetch', /(?<![.\w])fetch\s*\(/],
+  ['XMLHttpRequest', /\bXMLHttpRequest\b/],
+  ['WebSocket', /\bWebSocket\b/],
+  ['EventSource', /\bEventSource\b/],
+  ['navigator.sendBeacon', /\bsendBeacon\b/],
+];
+
+const STORAGE_APIS = [
+  ['localStorage', /\blocalStorage\b/],
+  ['sessionStorage', /\bsessionStorage\b/],
+  ['indexedDB', /\bindexedDB\b/i],
+  ['document.cookie', /document\s*\.\s*cookie\b/],
+];
+
+/** Source with comments and string literals removed, so only real code is scanned. */
+function codeOnly(src) {
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
+    .replace(/'(?:[^'\\\n]|\\.)*'/g, "''")
+    .replace(/"(?:[^"\\\n]|\\.)*"/g, '""');
+}
+
+function checkPrivacyClaims(file, src) {
+  const relative = file.slice(root.length + 1);
+  const isTool =
+    relative.startsWith('src/lib/tools/') || relative.startsWith('src/components/tools/');
+  const isLocking =
+    relative.startsWith('src/lib/tools/secure/') ||
+    relative.startsWith('src/lib/crypto/') ||
+    /\/(LockFilesTool|UnlockFileTool)\.tsx$/.test(relative);
+  if (!isTool && !isLocking) return;
+  if (relative.endsWith('.test.ts') || relative.endsWith('.test.tsx')) return;
+
+  const code = codeOnly(src);
+  for (const [name, pattern] of NETWORK_APIS) {
+    if (pattern.test(code)) {
+      fail(
+        file,
+        `uses ${name}. Tools are declared as processed in the browser, and /privacy says so — a tool that sends data off the device makes that page a lie`,
+      );
+    }
+  }
+  if (!isLocking) return;
+  for (const [name, pattern] of STORAGE_APIS) {
+    if (pattern.test(code)) {
+      fail(
+        file,
+        `uses ${name}. /privacy states that a password is never written to storage of any kind, including on the user's own device`,
+      );
+    }
+  }
+}
+
 const files = walk(join(root, 'src')).filter((file) => /\.tsx?$/.test(file));
 
 for (const file of files) {
@@ -296,6 +381,7 @@ for (const file of files) {
   }
   for (const match of src.matchAll(EXPORT_STAR)) checkEdge(file, match[1], [], false);
   checkClientBoundary(file);
+  checkPrivacyClaims(file, src);
 }
 
 checkToolCoverage();

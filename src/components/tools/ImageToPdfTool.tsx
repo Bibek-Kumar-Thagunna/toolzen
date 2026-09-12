@@ -48,6 +48,7 @@ import { brand } from '@/lib/brand';
 import { humanBytes } from '@/lib/files/bytes';
 import { downloadBytes } from '@/lib/files/download';
 import { safeBaseName } from '@/lib/files/name';
+import type { AcceptSpec } from '@/lib/registry/types';
 import { RASTER_IMAGES_MANY } from '@/lib/tools/accepts';
 import { decodeImage, readPixels } from '@/lib/tools/image/codec';
 import { sniffImage } from '@/lib/tools/image/format';
@@ -68,6 +69,22 @@ import {
 } from '@/lib/tools/pdf/writer';
 
 const SLUG = 'image-to-pdf';
+
+/**
+ * The variants.
+ *
+ * `jpg-to-pdf` and `png-to-pdf` are separate searches from "image to pdf" and
+ * separate pages, and they are separate *tools* rather than the same tool with
+ * different words on it: each accepts only its own format. That is not an SEO
+ * device. A page that says "JPG to PDF" and then silently accepts a WebP has
+ * lied about what it does, and the narrower dropzone is genuinely better for
+ * someone who has a folder of scans and wants the odd screenshot rejected
+ * rather than quietly included.
+ */
+export interface ImageToPdfProps {
+  slug?: string;
+  accept?: AcceptSpec;
+}
 
 const PAGE_CHOICES: { value: PageSizeName; label: string }[] = [
   { value: 'a4', label: 'A4 — 210 × 297 mm' },
@@ -91,23 +108,23 @@ interface PdfOutput {
   name: string;
 }
 
-export function ImageToPdfTool() {
+export function ImageToPdfTool({ slug = SLUG, accept = RASTER_IMAGES_MANY }: ImageToPdfProps = {}) {
   const [files, setFiles] = useState<File[]>([]);
   const [pageSize, setPageSize] = useState<PageSizeName>('a4');
   const [orientation, setOrientation] = useState<Orientation>('auto');
   const [fit, setFit] = useState<ImageFit>('contain');
   const [marginMm, setMarginMm] = useState(10);
 
-  const run = useToolRun<PdfOutput>(SLUG);
-  const markStarted = useToolStarted(SLUG);
+  const run = useToolRun<PdfOutput>(slug);
+  const markStarted = useToolStarted(slug);
 
   const addFiles = useCallback(
     (incoming: File[]) => {
       markStarted();
-      setFiles((previous) => [...previous, ...incoming].slice(0, RASTER_IMAGES_MANY.maxFiles));
+      setFiles((previous) => [...previous, ...incoming].slice(0, accept.maxFiles));
       run.reset();
     },
-    [markStarted, run],
+    [accept.maxFiles, markStarted, run],
   );
 
   const move = useCallback(
@@ -257,8 +274,8 @@ export function ImageToPdfTool() {
       }
     >
       <FileDropzone
-        slug={SLUG}
-        accept={RASTER_IMAGES_MANY}
+        slug={slug}
+        accept={accept}
         existing={files.length}
         disabled={run.busy}
         onFiles={addFiles}
@@ -415,7 +432,7 @@ export function ImageToPdfTool() {
 
       {run.result ? (
         <ToolResult
-          slug={SLUG}
+          slug={slug}
           title="PDF ready"
           summary={
             <>

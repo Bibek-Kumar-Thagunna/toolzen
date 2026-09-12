@@ -1,7 +1,9 @@
 import type { Tool } from '../types';
 import {
   JPG_ONLY,
+  JPG_ONLY_MANY,
   PNG_ONLY,
+  PNG_ONLY_MANY,
   RASTER_IMAGES,
   RASTER_IMAGES_MANY,
   WEBP_ONLY,
@@ -22,14 +24,15 @@ export const imageTools: Tool[] = [
     slug: 'image-compressor',
     name: 'Image Compressor',
     h1: 'Compress images online',
-    tagline: 'Get a photo small enough to upload or email without it looking obviously degraded.',
+    tagline:
+      'Compress an image small enough to upload or email, without it looking obviously degraded.',
     category: 'image',
     icon: 'compress',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'Compress Images — JPG, PNG and WebP',
     metaDescription:
-      'Compress JPG, PNG and WebP images with a quality slider and a before-and-after size readout. Everything happens in your browser, nothing is uploaded.',
+      'Compress images — JPG, PNG and WebP — with a quality slider and a before-and-after size readout. Runs in your browser, so nothing is uploaded.',
     primaryKeyword: 'compress image',
     secondaryKeywords: [
       'compress jpg',
@@ -110,6 +113,14 @@ export const imageTools: Tool[] = [
         q: 'Is any part of the image uploaded?',
         a: 'No. There is no upload endpoint behind this page. The file is read into memory, drawn to a canvas and encoded on your own device, and closing the tab is the deletion step.',
       },
+      {
+        q: 'Is the compressor free, and does it watermark the image?',
+        a: 'It is free with no watermark, no stamp in the corner and no reduced-quality “preview” version. Sites that watermark a compressed photo are selling you the removal of their own damage. The file you download is your picture, smaller, and nothing else has been done to it.',
+      },
+      {
+        q: 'Do I need an account, and how many photos can I do at once?',
+        a: 'No account, no email address and no daily quota. Twenty images per batch is the only ceiling, and it exists because twenty large photos is roughly what a phone can decode at once without the tab being killed — not because a paid tier does thirty.',
+      },
     ],
     content: [
       {
@@ -136,7 +147,7 @@ export const imageTools: Tool[] = [
         ],
       },
     ],
-    related: ['image-resizer', 'png-to-webp', 'image-to-pdf', 'png-to-jpg'],
+    related: ['image-resizer', 'png-to-webp', 'image-to-pdf', 'png-to-jpg', 'webp-to-jpg', 'images-to-pptx', 'compress-jpeg'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -144,7 +155,8 @@ export const imageTools: Tool[] = [
     slug: 'image-resizer',
     name: 'Image Resizer',
     h1: 'Resize images online',
-    tagline: 'Hit an exact pixel size — or a whole set of them — without softening the picture.',
+    tagline:
+      'Resize an image to an exact pixel size — or a whole set of them — without softening the picture.',
     category: 'image',
     icon: 'maximize',
     surface: 'files',
@@ -224,6 +236,14 @@ export const imageTools: Tool[] = [
         q: 'Will an animated GIF still animate?',
         a: 'No. Only the first frame is drawn, so the output is a still image in JPG, PNG or WebP.',
       },
+      {
+        q: 'Is resizing free, and will it add a watermark?',
+        a: 'Free, and nothing is drawn onto the picture. The output is your image at the pixel dimensions you asked for. A resizer that brands the result has resized it and then damaged it, which is a strange thing to charge for removing.',
+      },
+      {
+        q: 'Do I have to sign up, and is my photo uploaded?',
+        a: 'Neither. There is no sign-up form on this site, and the resize happens in the tab using the same drawing code your browser uses for every image on every page. Switch off your internet connection and the tool still works, which is the simplest way to confirm it.',
+      },
     ],
     content: [
       {
@@ -249,7 +269,7 @@ export const imageTools: Tool[] = [
         ],
       },
     ],
-    related: ['image-compressor', 'image-cropper', 'png-to-webp', 'image-to-pdf'],
+    related: ['image-compressor', 'image-cropper', 'png-to-webp', 'image-to-pdf', 'images-to-pptx', 'compress-jpeg'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -257,14 +277,15 @@ export const imageTools: Tool[] = [
     slug: 'image-cropper',
     name: 'Image Cropper',
     h1: 'Crop images online',
-    tagline: 'Trim a picture to the part that matters, at a ratio the destination will accept.',
+    tagline:
+      'Crop an image down to the part that matters, at a ratio the destination will accept.',
     category: 'image',
     icon: 'crop',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'Crop Images Online',
     metaDescription:
-      'Crop a photo by dragging a selection box, with locked ratios for 1:1, 4:3, 16:9 and more. Live pixel readout, and the file never leaves your device.',
+      'Crop images by dragging a selection box, with locked ratios for 1:1, 4:3, 16:9 and more. Live pixel readout, and the file never leaves your device.',
     primaryKeyword: 'crop image',
     secondaryKeywords: [
       'crop a photo',
@@ -335,6 +356,14 @@ export const imageTools: Tool[] = [
         q: 'Can I crop several images to the same ratio?',
         a: 'Load up to twenty and crop them one after another. Each needs its own selection, because the interesting part of a photograph is not in the same place twice.',
       },
+      {
+        q: 'Is the cropper free, and is there a watermark on the result?',
+        a: 'Free, and no. What comes back is the rectangle you selected, at full resolution, with nothing overlaid. The crop is a straight pixel copy out of the original, so the cropped region is bit-for-bit what it was inside the larger picture.',
+      },
+      {
+        q: 'Do I need an account, and does my picture get uploaded?',
+        a: 'No account and no upload. The selection rectangle is drawn over a preview in the page and the cut is made on your device, so a photo you are cropping a face or a document out of never reaches a server at any point.',
+      },
     ],
     content: [
       {
@@ -351,6 +380,14 @@ export const imageTools: Tool[] = [
           'If the goal is a specific file size, crop for composition and then resize or compress for weight. Trying to reach a byte target by cropping alone means throwing away parts of the picture you wanted to keep.',
         ],
       },
+      {
+        heading: 'Cropping is not the same as hiding',
+        body: [
+          'A crop removes pixels. That sounds obvious, and it is worth saying because the two operations people confuse it with do not: drawing a black box over a face leaves the face in the file underneath the box, and scaling a picture down leaves every part of it in frame. If the point is that nobody should ever see part of a photograph, the crop is the operation that achieves it, and the cropped file is the one to send.',
+          'The opposite mistake is cropping when you meant to resize. A crop of a 4000-pixel photo down to a 1000-pixel square is a thousand pixels of the original, at original quality, with the rest gone. A resize to 1000 pixels keeps the whole scene and throws away detail everywhere. Neither is better; they answer different questions, and the give-away is whether you care about the composition or the file size.',
+          'One thing a crop does not remove is the metadata. Location, camera and timestamp live in their own section of the file and survive being cut down, so a cropped holiday photo can still say where it was taken.',
+        ],
+      },
     ],
     related: ['image-resizer', 'image-compressor', 'jpg-to-png', 'image-to-pdf'],
     updated: '2026-09-03',
@@ -359,7 +396,8 @@ export const imageTools: Tool[] = [
     slug: 'jpg-to-png',
     name: 'JPG to PNG',
     h1: 'Convert JPG to PNG',
-    tagline: 'Get a lossless copy of a photo for editing, layering or a tool that insists on PNG.',
+    tagline:
+      'Convert JPG to PNG for a lossless copy you can edit, layer, or feed to a tool that insists on it.',
     category: 'image',
     icon: 'swap',
     surface: 'files',
@@ -436,6 +474,18 @@ export const imageTools: Tool[] = [
         q: 'Is there a file size limit?',
         a: 'Thirty megabytes per file, twenty files per batch, and about 67 megapixels per image — the last one is a browser canvas ceiling rather than a policy, and exceeding it can produce a blank result on mobile.',
       },
+      {
+        q: 'Is JPG to PNG conversion free, and does it watermark the PNG?',
+        a: 'Free, unwatermarked, and unlimited. Adding a mark to a converted file would be particularly pointless here — the whole reason to convert to PNG is to get a lossless copy to keep editing, and a watermark is a permanent edit somebody else made.',
+      },
+      {
+        q: 'Do I need to register, and is there a size limit?',
+        a: 'No registration and no email. Thirty megabytes per file and twenty files at a time, which is a memory limit rather than a business one: the conversion decodes the whole picture into the tab, and a hundred-megapixel scan is where a phone runs out of room.',
+      },
+      {
+        q: 'Is my JPG uploaded to convert it?',
+        a: 'No. Your browser already contains a JPEG decoder and a PNG encoder — they are what render and save images on every site you visit — so the conversion is a local operation and no request is made. Disconnect from the internet and it still runs.',
+      },
     ],
     content: [
       {
@@ -452,15 +502,24 @@ export const imageTools: Tool[] = [
           'So JPEG to PNG is a conversion for a purpose, not a default. If the file is headed for a website or an email, going the other way — or to WebP — will serve you better. If it is headed into an editing pipeline or a tool that only reads PNG, the extra bytes are the price of admission.',
         ],
       },
+      {
+        heading: 'What converting to PNG does and does not recover',
+        body: [
+          'It is easy to read “losslessy” as “better”, and for this direction it does not mean that. A JPEG has already thrown detail away: its encoder decided which parts of the picture a person was least likely to miss and discarded them, and that decision is baked into the file. Converting to PNG preserves the result of that decision perfectly, but it does not undo it — no format can reconstruct detail that is no longer there, and any tool claiming to is inventing pixels.',
+          'What you gain is a file that stops degrading. Every time a JPEG is opened, edited and saved it goes through the encoder again, and the damage accumulates — which is why a meme that has been through a dozen phones looks the way it does. A PNG saved from that JPEG will look identical to the JPEG forever, however many times you edit and re-save it.',
+          'So the conversion is worth doing when the file is about to be worked on: annotated, composited, cut out, or passed between people who will each re-save it. It is not worth doing to a photograph you are simply going to store or send, where the PNG will be several times larger for no visible gain.',
+        ],
+      },
     ],
-    related: ['png-to-jpg', 'image-compressor', 'png-to-webp', 'image-to-pdf'],
+    related: ['png-to-jpg', 'image-compressor', 'png-to-webp', 'image-to-pdf', 'webp-to-jpg', 'webp-to-png'],
     updated: '2026-09-03',
   },
   {
     slug: 'png-to-jpg',
     name: 'PNG to JPG',
     h1: 'Convert PNG to JPG',
-    tagline: 'Turn a heavy PNG into a photo-sized JPG, and decide what fills the transparent parts.',
+    tagline:
+      'Convert PNG to JPG to turn a heavy file photo-sized, and decide what fills the transparent parts.',
     category: 'image',
     icon: 'swap',
     surface: 'files',
@@ -538,6 +597,18 @@ export const imageTools: Tool[] = [
         q: 'What are the limits?',
         a: 'Thirty megabytes per file, twenty files at a time, and roughly 67 megapixels per image before the browser’s own canvas ceiling becomes a problem.',
       },
+      {
+        q: 'Is it free, and is the JPG watermarked?',
+        a: 'Free and clean. The JPEG your browser writes is the only thing you get back, with no corner logo and no banner across the middle. Quality is yours to set rather than being throttled to push you towards a paid plan.',
+      },
+      {
+        q: 'Any sign-up, and is there a cap on how many I can convert?',
+        a: 'No sign-up. Twenty files per batch, repeated as often as you like — nothing counts how many batches you have run, because nothing on this site knows who you are. The per-file ceiling is thirty megabytes.',
+      },
+      {
+        q: 'Does my PNG get sent anywhere?',
+        a: 'No. Your browser decodes the PNG and re-encodes it as a JPEG in the page. There is no upload step in the code, which is why the conversion starts the instant you drop the file rather than after a progress bar and a queue.',
+      },
     ],
     content: [
       {
@@ -554,15 +625,24 @@ export const imageTools: Tool[] = [
           'The opposite holds for anything with text, sharp edges or flat colour. There, JPEG spends bytes fighting the edges and leaves visible fringing, and you are better off compressing the PNG or moving to WebP, which handles both photographs and graphics without the trade.',
         ],
       },
+      {
+        heading: 'The two things that go wrong converting PNG to JPG',
+        body: [
+          'The first is transparency. PNG can store a transparent background; JPEG cannot, at all, in any variant. So every transparent pixel has to become some actual colour, and the only question is which one. Left to a default that colour is usually white, which is invisible on a white page and glaringly obvious on a dark one — the classic logo-with-a-white-box problem. Picking the background deliberately, to match wherever the image will sit, is the whole fix.',
+          'The second is what the picture contains. JPEG compresses by discarding fine detail, and in a photograph the fine detail is texture nobody was looking at. In a screenshot, a diagram or a logo, the fine detail is the edges of letters and shapes — so those come out with a faint grey halo around every character, at any quality setting below the point where the file stops being smaller than the PNG.',
+          'The practical rule: convert photographs and leave flat graphics alone. If a PNG of a screenshot is too large, the answer is usually colour reduction rather than JPEG, because a screenshot has few enough distinct colours to compress enormously as an indexed PNG.',
+        ],
+      },
     ],
-    related: ['jpg-to-png', 'png-to-webp', 'image-compressor', 'image-to-pdf'],
+    related: ['jpg-to-png', 'png-to-webp', 'image-compressor', 'image-to-pdf', 'compress-jpeg'],
     updated: '2026-09-03',
   },
   {
     slug: 'png-to-webp',
     name: 'PNG to WebP',
     h1: 'Convert PNG to WebP',
-    tagline: 'Keep the transparency and lose most of the weight, for pages that load quickly.',
+    tagline:
+      'Convert PNG to WebP: keep the transparency, lose most of the weight, and load pages faster.',
     category: 'image',
     icon: 'swap',
     surface: 'files',
@@ -639,6 +719,14 @@ export const imageTools: Tool[] = [
         q: 'What happens to the PNG metadata?',
         a: 'It is not carried over. The WebP is encoded from decoded pixels, so embedded text chunks and colour profile information do not make the trip.',
       },
+      {
+        q: 'Is PNG to WebP free, and does it leave a watermark?',
+        a: 'Free, and the WebP is unmarked. This matters more than usual for this conversion: people convert to WebP to put images on a website, and a watermarked asset is unusable for that, which is exactly why some converters add one.',
+      },
+      {
+        q: 'Do I need an account, and how many can I convert at once?',
+        a: 'No account of any kind. Twenty files a batch, as many batches as you want. If you are converting a whole site’s worth of images, run them in twenties — nothing is counting, and nothing expires.',
+      },
     ],
     content: [
       {
@@ -655,22 +743,31 @@ export const imageTools: Tool[] = [
           'For a website, the practical order is resize to the largest size you will actually display, then convert, then check the number. Serving a 3000 px image scaled down in the page wastes far more bytes than any format choice can recover.',
         ],
       },
+      {
+        heading: 'When WebP is worth the switch, and when it is not',
+        body: [
+          'WebP exists for one reason: to make images on web pages smaller than PNG and JPEG at the same visible quality, and it succeeds — typically by a quarter to a third against PNG for photographs, and rather more for flat graphics. On a page with twenty images that is the difference between a site that feels instant and one that does not, which is why it has become the default output of most build pipelines.',
+          'It is the wrong choice everywhere else. WebP is a web format, and support outside the browser is still patchy: plenty of desktop software, print workflows, older phones and document templates will refuse a .webp or show nothing. An image that has to be emailed, printed, put in a Word document or handed to a designer should stay a PNG or a JPEG.',
+          'There is also a decision inside the conversion itself. Lossless WebP is a smaller PNG and nothing is lost; lossy WebP is much smaller still and works like JPEG, with the same caution about text and sharp edges. For a photograph on a website, lossy at a high quality setting is almost always the right answer; for a logo with transparency, lossless is.',
+        ],
+      },
     ],
-    related: ['image-compressor', 'png-to-jpg', 'image-resizer', 'jpg-to-png'],
+    related: ['image-compressor', 'png-to-jpg', 'image-resizer', 'jpg-to-png', 'webp-to-png'],
     updated: '2026-09-03',
   },
   {
     slug: 'webp-to-jpg',
     name: 'WebP to JPG',
     h1: 'Convert WebP to JPG',
-    tagline: 'Turn a file nothing will open into one everything will.',
+    tagline:
+      'Convert WebP to JPG — a file nothing will open becomes one everything will.',
     category: 'image',
     icon: 'swap',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'WebP to JPG Converter',
     metaDescription:
-      'Convert WebP images to JPG in your browser, with a background colour for transparent areas. No upload, no watermark, up to 20 files at a time.',
+      'Convert WebP to JPG in your browser, with a background colour for transparent areas. No upload, no watermark, up to 20 files at a time.',
     primaryKeyword: 'webp to jpg',
     secondaryKeywords: [
       'convert webp to jpeg',
@@ -741,6 +838,14 @@ export const imageTools: Tool[] = [
         q: 'How many can I convert at once?',
         a: 'Twenty files of up to 30 MB each per batch. The practical limit before that is your device: everything is decoded in one browser tab, and a phone has far less room than a laptop.',
       },
+      {
+        q: 'Is it free, and will the JPG have a watermark?',
+        a: 'Free, no watermark, no account. You are usually here because something saved a WebP that another program refuses to open, and handing back a marked-up JPEG would solve one problem by creating a worse one.',
+      },
+      {
+        q: 'Is there a limit, and is the file uploaded?',
+        a: 'Twenty files per batch at thirty megabytes each, and nothing is uploaded — your browser already knows how to decode WebP, which is the only reason this conversion can happen locally at all.',
+      },
     ],
     content: [
       {
@@ -759,6 +864,14 @@ export const imageTools: Tool[] = [
           'So the fill is a visible choice here. White suits almost everything; pick the page colour if the image is going onto a coloured background, and if the answer is "it must stay transparent", the conversion you want is WebP to PNG.',
         ],
       },
+      {
+        heading: 'You are probably here because something refused to open the file',
+        body: [
+          'That is the usual reason for this conversion, and it is worth knowing why it happens. WebP is a web format: browsers all support it, and a great deal of other software does not. Save an image from a website today and there is a good chance it lands as a .webp, at which point the photo printing service, the older version of Photoshop, the council’s upload form or the document template all decline it.',
+          'Converting to JPEG solves that, because JPEG is the most widely supported image format there has ever been — there is essentially no software that reads images and cannot read a JPEG. The cost is a second round of lossy compression on a picture that has already had one, so some detail goes. At a high quality setting the loss is not visible; at a low one it compounds with the first round and shows.',
+          'Two things to watch. If the WebP has a transparent background, that transparency has to become a solid colour, so choose one that matches where the picture will sit. And if the image is a screenshot or a graphic rather than a photograph, converting to PNG instead avoids the halos that JPEG puts around text.',
+        ],
+      },
     ],
     related: ['webp-to-png', 'png-to-webp', 'image-compressor', 'png-to-jpg'],
     isNew: true,
@@ -768,14 +881,15 @@ export const imageTools: Tool[] = [
     slug: 'webp-to-png',
     name: 'WebP to PNG',
     h1: 'Convert WebP to PNG',
-    tagline: 'Keep the transparency, and get a file every program understands.',
+    tagline:
+      'Convert WebP to PNG: keep the transparency, and get a file every program understands.',
     category: 'image',
     icon: 'swap',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'WebP to PNG Converter',
     metaDescription:
-      'Convert WebP images to PNG with transparency intact. Runs in your browser — no upload, no watermark, up to 20 files at a time.',
+      'Convert WebP to PNG with transparency intact. Runs in your browser — no upload, no watermark, no sign-up, up to 20 files at a time.',
     primaryKeyword: 'webp to png',
     secondaryKeywords: [
       'convert webp to png',
@@ -843,7 +957,15 @@ export const imageTools: Tool[] = [
       },
       {
         q: 'Are my images uploaded anywhere?',
-        a: 'No. The conversion happens in your browser using its own image encoder. Closing the tab is the deletion step.',
+        a: 'No. Your browser already decodes WebP — that is how it displays them on the sites that serve them — and it already writes PNG, so both halves of this conversion are things it does natively. There is no request in the code and no endpoint to receive one.',
+      },
+      {
+        q: 'Is WebP to PNG free, and is the PNG watermarked?',
+        a: 'Free and unwatermarked. The PNG is a lossless copy of what the WebP decoded to, which is the point of choosing PNG as the target, and a watermark would be a permanent change to an image you converted specifically to preserve.',
+      },
+      {
+        q: 'Do I need to sign up, and how many files at a time?',
+        a: 'No sign-up, no email, no limit on how often. Twenty files per batch, thirty megabytes each — both are about what a browser tab can hold rather than a tier you can pay to raise.',
       },
     ],
     content: [
@@ -871,15 +993,15 @@ export const imageTools: Tool[] = [
   {
     slug: 'images-to-pptx',
     name: 'Images to PowerPoint',
-    h1: 'Convert images to PowerPoint',
+    h1: 'Convert images to PPT or PPTX',
     tagline: 'Turn a set of pictures into a .pptx deck you can open in PowerPoint, Keynote or Slides.',
     category: 'image',
     icon: 'presentation',
     surface: 'files',
     processing: 'browser',
-    metaTitle: 'Images to PowerPoint (PPTX)',
+    metaTitle: 'Images to PPT — PowerPoint Deck',
     metaDescription:
-      'Turn JPG and PNG images into a PowerPoint deck, one picture per slide, in 16:9 or 4:3. The pictures are copied in untouched and nothing is uploaded.',
+      'Turn images to PPT in one step: JPG and PNG become a PowerPoint deck, one picture per slide, in 16:9 or 4:3. Nothing is uploaded and nothing re-encoded.',
     primaryKeyword: 'images to ppt',
     secondaryKeywords: [
       'jpg to ppt',
@@ -952,7 +1074,15 @@ export const imageTools: Tool[] = [
       },
       {
         q: 'Are my pictures uploaded to a server?',
-        a: 'No. The .pptx is built in your browser and handed straight to your downloads folder. Closing the tab is the deletion step.',
+        a: 'No. The package is assembled in the tab, entry by entry, and handed straight to your downloads folder. A deck of internal screenshots or customer photographs is exactly the sort of thing that should not pass through anyone else’s machine on the way to being a presentation.',
+      },
+      {
+        q: 'Is it free, and does the deck come with a watermark slide?',
+        a: 'Free, and there is no watermark on the slides and no extra slide advertising this site at the end. That last one is worth checking elsewhere: a deck that opens with somebody else’s logo is not something you can put in front of a room.',
+      },
+      {
+        q: 'Do I need an account, and how many pictures can go in?',
+        a: 'No account and no email address. Fifty images per deck, thirty megabytes each. The ceiling is memory rather than policy — every picture is held in the tab while the package is assembled.',
       },
     ],
     content: [
@@ -974,6 +1104,228 @@ export const imageTools: Tool[] = [
       },
     ],
     related: ['image-to-pdf', 'image-compressor', 'image-resizer', 'pdf-to-pptx'],
+    isNew: true,
+    updated: '2026-09-12',
+  },
+  {
+    slug: 'compress-jpeg',
+    name: 'Compress JPEG',
+    h1: 'Compress JPEG files',
+    tagline: 'Compress a JPEG down to a size you can send, with the quality slider that actually governs it.',
+    category: 'image',
+    icon: 'compress',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'Compress JPEG — Free, No Watermark',
+    metaDescription:
+      'Compress JPEG photos in your browser with a real quality slider and a before-and-after size readout. No upload, no watermark, no sign-up, up to 20 at once.',
+    primaryKeyword: 'compress jpeg',
+    secondaryKeywords: [
+      'compress jpg',
+      'reduce jpeg file size',
+      'jpeg optimizer',
+      'make a photo smaller',
+      'jpg quality slider',
+    ],
+    synonyms: [
+      'shrink a jpeg',
+      'jpg compressor',
+      'reduce photo size',
+      'compress jpg online',
+      'lower jpeg quality',
+      'make jpeg smaller for email',
+      'optimise jpeg for web',
+    ],
+    accepts: JPG_ONLY,
+    howTo: {
+      title: 'How to compress a JPEG',
+      steps: [
+        'Drop in your JPEGs — up to twenty at a time.',
+        'Set the quality. 75 to 85 is the range where the saving is large and the loss is invisible.',
+        'Check the before-and-after figures for each file before you commit.',
+        'Download them one at a time, or all together as a zip.',
+      ],
+    },
+    features: [
+      {
+        title: 'One slider, because that is the whole mechanism',
+        body: 'JPEG compression works by discarding detail, and the quality number decides how much. There is nothing else to tune that makes a real difference, so the page does not pretend otherwise with a row of switches that change nothing.',
+      },
+      {
+        title: 'The size is shown before you commit',
+        body: 'Each file reports what it was and what it became, per image rather than as a total. A batch average hides the one photo that barely moved, which is the one you actually needed to know about.',
+      },
+      {
+        title: 'A file that got bigger is never handed back',
+        body: 'Re-encoding an already-heavily-compressed JPEG can produce a larger file. When that happens your original is kept and the page says so, rather than handing you a "compressed" photo that grew.',
+      },
+      {
+        title: 'Only JPEGs, on purpose',
+        body: 'The dropzone refuses anything else. A PNG needs a completely different treatment — see the PNG compressor — and quietly accepting one here would mean running the wrong operation on it.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'Your browser already contains a JPEG encoder, because it needs one to save images. The compression uses it, in the tab, which is why the work starts instantly and why the photographs never travel.',
+      },
+    ],
+    faq: [
+      {
+        q: 'What quality should I choose?',
+        a: '75 to 85 for almost everything. Below about 70 the artefacts start to show around edges and in flat areas of sky; above about 90 the file grows quickly for a difference nobody can see. At 100 you will often get a file larger than the one you started with, because the encoder is being asked to preserve noise.',
+      },
+      {
+        q: 'Does compressing a JPEG twice make it worse?',
+        a: 'Yes, and this is worth understanding. Every JPEG encode throws detail away, and the losses accumulate — a photo compressed five times looks visibly degraded even if each step used a high quality setting. Always compress from the original rather than from a previously compressed copy.',
+      },
+      {
+        q: 'Why did my photo barely get smaller?',
+        a: 'Because it was already compressed. A photo straight off a phone has usually been through a JPEG encoder at a high quality setting, and one that came out of a messaging app has been through one at a low setting. The second has almost nothing left to remove, and the page will tell you so instead of pretending.',
+      },
+      {
+        q: 'Is compressing JPEG free, and is there a watermark?',
+        a: 'Free, with no watermark, no corner logo and no reduced-size preview you have to pay to unlock. A compressor that brands the photo has damaged it and is charging you to undo the damage.',
+      },
+      {
+        q: 'Do I need an account, and how many can I do at once?',
+        a: 'Nothing is asked for. Twenty photos go through at a time at 30 MB apiece, and the batch count is not tracked because nothing here remembers you between one visit and the next.',
+      },
+      {
+        q: 'Does it strip the location data from my photos?',
+        a: 'Re-encoding drops the metadata block, so the compressed copy does not carry the camera model, the timestamp or the GPS coordinates the original did. That is usually what you want before posting a photo, but it means the compressed file is not a full replacement for the original if you keep an archive.',
+      },
+      {
+        q: 'Is my photo uploaded to compress it?',
+        a: 'No. The JPEG encoder doing the work is the one built into your browser — the same code that saves an image when you right-click one. It runs in the tab, which is why compression starts the instant you drop a file instead of after an upload bar and a queue position.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Where the quality number actually bites',
+        body: [
+          'JPEG divides the picture into blocks, converts each into a set of frequency coefficients, and then rounds those coefficients — coarsely at low quality, finely at high. The rounding is where the file size goes, and it is also where the damage goes. High frequencies are rounded hardest, and high frequencies are edges.',
+          'That is why the same quality setting looks different on different pictures. A photograph of a face at quality 70 is fine, because skin and hair are mostly smooth gradients with little high-frequency content. A screenshot of text at quality 70 is visibly wrong, because every letter is an edge and the rounding puts a faint grey halo around all of them.',
+          'The practical rule follows directly: photographs tolerate aggressive compression, and anything with text, line art or hard-edged graphics does not. If your image is the second kind, the right answer is not a higher JPEG quality — it is PNG.',
+        ],
+      },
+      {
+        heading: 'Getting under a specific limit',
+        body: [
+          'Most people arrive here with a number: an upload form that refuses anything over 2 MB, an email that bounces at 25, a job portal that wants a photo under 500 KB. The per-file readout is there for exactly this — set a quality, look at the result, and adjust rather than guessing.',
+          'If the file is still too large at quality 70, the problem is dimensions rather than compression. A 12-megapixel photo has 12 million pixels to encode however hard you squeeze it, and a form that wants 500 KB almost certainly displays the image at a fraction of that size. Resizing to 1600 pixels on the long edge first, then compressing, routinely gets a file a tenth of the size with no visible difference on screen.',
+          'The order matters: resize first, compress second. Compressing and then resizing throws away the detail and then throws away the pixels, which costs quality for no extra saving.',
+        ],
+      },
+    ],
+    related: ['compress-png', 'image-compressor', 'image-resizer', 'jpg-to-png'],
+    isNew: true,
+    updated: '2026-09-12',
+  },
+  {
+    slug: 'compress-png',
+    name: 'Compress PNG',
+    h1: 'Compress PNG files',
+    tagline: 'Compress a PNG by reducing its colours — the only thing that actually shrinks a lossless image.',
+    category: 'image',
+    icon: 'compress',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'Compress PNG — Free, No Watermark',
+    metaDescription:
+      'Compress PNG images in your browser by reducing colours to an indexed palette — often 70-90% smaller. Transparency kept. No upload, no watermark, no sign-up.',
+    primaryKeyword: 'compress png',
+    secondaryKeywords: [
+      'reduce png file size',
+      'png optimizer',
+      'shrink a png',
+      'indexed png',
+      'png colour reduction',
+    ],
+    synonyms: [
+      'png compressor',
+      'make a png smaller',
+      'optimise png for web',
+      'compress screenshot',
+      'reduce png size online',
+      'lossless png compression',
+      'tinypng alternative',
+    ],
+    accepts: PNG_ONLY,
+    howTo: {
+      title: 'How to compress a PNG',
+      steps: [
+        'Drop in your PNGs — up to twenty at a time.',
+        'Turn on colour reduction. This is the control that does the work; the quality slider does nothing to a PNG.',
+        'Pick the number of colours. 256 is invisible on most screenshots; 64 is often invisible on flat graphics.',
+        'Check the per-file saving, then download individually or as a zip.',
+      ],
+    },
+    features: [
+      {
+        title: 'Real compression, not a re-save',
+        body: 'Most browser-based "PNG compressors" draw the image to a canvas and save it again, which typically produces a *larger* file than the one you started with. This one quantises the colours and writes a genuine indexed PNG with its own palette, which is the mechanism that makes a PNG small.',
+      },
+      {
+        title: 'Transparency survives',
+        body: 'Transparent pixels are carried into the palette and written as a tRNS chunk, ordered so it stays short. A logo with a cut-out background comes out with the cut-out intact rather than on a white square.',
+      },
+      {
+        title: 'Dithering, so gradients do not band',
+        body: 'Reducing colours in a gradient normally produces visible stripes. Floyd–Steinberg dithering spreads the error into neighbouring pixels so the eye reads a smooth ramp, which is what makes 64 colours look like thousands.',
+      },
+      {
+        title: 'The quality slider is hidden, because it would lie',
+        body: 'PNG is lossless — there is no quality parameter in the format, and a PNG tool that shows you one is showing you a control that changes nothing. This page shows the control that does.',
+      },
+      {
+        title: 'Only PNGs, on purpose',
+        body: 'The dropzone refuses other formats, because the operation is specific to PNG. A JPEG needs the quality slider and nothing else, which is the other page.',
+      },
+    ],
+    faq: [
+      {
+        q: 'How can a lossless format be compressed at all?',
+        a: 'By reducing how much there is to store rather than by storing it less accurately. A full-colour PNG records three bytes per pixel; an indexed PNG records a palette once and then one small number per pixel. Dropping from 16 million possible colours to 256 typically cuts the file by 70 to 90 per cent, and on a screenshot the result is pixel-for-pixel identical because a screenshot rarely contains 256 distinct colours in the first place.',
+      },
+      {
+        q: 'Will it look worse?',
+        a: 'On screenshots, diagrams, logos and flat illustrations, usually not at all — those images genuinely contain few colours. On photographs saved as PNG it will, because a photograph contains thousands of subtly different shades. If your PNG is a photograph, converting it to JPEG saves far more and looks better than reducing its colours.',
+      },
+      {
+        q: 'Why do other online PNG compressors make my file bigger?',
+        a: 'Because they re-encode through the browser canvas, which always writes a full-colour PNG and often uses a weaker compression setting than whatever produced the original. Handing back a larger file and calling it compressed is common enough to be worth checking for — here, if the result is not smaller, your original is kept and the page says so.',
+      },
+      {
+        q: 'Is compressing PNG free, and does it add a watermark?',
+        a: 'Free, unwatermarked and unlimited. Watermarking a compressed PNG would be especially destructive, since PNGs are usually logos and interface assets going into a design where somebody else\x27s mark is unusable.',
+      },
+      {
+        q: 'Do I need an account, and is there a size limit?',
+        a: 'Nothing to join. Twenty images at a time, 30 MB apiece — a ceiling set by how much decoded bitmap fits in a tab, which for a large PNG is several times the file on disk.',
+      },
+      {
+        q: 'Is my image uploaded?',
+        a: 'No. The quantisation, the dithering and the PNG encoding all run in the page — this tool writes the PNG bytes itself rather than asking the browser to, which is precisely why it can produce an indexed file when the canvas cannot.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why a canvas cannot compress a PNG',
+        body: [
+          'This is worth knowing because it explains most of the disappointing results elsewhere. The browser gives every page a way to draw an image and save it — and for PNG that path writes one specific kind of file: full colour, eight bits per channel, with a fixed compression setting. There is no parameter for palettes, no parameter for bit depth, and no parameter for compression effort.',
+          'So a tool built on that path cannot make a PNG smaller by any mechanism at all. What it can do is make it larger, which is what happens when the original was written by a program that optimised it and the browser rewrites it without those optimisations.',
+          'Producing a genuinely smaller PNG means writing the file format by hand: choosing a palette, mapping every pixel to it, packing the indices at the smallest bit depth that fits, assembling the chunks and deflating the pixel data. That is what happens here, which is why the savings are real.',
+        ],
+      },
+      {
+        heading: 'Choosing a colour count',
+        body: [
+          'Start at 256 and look. A screenshot of an application, a chart, a diagram or a flat illustration will usually be indistinguishable from the original at 256 colours, because it never had more than that — the palette is not throwing anything away, it is just recording it more efficiently.',
+          'Below 256 the file keeps shrinking and the risk rises. 64 colours is often invisible on a logo or a two-tone graphic. 32 will show on anything with a gradient, even with dithering. The per-file size readout is there so you can try one, look at the number, and decide.',
+          'One case to watch: a screenshot containing a photograph, such as a webpage with a hero image in it. The interface part quantises beautifully and the photograph part does not, and the result is a picture where the chrome looks perfect and the photo looks blotchy. Cropping the photo out, or accepting a higher colour count, are both better than splitting the difference.',
+        ],
+      },
+    ],
+    related: ['compress-jpeg', 'image-compressor', 'png-to-jpg', 'png-to-webp'],
     isNew: true,
     updated: '2026-09-12',
   },

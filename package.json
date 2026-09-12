@@ -14,12 +14,13 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types \"src/lib/**/*.test.ts\"",
-    "check": "node scripts/check-integrity.mjs && node scripts/check-icons.mjs && node scripts/check-contrast.mjs",
+    "check": "node scripts/check-integrity.mjs && node scripts/check-icons.mjs && node scripts/check-contrast.mjs && node --experimental-strip-types scripts/check-seo.mjs",
     "verify": "npm run check && npm run test && npm run typecheck && npm run lint && npm run build",
     "postinstall": "node scripts/copy-pdf-worker.mjs",
     "assets": "node scripts/generate-brand-assets.mjs",
     "ads-txt": "node scripts/write-ads-txt.mjs",
-    "build:static": "node scripts/write-ads-txt.mjs && NEXT_OUTPUT=export next build"
+    "build:static": "node scripts/write-ads-txt.mjs && NEXT_OUTPUT=export next build && node scripts/check-export.mjs",
+    "deploy": "NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://thetoolzen.com} npm run build:static && npx wrangler deploy"
   },
   "dependencies": {
     "next": "15.5.25",

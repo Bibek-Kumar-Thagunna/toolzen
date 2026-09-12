@@ -1,5 +1,11 @@
 import type { Tool } from '../types';
-import { PDF_MANY, PDF_ONE, RASTER_IMAGES_MANY } from '../../tools/accepts.ts';
+import {
+  JPG_ONLY_MANY,
+  PDF_MANY,
+  PDF_ONE,
+  PNG_ONLY_MANY,
+  RASTER_IMAGES_MANY,
+} from '../../tools/accepts.ts';
 
 /**
  * Registry entries for the PDF category.
@@ -19,14 +25,15 @@ export const pdfTools: Tool[] = [
     slug: 'image-to-pdf',
     name: 'Image to PDF',
     h1: 'Convert images to PDF',
-    tagline: 'Put a set of photos, scans or screenshots into one PDF that opens the same everywhere.',
+    tagline:
+      'Turn an image to PDF, or a whole set of photos, scans and screenshots into one document.',
     category: 'pdf',
     icon: 'file-pdf',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'Images to PDF — JPG and PNG',
     metaDescription:
-      'Turn JPG and PNG images into one PDF, with A4, Letter or fit-to-image pages. JPEGs are embedded exactly as they are, so nothing is re-compressed.',
+      'Image to PDF in your browser: JPG and PNG become one document, with A4, Letter or fit-to-image pages. JPEGs are embedded exactly as they are.',
     primaryKeyword: 'image to pdf',
     secondaryKeywords: [
       'jpg to pdf',
@@ -105,6 +112,14 @@ export const pdfTools: Tool[] = [
         q: 'Can I set a title and author?',
         a: 'You can, and they are the only descriptive fields written into the file. Leave them empty and the document carries nothing but a producer line.',
       },
+      {
+        q: 'Is it free, and does the PDF get a watermark?',
+        a: 'Free, and no watermark is drawn on any page. This is the conversion where marking is most common elsewhere, because a watermarked PDF is useless for the thing people need one for — sending a document to somebody who will print it.',
+      },
+      {
+        q: 'Do I need an account, and how many images can go in one document?',
+        a: 'No account and no email. Fifty images per batch; the writer itself stops at 500 pages or about 500 MB, with a maximum page edge of 200 inches. Those are the format’s and the browser’s limits, not a plan you can upgrade.',
+      },
     ],
     content: [
       {
@@ -131,7 +146,7 @@ export const pdfTools: Tool[] = [
         ],
       },
     ],
-    related: ['merge-pdf', 'image-compressor', 'image-resizer', 'split-pdf'],
+    related: ['merge-pdf', 'image-compressor', 'image-resizer', 'split-pdf', 'pdf-to-pptx', 'password-protect-files', 'jpg-to-pdf'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -139,14 +154,15 @@ export const pdfTools: Tool[] = [
     slug: 'merge-pdf',
     name: 'Merge PDF',
     h1: 'Merge PDF files',
-    tagline: 'Join several documents into one, in the order you choose, without handing them to anyone.',
+    tagline:
+      'Merge PDF files into one document, in the order you choose, without handing them to anyone.',
     category: 'pdf',
     icon: 'merge',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'Merge PDF Files',
     metaDescription:
-      'Combine PDFs into one file, reorder the pages and drop the ones you do not want. Runs in your browser, so contracts and statements stay on your device.',
+      'Merge PDF files into one document, reorder the pages and drop the ones you do not want. Runs in your browser, so contracts and statements stay put.',
     primaryKeyword: 'merge pdf',
     secondaryKeywords: [
       'combine pdf',
@@ -218,6 +234,22 @@ export const pdfTools: Tool[] = [
         q: 'Are signatures and form fields preserved?',
         a: 'Treat both as unreliable. A digital signature covers one specific file and is invalidated by writing its pages into a new one, and interactive form fields may not survive the copy. Merge first, sign afterwards.',
       },
+      {
+        q: 'Is merging free, and does it stamp the merged file?',
+        a: 'Free, with nothing added to any page. Several well-known merge tools put a line of promotional text on the first page of the output, which means the merged contract you just assembled now advertises somebody else at the top.',
+      },
+      {
+        q: 'Do I need to sign up, and how many documents can I combine?',
+        a: 'No sign-up and no daily count. Twenty documents at up to 100 MB each, which is a real constraint rather than a commercial one: merging has to hold every document open at once, so the ceiling is collective as much as per-file.',
+      },
+      {
+        q: 'Does the merged PDF get a watermark or an extra page?',
+        a: 'Neither. Several well-known merge services add a line of promotional text to the first page or append a page of their own, which means the contract bundle you just assembled now advertises somebody else. Nothing is added here.',
+      },
+      {
+        q: 'Are my documents uploaded to be merged?',
+        a: 'No. Both documents are opened in the tab and the pages are copied from one into the other on your device. Merging is most often done with contracts, invoices and statements — the precise documents that should not be sitting in an upload queue.',
+      },
     ],
     content: [
       {
@@ -235,8 +267,16 @@ export const pdfTools: Tool[] = [
           'Encryption does not carry over either. A merged file is a new, unprotected document, so if the source needed a password to open, the result will not — add protection again yourself if the combined file needs it.',
         ],
       },
+      {
+        heading: 'What survives a merge, and what does not',
+        body: [
+          'Merging copies pages from one document into another, and a page is a self-contained thing: its text, fonts, images and vector artwork all come across exactly as they were. Nothing is re-rendered, so the merged file looks identical to the originals and is the same quality, however many times you merge and re-merge.',
+          'What does not come across is everything that belongs to the document rather than to a page. Bookmarks and the outline tree are rebuilt from scratch, so a merged file loses the chapter navigation the originals had. Form fields stop behaving as a form, because two documents can easily contain two fields with the same internal name. Digital signatures break by design — a signature attests to a specific document, and a merged document is not that document, so any reader that checks will correctly report it as no longer valid.',
+          'None of that is a limitation of this tool in particular; it is what merging means. If the signature matters, merge first and sign the result. If the form matters, keep it as its own file and send two attachments.',
+        ],
+      },
     ],
-    related: ['split-pdf', 'image-to-pdf', 'image-compressor'],
+    related: ['split-pdf', 'image-to-pdf', 'image-compressor', 'remove-pdf-pages', 'rotate-pdf'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -244,7 +284,8 @@ export const pdfTools: Tool[] = [
     slug: 'split-pdf',
     name: 'Split PDF',
     h1: 'Split a PDF',
-    tagline: 'Pull out the pages you need, or break a long document into parts you can send.',
+    tagline:
+      'Split a PDF into the pages you need, or break a long document into parts you can send.',
     category: 'pdf',
     icon: 'split',
     surface: 'files',
@@ -326,6 +367,18 @@ export const pdfTools: Tool[] = [
         q: 'Is my original file modified?',
         a: 'No. The PDF you open is only read; the split output arrives as a separate download and the file on disk is exactly as it was.',
       },
+      {
+        q: 'Is split PDF free, and are the pieces watermarked?',
+        a: 'Free, and each piece comes out as an ordinary PDF with nothing added. The pages are copied rather than redrawn, so a split page is byte-identical in content to the page it came from — there is nowhere for a watermark to have been inserted.',
+      },
+      {
+        q: 'Do I need an account, and how large a file can I split?',
+        a: 'No account. Up to 300 MB for a single document, which is deliberately generous because the scans people most want to split — a few hundred pages photographed at high resolution — routinely run past 200 MB and being turned away at that point is useless.',
+      },
+      {
+        q: 'Is my document uploaded when I split it?',
+        a: 'No. The file is parsed in the tab and the pieces are written there too, so a 200-page statement you are pulling three pages out of never crosses the network. That is also why splitting starts instantly instead of after an upload bar.',
+      },
     ],
     content: [
       {
@@ -342,22 +395,31 @@ export const pdfTools: Tool[] = [
           'In every case the pages are copied rather than reprinted. Nothing is rasterised, so text that was searchable before is searchable still, and a vector chart zooms as cleanly as it did in the original. The result is a shorter document, not a picture of one.',
         ],
       },
+      {
+        heading: 'Splitting is a copy, not a cut',
+        body: [
+          'The pages you extract are copied byte-for-byte into a new document, and the original on your disk is untouched. This is worth being explicit about because people often expect a split to consume the file the way cutting paper does — it does not, and there is nothing to undo afterwards.',
+          'It also means the extracted pages are identical in quality to the ones they came from. No re-rendering happens, so a page of a 600-DPI scan is still a page of a 600-DPI scan, and text stays as text rather than becoming a picture of text. The only thing that changes is which pages are in the file.',
+          'The size, though, often surprises people. A single page pulled out of a 50 MB document can come out larger than a fiftieth of it, because fonts and any image the page uses have to be carried along with it. Extract three pages that share the same embedded font and the font goes into all three. That is the format working correctly — each file has to stand on its own — and it is why splitting then compressing is a common pair.',
+        ],
+      },
     ],
-    related: ['merge-pdf', 'image-to-pdf', 'image-compressor'],
+    related: ['merge-pdf', 'image-to-pdf', 'image-compressor', 'rotate-pdf', 'extract-pdf-text', 'pdf-to-png'],
     updated: '2026-09-03',
   },
   {
     slug: 'pdf-to-jpg',
     name: 'PDF to JPG',
     h1: 'Convert PDF to JPG',
-    tagline: 'Turn every page of a document into a picture you can post, print or edit.',
+    tagline:
+      'Convert PDF to JPG so every page becomes a picture you can post, print or edit.',
     category: 'pdf',
     icon: 'file-image',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'PDF to JPG Converter',
     metaDescription:
-      'Convert PDF pages to JPG, PNG or WebP at the quality you choose. Runs entirely in your browser, so contracts and statements are never uploaded.',
+      'Convert PDF to JPG, PNG or WebP at the quality you choose. Runs entirely in your browser, so contracts and statements are never uploaded.',
     primaryKeyword: 'pdf to jpg',
     secondaryKeywords: [
       'convert pdf to image',
@@ -436,6 +498,14 @@ export const pdfTools: Tool[] = [
         q: 'Is anything uploaded?',
         a: 'No. The PDF is parsed and drawn on your own device, and the page images are built in your browser\u2019s memory. Closing the tab is the deletion step.',
       },
+      {
+        q: 'Is it free, and do the images come out watermarked?',
+        a: 'Free, and the JPEGs are clean. Rendering a page and then writing a logo across it would defeat the purpose, which is usually to get a picture of a page into a document, a slide or a message where it has to look like the page.',
+      },
+      {
+        q: 'Do I need an account, and is there a page limit?',
+        a: 'No account and no page limit. Long documents take longer and use more memory, which is why there is a page-range box — converting the six pages you need from a 300-page report is faster than converting the report and deleting 294 files.',
+      },
     ],
     content: [
       {
@@ -463,7 +533,7 @@ export const pdfTools: Tool[] = [
         ],
       },
     ],
-    related: ['image-to-pdf', 'split-pdf', 'merge-pdf', 'image-compressor'],
+    related: ['image-to-pdf', 'split-pdf', 'merge-pdf', 'image-compressor', 'extract-pdf-text', 'pdf-to-pptx', 'jpg-to-pdf', 'pdf-to-png'],
     popular: true,
     updated: '2026-09-10',
   },
@@ -471,14 +541,15 @@ export const pdfTools: Tool[] = [
     slug: 'rotate-pdf',
     name: 'Rotate PDF',
     h1: 'Rotate a PDF',
-    tagline: 'Turn sideways pages the right way up, and save it without touching anything else.',
+    tagline:
+      'Rotate PDF pages the right way up, and save the file without touching anything else.',
     category: 'pdf',
     icon: 'rotate',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'Rotate PDF Pages Online',
     metaDescription:
-      'Rotate every page of a PDF or just the sideways ones, permanently and without losing quality. Runs in your browser — nothing is uploaded.',
+      'Rotate PDF pages — all of them or just the sideways ones — permanently and without losing quality. Runs in your browser, and nothing is uploaded.',
     primaryKeyword: 'rotate pdf',
     secondaryKeywords: [
       'rotate pdf pages',
@@ -556,6 +627,18 @@ export const pdfTools: Tool[] = [
         q: 'Is my document uploaded?',
         a: 'No. It is read and rewritten on your own device. There is no upload endpoint behind this page.',
       },
+      {
+        q: 'Is rotating a PDF free, and is the saved file marked?',
+        a: 'Free, and nothing is added. Rotation only changes a number in each page’s own description of itself, so the content is not redrawn and there is no re-encoding step in which anything could be stamped on.',
+      },
+      {
+        q: 'Do I need to sign up, and how big a document can I rotate?',
+        a: 'No sign-up. Up to 300 MB in one document. Because rotating rewrites a small field rather than the page content, even a very large scan turns almost instantly — the size limit here is about opening the file, not about the work.',
+      },
+      {
+        q: 'Does rotating add a watermark to the pages?',
+        a: 'No. Rotation changes one number in each page’s own description of itself and leaves the content untouched, so there is no re-drawing step in which anything could be stamped onto the page.',
+      },
     ],
     content: [
       {
@@ -582,14 +665,15 @@ export const pdfTools: Tool[] = [
     slug: 'remove-pdf-pages',
     name: 'Delete PDF Pages',
     h1: 'Delete pages from a PDF',
-    tagline: 'Take out the blank scans, the cover sheet or the pages you were not meant to send.',
+    tagline:
+      'Delete pages from a PDF — the blank scans, the cover sheet, or the ones you were not meant to send.',
     category: 'pdf',
     icon: 'trash',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'Delete Pages from a PDF',
     metaDescription:
-      'Remove pages from a PDF and download the rest as a new file. Runs in your browser, so the document never leaves your device.',
+      'Delete pages from a PDF and download the rest as a new file. Runs in your browser, so the document never leaves your device. No sign-up, no watermark.',
     primaryKeyword: 'delete pages from pdf',
     secondaryKeywords: [
       'remove pdf pages',
@@ -667,6 +751,14 @@ export const pdfTools: Tool[] = [
         q: 'Can it open a password-protected PDF?',
         a: 'No. Remove the password in your PDF reader first and save an unprotected copy. The tool refuses rather than producing a broken file.',
       },
+      {
+        q: 'Is it free to delete pages from a PDF, and is the result watermarked?',
+        a: 'Free, and unmarked. The pages you keep are copied across unchanged, so what you get is the original document minus the pages you chose, with nothing written on the ones that remain.',
+      },
+      {
+        q: 'Do I need an account, and is the document uploaded?',
+        a: 'No account, and the document never leaves your device. This matters more here than for most tools: the pages people delete are usually the ones they do not want anyone else to see, and uploading the file to remove them would defeat the exercise entirely.',
+      },
     ],
     content: [
       {
@@ -686,21 +778,22 @@ export const pdfTools: Tool[] = [
         ],
       },
     ],
-    related: ['split-pdf', 'merge-pdf', 'rotate-pdf', 'pdf-to-jpg'],
+    related: ['split-pdf', 'merge-pdf', 'rotate-pdf', 'pdf-to-jpg', 'unlock-file'],
     updated: '2026-09-10',
   },
   {
     slug: 'compress-pdf',
     name: 'Compress PDF',
     h1: 'Compress a PDF',
-    tagline: 'Get a file under the limit, and be told honestly what it costs.',
+    tagline:
+      'Compress a PDF under the limit you have been given, and be told honestly what it costs.',
     category: 'pdf',
     icon: 'compress',
     surface: 'files',
     processing: 'browser',
     metaTitle: 'Compress PDF — Reduce File Size',
     metaDescription:
-      'Make a PDF smaller in your browser. Repack a text document without changing a pixel, or rebuild a scan at a lower resolution. Never returns a bigger file.',
+      'Compress a PDF in your browser. Repack a text document without changing a pixel, or rebuild a scan at a lower resolution. Never returns a bigger file.',
     primaryKeyword: 'compress pdf',
     secondaryKeywords: [
       'reduce pdf file size',
@@ -780,6 +873,14 @@ export const pdfTools: Tool[] = [
         q: 'Can it compress a password-protected PDF?',
         a: 'No. An encrypted document cannot be read until it is decrypted. Open it in your PDF reader with the password, save an unprotected copy, and compress that.',
       },
+      {
+        q: 'Is compressing a PDF free, and does it watermark the result?',
+        a: 'Free with no watermark and no cap on how many you run. The compressed file is your document with its images re-encoded — there is no trial version that adds a stamp and no full version to buy.',
+      },
+      {
+        q: 'Do I need an account, and what is the largest file it handles?',
+        a: 'No account and no email address. 300 MB for a single document. That ceiling is ours rather than the browser’s, and it is set high on purpose because the files worth compressing are the big ones and a 50 MB cap turns away the exact job the tool exists for.',
+      },
     ],
     content: [
       {
@@ -808,7 +909,7 @@ export const pdfTools: Tool[] = [
         ],
       },
     ],
-    related: ['split-pdf', 'merge-pdf', 'pdf-to-jpg', 'image-compressor'],
+    related: ['split-pdf', 'merge-pdf', 'pdf-to-jpg', 'image-compressor', 'password-protect-files', 'unlock-file', 'jpg-to-pdf'],
     popular: true,
     isNew: true,
     updated: '2026-09-10',
@@ -817,14 +918,15 @@ export const pdfTools: Tool[] = [
     slug: 'extract-pdf-text',
     name: 'PDF to Text',
     h1: 'Extract text from a PDF',
-    tagline: 'Get the words out of a document, ready to paste anywhere.',
+    tagline:
+      'Extract text from a PDF and get the words out of a document, ready to paste anywhere.',
     category: 'pdf',
     icon: 'file-text',
     surface: 'files',
     processing: 'browser',
-    metaTitle: 'PDF to Text — Extract Text',
+    metaTitle: 'Extract Text From PDF — Free',
     metaDescription:
-      'Pull the text out of a PDF and copy it or save it as a .txt file. Runs in your browser, so the document is never uploaded. Says plainly when a file is a scan.',
+      'Extract text from a PDF and copy it or save it as a .txt file. Runs in your browser, so the document is never uploaded. Says plainly when a file is a scan.',
     primaryKeyword: 'extract text from pdf',
     secondaryKeywords: [
       'pdf to text',
@@ -903,6 +1005,14 @@ export const pdfTools: Tool[] = [
         q: 'Is there a page limit?',
         a: 'No fixed one. Very long documents take longer and use more memory, and the page box is there so you can read the section you need rather than all three hundred pages.',
       },
+      {
+        q: 'Is it free to extract text from a PDF, and is the text usable?',
+        a: 'Free, and the text comes back in an editable box you can copy straight out of — no watermark line inserted into the output and no truncation at the first few pages to push you towards paying.',
+      },
+      {
+        q: 'Do I need an account, and is my document uploaded to read it?',
+        a: 'No account, and no. The text is pulled out of the file structure in your own browser, which is the only reasonable way to handle a document whose text you are extracting — contracts and statements are exactly what people run through this.',
+      },
     ],
     content: [
       {
@@ -929,15 +1039,15 @@ export const pdfTools: Tool[] = [
   {
     slug: 'pdf-to-pptx',
     name: 'PDF to PowerPoint',
-    h1: 'Convert PDF to PowerPoint',
+    h1: 'Convert PDF to PPT or PPTX',
     tagline: 'Every page becomes a slide, looking exactly like the page — ready to present, reorder or draw on.',
     category: 'pdf',
     icon: 'presentation',
     surface: 'files',
     processing: 'browser',
-    metaTitle: 'PDF to PowerPoint (PPTX)',
+    metaTitle: 'PDF to PPT — PowerPoint Slides',
     metaDescription:
-      'Turn a PDF into a PowerPoint deck, one slide per page, with the layout exactly preserved. Choose the sharpness and the pages. Nothing is uploaded.',
+      'Turn a PDF to PPT or PPTX, one slide per page, with the layout exactly preserved. Choose the sharpness and the pages. Nothing is uploaded.',
     primaryKeyword: 'pdf to ppt',
     secondaryKeywords: [
       'pdf to pptx',
@@ -1016,6 +1126,18 @@ export const pdfTools: Tool[] = [
         q: 'What about a password-protected PDF?',
         a: 'It has to be decrypted first. Open it in a reader with the password, save an unprotected copy, and convert that.',
       },
+      {
+        q: 'Is PDF to PPT free, and does the deck carry a watermark?',
+        a: 'Free, and no slide carries a mark or an advert. Converting a document you then have to present, only to find somebody else’s logo in the corner of every slide, is the specific failure this avoids.',
+      },
+      {
+        q: 'Do I need an account, and how many pages can it convert?',
+        a: 'No account and no email. There is no page limit, though a long document at the sharpest setting makes a large file — the page-range box is there so you can take the six pages you are actually presenting.',
+      },
+      {
+        q: 'Is my PDF uploaded to make the slides?',
+        a: 'No. The pages are rendered in the tab and the PowerPoint package is assembled there, so a board pack or a client report you have to present never leaves the device. It works with the internet disconnected.',
+      },
     ],
     content: [
       {
@@ -1036,6 +1158,345 @@ export const pdfTools: Tool[] = [
       },
     ],
     related: ['pdf-to-jpg', 'images-to-pptx', 'split-pdf', 'compress-pdf'],
+    isNew: true,
+    updated: '2026-09-12',
+  },
+  {
+    slug: 'jpg-to-pdf',
+    name: 'JPG to PDF',
+    h1: 'Convert JPG to PDF',
+    tagline: 'Convert JPG to PDF with the photos embedded exactly as they are — no re-compression, no quality loss.',
+    category: 'pdf',
+    icon: 'file-pdf',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'JPG to PDF — Free, No Watermark',
+    metaDescription:
+      'Convert JPG to PDF in your browser. Photos are embedded byte-for-byte, so nothing is re-compressed. A4, Letter or fit-to-image pages. No upload, no watermark.',
+    primaryKeyword: 'jpg to pdf',
+    secondaryKeywords: [
+      'jpeg to pdf',
+      'photo to pdf',
+      'scan to pdf',
+      'combine jpgs into one pdf',
+      'jpg to pdf without losing quality',
+    ],
+    synonyms: [
+      'convert jpg to pdf',
+      'jpg to pdf converter',
+      'pictures to pdf',
+      'multiple jpg to one pdf',
+      'phone photos to pdf',
+      'camera scan to pdf',
+      'jpeg to pdf free',
+    ],
+    accepts: JPG_ONLY_MANY,
+    howTo: {
+      title: 'How to convert JPG to PDF',
+      steps: [
+        'Add your JPGs in the order you want the pages, then drag to rearrange.',
+        'Choose a page size — A4, Letter, or fit each page to its photo.',
+        'Decide how the photo sits on the page, and whether there is a margin.',
+        'Build the PDF and download it.',
+      ],
+    },
+    features: [
+      {
+        title: 'Your JPEGs are copied in, not re-encoded',
+        body: 'A PDF can carry a JPEG bitstream exactly as it arrived, and that is what happens here. The photo inside the document is byte-for-byte the photo on your disk — no decode, no second generation of compression loss, and a file barely larger than the pictures that went into it.',
+      },
+      {
+        title: 'Only JPGs, so nothing is silently converted',
+        body: 'The dropzone accepts JPG and JPEG and refuses everything else. That matters because the verbatim-embedding promise only holds for JPEG — a PNG has to be decoded and re-compressed, which is a different page with different guarantees.',
+      },
+      {
+        title: 'Page sizes that match real paper',
+        body: 'A4, A3, A5, Letter, Legal and Tabloid at their exact point dimensions, plus a fit-to-image mode where each page takes the shape of its photo and no white space is left over.',
+      },
+      {
+        title: 'Up to fifty photos in one document',
+        body: 'Enough for a full set of scanned pages or a photo album. The writer itself stops at 500 pages or about 500 MB, which is far beyond what a phone will manage in one go.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'The document is assembled in the tab. A set of photographed passport pages, bank statements or signed contracts — which is what most of these are — never reaches a server.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Does converting JPG to PDF reduce the quality?',
+        a: 'Not here. The JPEG data is copied into the document untouched, so the picture in the PDF is identical to the one on your disk. Many converters decode and re-encode, which adds a second round of JPEG loss — visible as softening around edges if you compare closely.',
+      },
+      {
+        q: 'Why is my phone photo sideways in the PDF?',
+        a: 'Phone cameras often store the picture one way round and add a rotation flag telling viewers to turn it. PDF readers ignore that flag, so a verbatim copy appears as it is really stored. Rotate the photo before adding it — a quarter turn in the cropper costs nothing in quality because it does not re-encode.',
+      },
+      {
+        q: 'How do I get several JPGs into one PDF rather than several?',
+        a: 'Add them all at once, or drop them in a few at a time — they queue up as pages in one document, and you can drag to reorder before building. One PDF comes out at the end, regardless of how many photos went in.',
+      },
+      {
+        q: 'Is JPG to PDF free, and is there a watermark?',
+        a: 'Free. Nothing is drawn on the pages, and there is no “upgrade to remove the mark” step. A stamped document is one you cannot submit anywhere — a claim form, a visa application, an invoice — which is exactly why some converters stamp it.',
+      },
+      {
+        q: 'Do I need an account, and how many photos can I convert?',
+        a: 'Nothing is asked of you before the file appears: no registration step, no address to confirm, no “we will email you the result”. Fifty photos per document, 30 MB apiece, run as often as you like.',
+      },
+      {
+        q: 'What if one of my JPGs is refused?',
+        a: 'A few old variants cannot be displayed by PDF readers at all — arithmetic-coded JPEG, lossless JPEG, and files storing more than 8 bits per colour. Those are rejected with an explanation rather than producing a document full of grey boxes. Re-saving as an ordinary JPEG fixes it.',
+      },
+      {
+        q: 'Are my photos uploaded to build the PDF?',
+        a: 'No, and for this conversion that is easy to verify: nothing is decoded, so there would be nothing to send even if there were somewhere to send it. The JPEG bytes are read, copied into a document structure written in the tab, and handed to your downloads folder.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why verbatim embedding is the whole point',
+        body: [
+          'PDF supports a compression filter called DCTDecode, which is JPEG. That means a PDF can store a JPEG in its original form and hand it straight to the viewer\x27s decoder — there is no conversion step at all, only a copy.',
+          'A converter that decodes each photo and re-compresses it is doing avoidable damage. The second encode throws away detail the first one kept, and the effect compounds if the document is ever processed again. On a photographed page of text, which is what most of these documents are, it shows up as softening around the letters and makes the result harder to read at exactly the moment it matters.',
+          'The saving is also real. A ten-megabyte set of photos comes out as a roughly ten-megabyte PDF rather than a fifteen-megabyte one full of re-encoded copies, because nothing was expanded and rebuilt on the way in.',
+        ],
+      },
+      {
+        heading: 'Fit to paper, or fit to the photo',
+        body: [
+          'The decision is whether the document will ever be printed. If it will, choose the paper size and let the photos sit inside a margin — A4 is 595 by 842 points, Letter is 612 by 792, and a point is a seventy-second of an inch, which is the unit PDF works in internally.',
+          'If it is never going near a printer — receipts for an expense claim, photos of a damaged parcel for a claim form, a set of screenshots for a bug report — fit-to-image is usually better. Each page takes the exact proportions of its photo, so there are no white bands and nothing is scaled.',
+          'For a mixed set, leave orientation on auto. A landscape photo dropped onto a portrait A4 page wastes most of the sheet; turning the page to match uses the paper you are paying for.',
+        ],
+      },
+    ],
+    related: ['png-to-pdf', 'image-to-pdf', 'pdf-to-jpg', 'compress-pdf'],
+    isNew: true,
+    updated: '2026-09-12',
+  },
+  {
+    slug: 'png-to-pdf',
+    name: 'PNG to PDF',
+    h1: 'Convert PNG to PDF',
+    tagline: 'Convert PNG to PDF losslessly, with transparency written as a proper mask rather than flattened to white.',
+    category: 'pdf',
+    icon: 'file-pdf',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'PNG to PDF — Free, No Watermark',
+    metaDescription:
+      'Convert PNG to PDF in your browser, losslessly, with transparency kept as a soft mask. A4, Letter or fit-to-image pages. No upload, no watermark, no sign-up.',
+    primaryKeyword: 'png to pdf',
+    secondaryKeywords: [
+      'screenshot to pdf',
+      'combine pngs into one pdf',
+      'png to pdf transparency',
+      'lossless image to pdf',
+      'diagram to pdf',
+    ],
+    synonyms: [
+      'convert png to pdf',
+      'png to pdf converter',
+      'screenshots to one pdf',
+      'transparent png to pdf',
+      'save png as pdf',
+      'png to pdf free',
+      'multiple png to pdf',
+    ],
+    accepts: PNG_ONLY_MANY,
+    howTo: {
+      title: 'How to convert PNG to PDF',
+      steps: [
+        'Add your PNGs in the order you want the pages.',
+        'Choose a page size, or fit each page to its image — the right choice for screenshots.',
+        'Set how the image sits on the page and whether there is a margin.',
+        'Build the PDF and download it.',
+      ],
+    },
+    features: [
+      {
+        title: 'Lossless, with nothing thrown away',
+        body: 'PNGs are drawn and then deflate-compressed into the document. Deflate is lossless, so every pixel is preserved exactly — a diagram, a chart or a screenshot of text comes out as crisp in the PDF as it was on screen.',
+      },
+      {
+        title: 'Transparency becomes a real mask',
+        body: 'Any alpha channel is written as a separate soft mask in the document rather than being flattened onto white. A cut-out logo still looks like a cut-out on the page, which is the difference between a usable letterhead and one with a white box behind the mark.',
+      },
+      {
+        title: 'Only PNGs, so the guarantee holds',
+        body: 'The dropzone refuses other formats. The lossless promise is specific to this path — a JPEG goes in verbatim through a different route, on its own page, with its own guarantees.',
+      },
+      {
+        title: 'Built for screenshots',
+        body: 'Fit-to-image sizing gives each page the exact proportions of its screenshot, so a set of interface captures becomes a document with no white bands and nothing scaled. It is the common case and it is one click.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'The PDF is assembled in the tab. Internal dashboards, unreleased designs and bug reports full of customer data all stay on the device they were captured on.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Does converting PNG to PDF lose quality?',
+        a: 'No. The image data is compressed with deflate, which is the same lossless algorithm PNG itself uses, so every pixel survives. There is no quality setting because there is no loss to control — a PDF made this way can be zoomed as far as the original PNG allowed.',
+      },
+      {
+        q: 'What happens to a transparent background?',
+        a: 'It is preserved. The alpha channel is written into the document as a soft mask, so transparent areas stay transparent and whatever is behind them on the page shows through. Most converters flatten transparency to white, which is only invisible if the page happens to be white too.',
+      },
+      {
+        q: 'Why is my PNG-based PDF so much larger than a JPG one?',
+        a: 'Because lossless costs space. A photograph stored losslessly can easily be five times the size of the same photograph as a JPEG, and that ratio carries straight into the document. If your PNGs are photographs rather than screenshots or graphics, converting them to JPG first and using the JPG page will produce a far smaller PDF.',
+      },
+      {
+        q: 'Is PNG to PDF free, and is there a watermark?',
+        a: 'Free, with nothing drawn on any page. A watermark would be particularly destructive here, since PNGs going into a PDF are usually diagrams, screenshots and logos where an overlaid mark sits right on top of the thing you needed to show.',
+      },
+      {
+        q: 'Do I need an account, and how many PNGs can go in?',
+        a: 'None of it — no registration, no verification, nothing withheld behind a login. Fifty images per document and 30 MB each, which is the memory a tab needs to decode them rather than a tier somebody sells.',
+      },
+      {
+        q: 'Can I mix PNGs and photos in one document?',
+        a: 'Not on this page — it accepts PNG only, so that the lossless guarantee means something. The general image-to-PDF tool takes any mixture and handles each format the right way.',
+      },
+      {
+        q: 'Does my screenshot get uploaded anywhere?',
+        a: 'No. The image is decoded and deflate-compressed into the document inside the page. Screenshots are among the most revealing files people convert — internal dashboards, unreleased designs, customer records visible in a bug report — and none of that reaches a server here.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why screenshots belong in a PDF rather than a Word document',
+        body: [
+          'A PDF describes a page exactly: this image, at this size, at this position, on a page of these dimensions. Open it anywhere and you get the same thing. A word processor describes a document that it then lays out, and the layout depends on the version, the fonts installed and the paper size configured — which is why a set of screenshots pasted into a document arrives at somebody else with two of them on one page and one on its own.',
+          'For anything that has to be reviewed, filed, signed or printed by somebody else, that difference is the whole argument. A bug report, an expense claim, a design review, a set of evidence for a dispute — all of them are read by someone who did not make them, on software you cannot see.',
+          'It also stops being editable by accident. Nobody drags a screenshot half an inch out of place in a PDF, which happens constantly in the other kind of document.',
+        ],
+      },
+      {
+        heading: 'Transparency, and where it goes wrong',
+        body: [
+          'PNG stores an alpha channel — a per-pixel measure of how transparent that pixel is. PDF supports the same idea through a soft mask, so the conversion can be exact, and here it is.',
+          'The usual failure is flattening: the converter composites the image onto white before embedding it, which is invisible if the page is white and glaringly obvious the moment it is not. Place a flattened logo on a coloured letterhead and it arrives in a white rectangle.',
+          'The second failure is subtler. Semi-transparent pixels — the soft edges of an anti-aliased logo — flatten to a pale fringe that looks like a halo at any zoom level. A real mask keeps those pixels partly transparent, so the edge stays soft against whatever is behind it, which is what anti-aliasing was for in the first place.',
+        ],
+      },
+    ],
+    related: ['jpg-to-pdf', 'image-to-pdf', 'pdf-to-png', 'compress-png'],
+    isNew: true,
+    updated: '2026-09-12',
+  },
+  {
+    slug: 'pdf-to-png',
+    name: 'PDF to PNG',
+    h1: 'Convert PDF to PNG',
+    tagline: 'Convert PDF to PNG losslessly, so text and line art stay sharp instead of picking up JPEG halos.',
+    category: 'pdf',
+    icon: 'file-image',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'PDF to PNG — Free, No Watermark',
+    metaDescription:
+      'Convert PDF to PNG in your browser at the resolution you choose. Lossless, so text and line art stay crisp. No upload, no watermark, no page limit.',
+    primaryKeyword: 'pdf to png',
+    secondaryKeywords: [
+      'pdf page to image',
+      'pdf to transparent png',
+      'export pdf pages as png',
+      'pdf to high resolution image',
+      'convert a pdf page to a picture',
+    ],
+    synonyms: [
+      'convert pdf to png',
+      'pdf to png converter',
+      'save pdf page as png',
+      'pdf pages to images',
+      'pdf to image lossless',
+      'extract pages as png',
+      'pdf screenshot',
+    ],
+    accepts: PDF_ONE,
+    howTo: {
+      title: 'How to convert PDF to PNG',
+      steps: [
+        'Drop in your PDF.',
+        'Choose the resolution — 150 DPI for screen use, higher for printing or fine detail.',
+        'Give a page range if you only need part of the document.',
+        'Convert, then save the pages one at a time or all together as a zip.',
+      ],
+    },
+    features: [
+      {
+        title: 'Lossless, which is the reason to choose PNG',
+        body: 'Every pixel the renderer produces is stored exactly. JPEG compresses by discarding fine detail, and on a page of text the fine detail is the edges of the letters — which is why a JPEG of a document picks up a faint grey halo around every character and a PNG does not.',
+      },
+      {
+        title: 'Opens on PNG, because that is what you asked for',
+        body: 'The format is already selected when the page loads. The others are still there if you change your mind, but the default is the answer to the question that brought you here.',
+      },
+      {
+        title: 'The resolution is yours to choose',
+        body: 'A PDF page has no pixels — it is instructions — so the size of the image is decided at render time. 150 DPI is comfortable on screen; 300 matches print; 600 is for reading small print in a scan.',
+      },
+      {
+        title: 'Only the pages you want',
+        body: 'Give a range and only those pages are rendered. Pulling six pages out of a three-hundred-page report is faster than converting the report and deleting 294 files.',
+      },
+      {
+        title: 'The document never leaves your device',
+        body: 'The pages are drawn in the tab by the same renderer that displays PDFs in your browser. A contract, a payslip or a medical letter is not uploaded to anyone.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Should I choose PNG or JPG for PDF pages?',
+        a: 'PNG for anything with text, tables, diagrams or line art — which is most documents — because it stores the edges exactly. JPG for a page that is mostly a photograph and where file size matters, since a lossless image of a photograph is several times larger for no visible gain.',
+      },
+      {
+        q: 'What resolution should I use?',
+        a: '150 DPI for viewing on a screen or putting in a slide. 300 DPI if the image will be printed, which is the resolution print workflows expect. 600 DPI only for reading small print in a scan — a single page at 600 DPI is roughly sixteen times the pixels of one at 150, and the files get large quickly.',
+      },
+      {
+        q: 'Will the background be transparent?',
+        a: 'No. PDF pages are rendered onto a white background, because a page is paper and paper is opaque. If you need a transparent element from a document, the page image is the wrong route — extracting the original artwork is.',
+      },
+      {
+        q: 'Is PDF to PNG free, and are the images watermarked?',
+        a: 'Free, and nothing is drawn over the rendered pages. An image of a document with a stamp across it is not an image of that document, which makes a marked result worthless for the review, the slide or the filing it was made for.',
+      },
+      {
+        q: 'Do I need an account, and is there a page limit?',
+        a: 'Nothing to join and nothing to confirm. Page count is unrestricted; what bites first is memory, since every rendered page is held in the tab at once — which is why the range box exists.',
+      },
+      {
+        q: 'Why are my PNGs so much bigger than the PDF?',
+        a: 'Because a page of text stored as instructions is tiny and the same page stored as pixels is not — and PNG keeps every one of those pixels. A twenty-page document at 300 DPI can easily produce a hundred megabytes of images. Dropping to 150 DPI cuts it to a quarter.',
+      },
+      {
+        q: 'Is my document uploaded to render the pages?',
+        a: 'No. The renderer drawing each page is the same one your browser uses to display a PDF in a tab, running locally. Switch off your internet connection after the page has loaded and the conversion still works, which is the shortest proof there is.',
+      },
+    ],
+    content: [
+      {
+        heading: 'A PDF page has no resolution until you ask for one',
+        body: [
+          'This surprises people, and it explains the whole resolution control. A PDF page is a set of drawing instructions — put this glyph here in this font at this size, stroke this line, fill this path. There are no pixels anywhere in it, which is why a PDF stays sharp however far you zoom in.',
+          'Converting to an image means executing those instructions onto a grid, and you choose how fine the grid is. At 150 DPI an A4 page becomes roughly 1240 by 1754 pixels; at 300 DPI it is 2480 by 3508; at 600 it is nearly 5000 by 7000 and about sixteen times the data of the first.',
+          'The exception is a scanned document, where the page contains a photograph of paper and that photograph has a fixed resolution of its own. Rendering it at 600 DPI when it was scanned at 200 produces a larger file with no more detail — the extra pixels are interpolated, not recovered.',
+        ],
+      },
+      {
+        heading: 'Where PNG genuinely beats JPG here',
+        body: [
+          'JPEG works by discarding high-frequency detail, on the reasonable assumption that a person will not miss it. In a photograph that assumption holds. In a rendered document page it does not, because the high-frequency detail is the boundary between black letters and white paper — the only thing on the page.',
+          'The result is the familiar ringing artefact: a faint grey halo hugging every character, and a slight mottling in what should be flat white. At normal zoom on a good screen it is subtle. Printed, or enlarged in a slide, or run through OCR, it is not — and OCR accuracy measurably drops on JPEG page images compared with lossless ones.',
+          'So the rule is the one PNG was designed for: use it whenever the image has hard edges and flat areas, which is every document that is not a photograph. The file is larger, and for a document page that is the correct trade.',
+        ],
+      },
+    ],
+    related: ['pdf-to-jpg', 'png-to-pdf', 'extract-pdf-text', 'split-pdf'],
     isNew: true,
     updated: '2026-09-12',
   },
