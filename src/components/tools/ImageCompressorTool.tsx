@@ -125,8 +125,27 @@ export function ImageCompressorTool() {
   const [colors, setColors] = useState(128);
 
   const lossless = format === 'png';
-  /** Can a PNG come out of this run at all? Only then is the switch relevant. */
-  const pngPossible = format === 'png' || format === 'smallest' || format === 'keep';
+
+  /**
+   * Can a PNG actually come out of this run, given what is in the queue?
+   *
+   * `keep` and `smallest` both encode into each file's *own* format, so PNG is
+   * only on the table when something queued is one — or is a GIF or BMP, which
+   * `resolveKeep` turns into PNG. Asking only about the dropdown showed the
+   * colour-reduction switch above a queue of JPEGs, where it changes nothing
+   * at all: a control that is visibly on and provably inert, which is worse
+   * than not offering it.
+   */
+  const pngPossible = useCallback(
+    (queue: SniffedFile[]): boolean => {
+      if (format === 'png') return true;
+      if (format !== 'keep' && format !== 'smallest') return false;
+      return queue.some(
+        (entry) => entry.sniffed !== null && resolveKeep(entry.sniffed.format) === 'png',
+      );
+    },
+    [format],
+  );
 
   const plan = useCallback(
     ({ file, image, sniffed }: PlanInput): ImagePlan => {
@@ -265,8 +284,14 @@ export function ImageCompressorTool() {
           hint={
             lossless
               ? 'PNG is lossless, so there is no quality to set: it stores the exact pixels either way.'
-              : (estimate(queue) ??
-                'Below about 60 the damage starts to show. Pull it down until you can see it, then go back one step.')
+              : quality >= 95
+                ? // The failure people actually hit. At 95+ a JPEG re-encode is
+                  // usually the same size or larger than it started, the
+                  // never-inflate rule hands the original straight back, and the
+                  // tool looks like it did nothing. Say so before the button.
+                  `At ${quality} there is almost nothing to save — a photo re-encoded this high normally comes out the same size or bigger, and you will get your original back. Try 75 to 85.`
+                : (estimate(queue) ??
+                  'Below about 60 the damage starts to show. Pull it down until you can see it, then go back one step.')
           }
         >
           <Slider
@@ -282,7 +307,7 @@ export function ImageCompressorTool() {
 
         {/* Only shown when a PNG can actually come out of the run — on a
             JPG-to-JPG compression it would be a control that does nothing. */}
-        {pngPossible ? (
+        {pngPossible(queue) ? (
           <div className="sm:col-span-2">
             <label className="flex items-start gap-3 text-sm">
               <Switch
