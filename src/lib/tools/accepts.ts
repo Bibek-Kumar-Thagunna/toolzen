@@ -143,3 +143,36 @@ export const ANY_FILE: AcceptSpec = {
   maxBytes: 8 * MB,
   maxFiles: 1,
 };
+
+/**
+ * Anything at all, in quantity: the locking tool takes whatever a person wants
+ * to protect, and refusing a file type would be arbitrary — the bytes are never
+ * decoded, only encrypted.
+ *
+ * The ceilings are about what a browser tab can hold rather than about policy.
+ * Encryption needs the file in memory and the output alongside it, so the
+ * working set is roughly twice the input; 100 MB each and twenty files is
+ * comfortably inside what a mid-range phone survives, and the tool refuses a
+ * .tzlock past 200 MB in total with an explanation rather than a crash.
+ */
+export const ANY_FILES_MANY: AcceptSpec = {
+  mime: ['*/*'],
+  label: 'any files',
+  maxBytes: 100 * MB,
+  maxFiles: 20,
+};
+
+/**
+ * One locked file to open. `.tzlock` is ours; `.zip` covers the archives other
+ * programs produce, which this tool reads too.
+ *
+ * The ceiling is higher than the locking side's because opening is the cheaper
+ * direction — one file in, and entries come out one at a time rather than all
+ * being held at once.
+ */
+export const LOCKED_FILE_ONE: AcceptSpec = {
+  mime: ['application/zip', 'application/octet-stream', '.zip', '.tzlock'],
+  label: 'a .tzlock or password-protected .zip',
+  maxBytes: 300 * MB,
+  maxFiles: 1,
+};

@@ -112,6 +112,15 @@ const registry: Record<string, ComponentType> = {
   ),
   'pdf-to-pptx': dynamic(() => import('./PdfToPptxTool').then((m) => m.PdfToPptxTool), { loading }),
 
+  // -- files ----------------------------------------------------------------
+  'password-protect-files': dynamic(
+    () => import('./LockFilesTool').then((m) => m.LockFilesTool),
+    { loading },
+  ),
+  'unlock-file': dynamic(() => import('./UnlockFileTool').then((m) => m.UnlockFileTool), {
+    loading,
+  }),
+
   // -- text -----------------------------------------------------------------
   'word-counter': dynamic(() => import('./WordCounterTool').then((m) => m.WordCounterTool), {
     loading,

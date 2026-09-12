@@ -1,6 +1,13 @@
 import type { IconName } from '@/components/icons';
 
-export type CategoryId = 'image' | 'pdf' | 'text' | 'developer' | 'calculators' | 'generators';
+export type CategoryId =
+  | 'image'
+  | 'pdf'
+  | 'files'
+  | 'text'
+  | 'developer'
+  | 'calculators'
+  | 'generators';
 
 /**
  * Where the work happens. This drives the privacy badge shown on the tool page,

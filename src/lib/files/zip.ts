@@ -54,6 +54,8 @@ const VERSION_2_0 = 20;
 const FLAG_UTF8_NAMES = 0x0800;
 const METHOD_STORE = 0;
 
+const EMPTY = new Uint8Array(0);
+
 let crcTable: Uint32Array | null = null;
 
 /** Built once on first use: 256 entries is cheap, but not on a page that never zips. */
@@ -106,12 +108,43 @@ function dosStamp(when: Date): DosStamp {
   };
 }
 
+/**
+ * An entry whose bytes are not a plain stored copy of a file.
+ *
+ * The writer normally derives every header field from `data`: method 0, the
+ * CRC of those bytes, the same number for both sizes. An encrypted entry
+ * breaks all three at once — the payload is longer than the file, its CRC is
+ * not the file's CRC, and the method is a vendor code — so a caller that has
+ * already produced the payload supplies the fields instead.
+ *
+ * This is deliberately not a general "any compression method" hook. It exists
+ * because `aeszip.ts` needs it, and everything in it is written verbatim into
+ * the headers, so a caller that gets a field wrong produces an archive that
+ * looks valid and extracts to rubbish.
+ */
+export interface ZipRawEntry {
+  /** Compression method code. 99 is WinZip's AES marker. */
+  method: number;
+  /** Written to the CRC field as-is. AE-2 entries carry zero here by design. */
+  crc: number;
+  /** The file's real length, before encryption or compression. */
+  uncompressedSize: number;
+  /** The extra field, already encoded. Copied into both headers. */
+  extra: Uint8Array;
+  /** OR-ed into the general purpose flags. Bit 0 marks an entry as encrypted. */
+  flags: number;
+  /** Minimum reader version. 51 means "AES encryption" to a reader that checks. */
+  versionNeeded: number;
+}
+
 /** One file in the archive. Flat by default; see `keepPaths` on `writeZip`. */
 export interface ZipEntry {
   name: string;
   data: Uint8Array;
   /** Defaults to the moment the archive is written, which is what a user expects. */
   modified?: Date;
+  /** Present for an entry the caller has already encrypted or compressed. */
+  raw?: ZipRawEntry;
 }
 
 export type ZipResult =
@@ -124,6 +157,12 @@ interface PreparedEntry {
   crc: number;
   stamp: DosStamp;
   offset: number;
+  /** What the headers declare. Equal to `data.length` for a stored entry. */
+  uncompressedSize: number;
+  method: number;
+  flags: number;
+  versionNeeded: number;
+  extra: Uint8Array;
 }
 
 /**
@@ -236,17 +275,34 @@ export function writeZip(
     }
     const data = entries[i].data;
     const modified = entries[i].modified;
+    const raw = entries[i].raw;
+    const extra = raw?.extra ?? EMPTY;
+    if (extra.length > 0xffff) {
+      return { ok: false, reason: 'invalid_input', error: TOO_BIG };
+    }
     prepared.push({
       name,
       data,
-      crc: crc32(data),
+      // A raw entry's CRC covers the original file, which this module never
+      // sees, so the caller supplies it. Computing crc32(data) here would
+      // checksum the ciphertext and every reader would reject the archive.
+      crc: raw === undefined ? crc32(data) : raw.crc,
       stamp: modified === undefined ? fallbackStamp : dosStamp(modified),
       offset: 0,
+      uncompressedSize: raw === undefined ? data.length : raw.uncompressedSize,
+      method: raw === undefined ? METHOD_STORE : raw.method,
+      flags: FLAG_UTF8_NAMES | (raw === undefined ? 0 : raw.flags),
+      versionNeeded: raw === undefined ? VERSION_2_0 : raw.versionNeeded,
+      extra,
     });
     // Every byte the entry costs: its local header, its central directory
-    // header, its name twice, and the file itself.
+    // header, its name and extra field twice, and the payload itself.
     total +=
-      LOCAL_HEADER_BYTES + CENTRAL_HEADER_BYTES + name.length * 2 + data.length;
+      LOCAL_HEADER_BYTES +
+      CENTRAL_HEADER_BYTES +
+      name.length * 2 +
+      extra.length * 2 +
+      data.length;
     if (total > ZIP_MAX_TOTAL_BYTES) {
       return { ok: false, reason: 'too_large', error: TOO_BIG };
     }
@@ -269,20 +325,23 @@ function assemble(entries: PreparedEntry[], total: number): Uint8Array {
   for (const entry of entries) {
     entry.offset = at;
     view.setUint32(at, SIGNATURE_LOCAL, true);
-    view.setUint16(at + 4, VERSION_2_0, true);
-    view.setUint16(at + 6, FLAG_UTF8_NAMES, true);
-    view.setUint16(at + 8, METHOD_STORE, true);
+    view.setUint16(at + 4, entry.versionNeeded, true);
+    view.setUint16(at + 6, entry.flags, true);
+    view.setUint16(at + 8, entry.method, true);
     view.setUint16(at + 10, entry.stamp.time, true);
     view.setUint16(at + 12, entry.stamp.date, true);
     view.setUint32(at + 14, entry.crc, true);
-    // Stored, so the compressed and uncompressed sizes are the same number.
+    // The compressed size is what is actually here; for a stored entry the two
+    // are the same number, for an encrypted one they are not.
     view.setUint32(at + 18, entry.data.length, true);
-    view.setUint32(at + 22, entry.data.length, true);
+    view.setUint32(at + 22, entry.uncompressedSize, true);
     view.setUint16(at + 26, entry.name.length, true);
-    view.setUint16(at + 28, 0, true);
+    view.setUint16(at + 28, entry.extra.length, true);
     at += LOCAL_HEADER_BYTES;
     bytes.set(entry.name, at);
     at += entry.name.length;
+    bytes.set(entry.extra, at);
+    at += entry.extra.length;
     bytes.set(entry.data, at);
     at += entry.data.length;
   }
@@ -293,17 +352,17 @@ function assemble(entries: PreparedEntry[], total: number): Uint8Array {
     // Made by MS-DOS/FAT with no external attributes, so the extracting program
     // applies its own default permissions. Claiming a Unix mode here would mean
     // guessing one on behalf of a browser that has no idea.
-    view.setUint16(at + 4, VERSION_2_0, true);
-    view.setUint16(at + 6, VERSION_2_0, true);
-    view.setUint16(at + 8, FLAG_UTF8_NAMES, true);
-    view.setUint16(at + 10, METHOD_STORE, true);
+    view.setUint16(at + 4, entry.versionNeeded, true);
+    view.setUint16(at + 6, entry.versionNeeded, true);
+    view.setUint16(at + 8, entry.flags, true);
+    view.setUint16(at + 10, entry.method, true);
     view.setUint16(at + 12, entry.stamp.time, true);
     view.setUint16(at + 14, entry.stamp.date, true);
     view.setUint32(at + 16, entry.crc, true);
     view.setUint32(at + 20, entry.data.length, true);
-    view.setUint32(at + 24, entry.data.length, true);
+    view.setUint32(at + 24, entry.uncompressedSize, true);
     view.setUint16(at + 28, entry.name.length, true);
-    view.setUint16(at + 30, 0, true);
+    view.setUint16(at + 30, entry.extra.length, true);
     view.setUint16(at + 32, 0, true);
     view.setUint16(at + 34, 0, true);
     view.setUint16(at + 36, 0, true);
@@ -312,6 +371,8 @@ function assemble(entries: PreparedEntry[], total: number): Uint8Array {
     at += CENTRAL_HEADER_BYTES;
     bytes.set(entry.name, at);
     at += entry.name.length;
+    bytes.set(entry.extra, at);
+    at += entry.extra.length;
   }
 
   view.setUint32(at, SIGNATURE_END, true);

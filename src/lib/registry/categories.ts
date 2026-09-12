@@ -28,11 +28,24 @@ export const categories: Category[] = [
       'Free PDF tools that run in your browser: merge PDFs into one file, split out page ranges, and turn images into a PDF. Your documents are never uploaded.',
   },
   {
+    id: 'files',
+    slug: 'files',
+    name: 'File tools',
+    icon: 'lock',
+    order: 3,
+    tagline: 'Lock a file with a password, and open one you have been sent.',
+    description:
+      'Encryption is the one job where “we process it on our servers” is self-defeating: a password sent to somebody else’s computer along with the file it protects is not a secret. These tools do the work in your own browser, so the password never travels and neither does the file.',
+    metaTitle: 'File Tools — Password Protect and Unlock',
+    metaDescription:
+      'Put a password on any file with AES-256, and open password-protected zip files you have been sent. Everything is encrypted in your browser and never uploaded.',
+  },
+  {
     id: 'text',
     slug: 'text',
     name: 'Text tools',
     icon: 'text',
-    order: 3,
+    order: 4,
     tagline: 'Count, clean and reshape text instantly.',
     description:
       'Small text jobs that would otherwise mean a spreadsheet formula or a throwaway script. Results update as you type, and nothing you paste is stored or transmitted.',
@@ -45,7 +58,7 @@ export const categories: Category[] = [
     slug: 'developer',
     name: 'Developer tools',
     icon: 'code',
-    order: 4,
+    order: 5,
     tagline: 'Format, decode and inspect — the daily plumbing, done well.',
     description:
       'Formatters and decoders you can safely paste a production payload into, because the parsing happens in your own tab. Tokens, keys and customer data never reach our logs.',
@@ -58,7 +71,7 @@ export const categories: Category[] = [
     slug: 'calculators',
     name: 'Calculators',
     icon: 'calculator',
-    order: 5,
+    order: 6,
     tagline: 'Everyday maths with the working shown.',
     description:
       'Each calculator shows the formula it used and the intermediate numbers, so you can check the result instead of trusting it. Every input is shareable as a link.',
@@ -71,7 +84,7 @@ export const categories: Category[] = [
     slug: 'generators',
     name: 'Generators',
     icon: 'spark',
-    order: 6,
+    order: 7,
     tagline: 'QR codes, strong passwords and colour palettes.',
     description:
       'Generators that produce a real, downloadable artefact rather than a preview. Passwords are produced with your browser’s cryptographic random source, never a seeded pseudo-random function.',

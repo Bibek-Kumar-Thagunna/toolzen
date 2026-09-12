@@ -2,6 +2,7 @@ import type { Category, CategoryId, Tool } from './types.ts';
 import { categories, categoryIds, getCategory, isCategoryId } from './categories.ts';
 import { imageTools } from './tools/image.ts';
 import { pdfTools } from './tools/pdf.ts';
+import { fileTools } from './tools/files.ts';
 import { textTools } from './tools/text.ts';
 import { developerTools } from './tools/developer.ts';
 import { calculatorTools } from './tools/calculators.ts';
@@ -32,6 +33,7 @@ import { generatorTools } from './tools/generators.ts';
 const byCategory: Record<CategoryId, Tool[]> = {
   image: imageTools,
   pdf: pdfTools,
+  files: fileTools,
   text: textTools,
   developer: developerTools,
   calculators: calculatorTools,

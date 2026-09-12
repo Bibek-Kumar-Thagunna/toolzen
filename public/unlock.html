@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Toolzen offline unlocker (.tzlock)</title>
+    <!--
+      ══════════════════════════════════════════════════════════════════════
+      THE OFFLINE UNLOCKER
+      ══════════════════════════════════════════════════════════════════════
+      This page exists so that a .tzlock file is never a hostage.
+
+      A private file format is a promise that the software to read it will
+      still be there. Websites do not keep that promise: domains lapse, sites
+      get rewritten, companies stop. So this one page — no scripts, no
+      stylesheets, no fonts, no network of any kind — decrypts a .tzlock on
+      its own. Save it next to anything important you lock. It will work from
+      a USB stick in ten years, in any browser that still exists, with the
+      internet switched off.
+
+      It is also the format's documentation. Everything needed to write an
+      independent reader is below, in about two hundred readable lines. That
+      is deliberate: a format nobody else can implement is a trap, however
+      good the intentions of whoever made it.
+
+      ── The format ───────────────────────────────────────────────────────
+        offset  size  meaning
+        0       7     "TZLOCK\x1a"
+        7       1     format version, currently 1
+        8       1     key derivation: 1 = PBKDF2-HMAC-SHA256
+        9       1     cipher: 1 = AES-256-GCM
+        10      1     compression: 0 = none, 1 = raw deflate
+        11      4     PBKDF2 iterations, little-endian uint32
+        15      16    salt
+        31      12    GCM nonce
+        43      2     hint length in bytes, little-endian uint16
+        45      n     hint, UTF-8, plaintext
+        45+n    …     ciphertext, with the 16-byte GCM tag on the end
+
+      Every byte from 0 to 45+n is passed to GCM as additional authenticated
+      data, so the header cannot be altered without the file refusing to
+      open. The plaintext, once decrypted and inflated, is an ordinary .zip.
+      ══════════════════════════════════════════════════════════════════════
+    -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f7f8fa;
+        --panel: #ffffff;
+        --fg: #1a1a1f;
+        --muted: #55555f;
+        --line: #d8dae0;
+        --accent: #0f766e;
+        --danger: #b42318;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121317;
+          --panel: #1b1d22;
+          --fg: #eceef2;
+          --muted: #a8abb4;
+          --line: #33363d;
+          --accent: #2dd4bf;
+          --danger: #f97066;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 24px 16px 64px;
+        background: var(--bg);
+        color: var(--fg);
+        font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      main { max-width: 640px; margin: 0 auto; }
+      h1 { font-size: 1.5rem; margin: 0 0 4px; }
+      .sub { color: var(--muted); margin: 0 0 24px; }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 6px; }
+      input[type="file"], input[type="password"], input[type="text"] {
+        width: 100%;
+        padding: 10px 12px;
+        font: inherit;
+        color: var(--fg);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+      button {
+        font: inherit;
+        font-weight: 600;
+        padding: 10px 18px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      button:disabled { opacity: 0.5; cursor: not-allowed; }
+      button.link {
+        background: none;
+        color: var(--accent);
+        padding: 4px 0;
+        text-decoration: underline;
+        font-weight: 500;
+      }
+      .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .field { margin-bottom: 16px; }
+      .note { font-size: 0.8125rem; color: var(--muted); margin-top: 6px; }
+      .error { color: var(--danger); font-weight: 500; }
+      ul { list-style: none; padding: 0; margin: 12px 0 0; }
+      li {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-bottom: 6px;
+        font-size: 0.9375rem;
+      }
+      li span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      li span.size { color: var(--muted); font-variant-numeric: tabular-nums; }
+      details { margin-top: 24px; font-size: 0.875rem; color: var(--muted); }
+      summary { cursor: pointer; font-weight: 600; color: var(--fg); }
+      details p { margin: 12px 0; }
+      code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.875em; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Offline unlocker</h1>
+      <p class="sub">
+        Opens a <code>.tzlock</code> file. Works with no internet connection — nothing on this page
+        is loaded from anywhere, and nothing you put into it leaves your device.
+      </p>
+
+      <div class="panel">
+        <div class="field">
+          <label for="file">Locked file</label>
+          <input type="file" id="file" accept=".tzlock,application/octet-stream" />
+          <p class="note" id="fileNote"></p>
+        </div>
+
+        <div class="field" id="passwordField" hidden>
+          <label for="password">Password</label>
+          <div class="row">
+            <input type="password" id="password" style="flex: 1; min-width: 200px" autocomplete="off" />
+            <button type="button" class="link" id="reveal">Show</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <button type="button" id="unlock" disabled>Unlock</button>
+          <span class="note" id="status"></span>
+        </div>
+      </div>
+
+      <div class="panel" id="results" hidden>
+        <strong id="resultTitle"></strong>
+        <ul id="fileList"></ul>
+      </div>
+
+      <details>
+        <summary>What this page is, and why it exists</summary>
+        <p>
+          A file in a format only one website can read is a file that depends on that website
+          existing. This page removes that dependency: it is one self-contained HTML file with no
+          scripts, stylesheets or fonts loaded from anywhere, so it keeps working from a USB stick,
+          offline, indefinitely. Save a copy alongside anything important you lock.
+        </p>
+        <p>
+          It is also the specification. The comment at the top of this file’s source describes the
+          format completely — open it in a text editor — and the code below it is a working reader
+          in about two hundred lines. Anyone can write another one.
+        </p>
+        <p>
+          The encryption is AES-256-GCM with the key derived from your password by PBKDF2-HMAC-SHA256,
+          using the browser’s own cryptography. The whole header is authenticated along with the
+          contents, so a file that has been altered refuses to open rather than opening wrongly.
+          There is no recovery if the password is lost — that is the point of it.
+        </p>
+      </details>
+    </main>
+
+    <script>
+      (function () {
+        'use strict';
+
+        var MAGIC = [0x54, 0x5a, 0x4c, 0x4f, 0x43, 0x4b, 0x1a]; // "TZLOCK\x1a"
+        var SALT = 16;
+        var NONCE = 12;
+
+        var fileInput = document.getElementById('file');
+        var fileNote = document.getElementById('fileNote');
+        var passwordField = document.getElementById('passwordField');
+        var passwordInput = document.getElementById('password');
+        var revealButton = document.getElementById('reveal');
+        var unlockButton = document.getElementById('unlock');
+        var statusEl = document.getElementById('status');
+        var results = document.getElementById('results');
+        var resultTitle = document.getElementById('resultTitle');
+        var fileList = document.getElementById('fileList');
+
+        var loaded = null; // { bytes, header }
+
+        function say(message, isError) {
+          statusEl.textContent = message;
+          statusEl.className = isError ? 'note error' : 'note';
+        }
+
+        function humanBytes(n) {
+          if (n < 1024) return n + ' B';
+          if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+          return (n / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        /** Parse the header. Returns { error } or the fields. */
+        function readHeader(bytes) {
+          if (bytes.length < 45) return { error: 'This file is too short to be a locked file.' };
+          for (var i = 0; i < MAGIC.length; i++) {
+            if (bytes[i] !== MAGIC[i]) {
+              return { error: 'This is not a .tzlock file.' };
+            }
+          }
+          var view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+          var at = MAGIC.length;
+          var version = bytes[at++];
+          var kdf = bytes[at++];
+          var cipher = bytes[at++];
+          var compression = bytes[at++];
+          if (version !== 1) {
+            return {
+              error:
+                'This file uses format version ' +
+                version +
+                ', which this unlocker predates. A newer copy of this page will read it.',
+            };
+          }
+          if (kdf !== 1 || cipher !== 1) return { error: 'Unknown encryption settings.' };
+          if (compression !== 0 && compression !== 1) return { error: 'Unknown compression setting.' };
+
+          var iterations = view.getUint32(at, true);
+          at += 4;
+          var salt = bytes.slice(at, at + SALT);
+          at += SALT;
+          var nonce = bytes.slice(at, at + NONCE);
+          at += NONCE;
+          var hintLength = view.getUint16(at, true);
+          at += 2;
+          if (at + hintLength > bytes.length) return { error: 'The header is damaged.' };
+          var hint = new TextDecoder().decode(bytes.subarray(at, at + hintLength));
+          at += hintLength;
+
+          if (iterations < 1000 || iterations > 5000000) {
+            return { error: 'This file asks for an unreasonable amount of work. It is probably damaged.' };
+          }
+          return {
+            version: version,
+            iterations: iterations,
+            compression: compression,
+            hint: hint,
+            salt: salt,
+            nonce: nonce,
+            headerBytes: bytes.slice(0, at),
+          };
+        }
+
+        function deriveKey(password, salt, iterations) {
+          return crypto.subtle
+            .importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'])
+            .then(function (material) {
+              return crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: salt, iterations: iterations, hash: 'SHA-256' },
+                material,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['decrypt'],
+              );
+            });
+        }
+
+        function inflateRaw(bytes) {
+          if (typeof DecompressionStream === 'undefined') {
+            return Promise.reject(new Error('This browser cannot decompress the contents.'));
+          }
+          var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+          return new Response(stream).arrayBuffer().then(function (buffer) {
+            return new Uint8Array(buffer);
+          });
+        }
+
+        /* ── a minimal ZIP reader, for the archive inside ─────────────── */
+
+        function readZip(bytes) {
+          var view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+          var endAt = -1;
+          var earliest = Math.max(0, bytes.length - 22 - 0xffff);
+          for (var at = bytes.length - 22; at >= earliest; at--) {
+            if (view.getUint32(at, true) === 0x06054b50) {
+              endAt = at;
+              break;
+            }
+          }
+          if (endAt < 0) throw new Error('The contents are not a readable archive.');
+
+          var count = view.getUint16(endAt + 10, true);
+          var cursor = view.getUint32(endAt + 16, true);
+          var entries = [];
+          for (var i = 0; i < count; i++) {
+            if (view.getUint32(cursor, true) !== 0x02014b50) throw new Error('The archive index is damaged.');
+            var method = view.getUint16(cursor + 10, true);
+            var compressedSize = view.getUint32(cursor + 20, true);
+            var nameLength = view.getUint16(cursor + 28, true);
+            var extraLength = view.getUint16(cursor + 30, true);
+            var commentLength = view.getUint16(cursor + 32, true);
+            var localAt = view.getUint32(cursor + 42, true);
+            var rawName = new TextDecoder().decode(bytes.subarray(cursor + 46, cursor + 46 + nameLength));
+
+            var dataAt =
+              localAt + 30 + view.getUint16(localAt + 26, true) + view.getUint16(localAt + 28, true);
+            entries.push({
+              name: rawName.replace(/\\/g, '/').split('/').pop() || 'file-' + (i + 1),
+              isDirectory: /[\/\\]$/.test(rawName),
+              method: method,
+              payload: bytes.subarray(dataAt, dataAt + compressedSize),
+            });
+            cursor = cursor + 46 + nameLength + extraLength + commentLength;
+          }
+          return entries;
+        }
+
+        function entryBytes(entry) {
+          if (entry.method === 0) return Promise.resolve(entry.payload);
+          if (entry.method === 8) return inflateRaw(entry.payload);
+          return Promise.reject(new Error('“' + entry.name + '” uses an unsupported compression method.'));
+        }
+
+        /* ── wiring ───────────────────────────────────────────────────── */
+
+        fileInput.addEventListener('change', function () {
+          results.hidden = true;
+          fileList.textContent = '';
+          say('');
+          loaded = null;
+          unlockButton.disabled = true;
+          passwordField.hidden = true;
+          fileNote.textContent = '';
+
+          var file = fileInput.files && fileInput.files[0];
+          if (!file) return;
+
+          file.arrayBuffer().then(function (buffer) {
+            var bytes = new Uint8Array(buffer);
+            var header = readHeader(bytes);
+            if (header.error) {
+              fileNote.textContent = header.error;
+              fileNote.className = 'note error';
+              return;
+            }
+            loaded = { bytes: bytes, header: header };
+            fileNote.className = 'note';
+            fileNote.textContent =
+              humanBytes(bytes.length) +
+              ' · format version ' +
+              header.version +
+              (header.hint ? ' · reminder from the sender: “' + header.hint + '”' : '');
+            passwordField.hidden = false;
+            unlockButton.disabled = false;
+            passwordInput.focus();
+          });
+        });
+
+        revealButton.addEventListener('click', function () {
+          var showing = passwordInput.type === 'text';
+          passwordInput.type = showing ? 'password' : 'text';
+          revealButton.textContent = showing ? 'Show' : 'Hide';
+        });
+
+        passwordInput.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' && !unlockButton.disabled) unlockButton.click();
+        });
+
+        unlockButton.addEventListener('click', function () {
+          if (!loaded) return;
+          unlockButton.disabled = true;
+          results.hidden = true;
+          fileList.textContent = '';
+          // The delay is the point: 600,000 rounds is what makes guessing slow.
+          say('Working — this takes a moment on purpose…');
+
+          var header = loaded.header;
+          deriveKey(passwordInput.value, header.salt, header.iterations)
+            .then(function (key) {
+              return crypto.subtle.decrypt(
+                {
+                  name: 'AES-GCM',
+                  iv: header.nonce,
+                  additionalData: header.headerBytes,
+                  tagLength: 128,
+                },
+                key,
+                loaded.bytes.subarray(header.headerBytes.length),
+              );
+            })
+            .catch(function () {
+              throw new Error('That password does not open this file — or the file was altered.');
+            })
+            .then(function (buffer) {
+              var plaintext = new Uint8Array(buffer);
+              return header.compression === 1 ? inflateRaw(plaintext) : plaintext;
+            })
+            .then(function (archive) {
+              var entries = readZip(archive).filter(function (entry) {
+                return !entry.isDirectory;
+              });
+              return Promise.all(
+                entries.map(function (entry) {
+                  return entryBytes(entry).then(function (bytes) {
+                    return { name: entry.name, bytes: bytes };
+                  });
+                }),
+              );
+            })
+            .then(function (files) {
+              say('');
+              resultTitle.textContent =
+                files.length + (files.length === 1 ? ' file' : ' files') + ' — click to save';
+              files.forEach(function (file) {
+                var item = document.createElement('li');
+                var name = document.createElement('span');
+                name.textContent = file.name;
+                var size = document.createElement('span');
+                size.className = 'size';
+                size.textContent = humanBytes(file.bytes.length);
+                var save = document.createElement('button');
+                save.type = 'button';
+                save.textContent = 'Save';
+                save.addEventListener('click', function () {
+                  var url = URL.createObjectURL(new Blob([file.bytes]));
+                  var link = document.createElement('a');
+                  link.href = url;
+                  link.download = file.name;
+                  link.click();
+                  setTimeout(function () {
+                    URL.revokeObjectURL(url);
+                  }, 10000);
+                });
+                item.appendChild(name);
+                item.appendChild(size);
+                item.appendChild(save);
+                fileList.appendChild(item);
+              });
+              results.hidden = false;
+              unlockButton.disabled = false;
+            })
+            .catch(function (error) {
+              say(error && error.message ? error.message : 'Could not open this file.', true);
+              unlockButton.disabled = false;
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>
