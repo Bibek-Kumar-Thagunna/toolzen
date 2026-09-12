@@ -395,6 +395,15 @@ const paths = {
     'M3 14.5h18',
     'M9.5 4.5v15',
   ],
+  // A projector screen on its stand. Drawn with the screen open rather than a
+  // plain rectangle so it reads as a presentation and not as `monitor`, which
+  // sits three entries above it in the same set.
+  presentation: [
+    'M3.5 4.5h17',
+    'M5 4.5v8.5A1.5 1.5 0 0 0 6.5 14.5h11A1.5 1.5 0 0 0 19 13V4.5',
+    'M12 14.5V18',
+    'M9 20.5 12 18l3 2.5',
+  ],
 } as const satisfies Record<string, string | readonly string[]>;
 
 /**

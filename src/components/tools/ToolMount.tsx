@@ -86,6 +86,10 @@ const registry: Record<string, ComponentType> = {
   'png-to-webp': dynamic(() => import('./PngToWebpTool').then((m) => m.PngToWebpTool), { loading }),
   'webp-to-jpg': dynamic(() => import('./WebpToJpgTool').then((m) => m.WebpToJpgTool), { loading }),
   'webp-to-png': dynamic(() => import('./WebpToPngTool').then((m) => m.WebpToPngTool), { loading }),
+  'images-to-pptx': dynamic(
+    () => import('./ImagesToPptxTool').then((m) => m.ImagesToPptxTool),
+    { loading },
+  ),
 
   // -- pdf ------------------------------------------------------------------
   'image-to-pdf': dynamic(() => import('./ImageToPdfTool').then((m) => m.ImageToPdfTool), {
@@ -106,6 +110,7 @@ const registry: Record<string, ComponentType> = {
     () => import('./ExtractPdfTextTool').then((m) => m.ExtractPdfTextTool),
     { loading },
   ),
+  'pdf-to-pptx': dynamic(() => import('./PdfToPptxTool').then((m) => m.PdfToPptxTool), { loading }),
 
   // -- text -----------------------------------------------------------------
   'word-counter': dynamic(() => import('./WordCounterTool').then((m) => m.WordCounterTool), {

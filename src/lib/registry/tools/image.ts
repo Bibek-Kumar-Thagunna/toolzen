@@ -1,5 +1,11 @@
 import type { Tool } from '../types';
-import { JPG_ONLY, PNG_ONLY, RASTER_IMAGES, WEBP_ONLY } from '../../tools/accepts.ts';
+import {
+  JPG_ONLY,
+  PNG_ONLY,
+  RASTER_IMAGES,
+  RASTER_IMAGES_MANY,
+  WEBP_ONLY,
+} from '../../tools/accepts.ts';
 
 /**
  * Registry entries for the image category.
@@ -861,5 +867,114 @@ export const imageTools: Tool[] = [
     related: ['webp-to-jpg', 'png-to-webp', 'image-compressor', 'jpg-to-png'],
     isNew: true,
     updated: '2026-09-10',
+  },
+  {
+    slug: 'images-to-pptx',
+    name: 'Images to PowerPoint',
+    h1: 'Convert images to PowerPoint',
+    tagline: 'Turn a set of pictures into a .pptx deck you can open in PowerPoint, Keynote or Slides.',
+    category: 'image',
+    icon: 'presentation',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'Images to PowerPoint (PPTX)',
+    metaDescription:
+      'Turn JPG and PNG images into a PowerPoint deck, one picture per slide, in 16:9 or 4:3. The pictures are copied in untouched and nothing is uploaded.',
+    primaryKeyword: 'images to ppt',
+    secondaryKeywords: [
+      'jpg to ppt',
+      'png to pptx',
+      'photos to powerpoint',
+      'picture slideshow pptx',
+      'image to slide',
+    ],
+    synonyms: [
+      'image to powerpoint',
+      'convert pictures to slides',
+      'make a slideshow from photos',
+      'jpeg to pptx',
+      'screenshots to powerpoint',
+      'photo album to presentation',
+      'images into a deck',
+    ],
+    accepts: RASTER_IMAGES_MANY,
+    howTo: {
+      title: 'How to turn images into a PowerPoint',
+      steps: [
+        'Add your pictures in the order you want the slides.',
+        'Pick the slide size — 16:9 for a projector or screen share, 4:3 for older equipment.',
+        'Choose whether each picture is fitted inside the slide, fills it, or sets the slide shape itself.',
+        'Build the presentation and download the .pptx.',
+      ],
+    },
+    features: [
+      {
+        title: 'The pictures go in byte for byte',
+        body: 'A .pptx carries its images as ordinary files inside the package, so a JPEG is copied straight in. Nothing is decoded and re-encoded on the way, which means no second generation of compression loss and a deck that weighs roughly what the photographs weighed.',
+      },
+      {
+        title: 'A real .pptx, not a renamed archive',
+        body: 'The file is a proper Open XML package — content types, relationships, a slide master, a layout and a theme — which is what lets PowerPoint, Keynote, LibreOffice and Google Slides all open it without an offer to repair it.',
+      },
+      {
+        title: 'Three ways to place a picture',
+        body: 'Fit puts the whole image on the slide with background showing at the sides. Fill crops the overflow off the edges. Or let the first picture decide the slide shape, which is the right choice for a set of scans that are all the same proportions.',
+      },
+      {
+        title: 'Unusable files are named, not skipped silently',
+        body: 'The format is read from each file’s own header rather than its extension, because a WebP renamed to .png is still a WebP and PowerPoint would show an empty frame for it. Anything that cannot be displayed is listed by name with the reason.',
+      },
+      {
+        title: 'Nothing is uploaded',
+        body: 'The package is assembled in the tab using the same ZIP writer the rest of the site uses for its downloads. A deck of internal screenshots or customer photographs never leaves the device.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Can I edit the slides afterwards?',
+        a: 'Yes. Each picture is a normal picture object on a normal slide, so you can move it, resize it, crop it, or add text boxes, titles and notes around it in PowerPoint exactly as if you had inserted it yourself.',
+      },
+      {
+        q: 'Why is there only one slide size for the whole deck?',
+        a: 'Because that is how the format works — a PowerPoint file stores one slide dimension for the presentation, not one per slide. A mixed set of portrait and landscape pictures therefore cannot each get their own shape; fit mode is there for sets that are all the same proportions.',
+      },
+      {
+        q: 'Will my WebP images work?',
+        a: 'No, and they are reported rather than quietly dropped. PowerPoint does not display WebP. Convert them to PNG or JPG first — there is a converter for that on this site — and then build the deck.',
+      },
+      {
+        q: 'Does it make the deck smaller?',
+        a: 'No, and deliberately so. The images are stored as they arrived, so the presentation is about the size of the pictures plus a few kilobytes of XML. If the result is too large to email, compress the images before adding them.',
+      },
+      {
+        q: 'Which order do the slides come out in?',
+        a: 'The order you added the files. If you drop a whole folder, that is whatever order your operating system hands over — usually alphabetical, which is why naming scans 01, 02, 03 rather than 1, 2, 3 saves trouble.',
+      },
+      {
+        q: 'Are my pictures uploaded to a server?',
+        a: 'No. The .pptx is built in your browser and handed straight to your downloads folder. Closing the tab is the deletion step.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why 16:9 is the default',
+        body: [
+          'Every projector, meeting-room display, laptop screen and video-call screen share made in the last fifteen years is 16:9, and a 4:3 deck shown on one gets thick black bars down both sides. PowerPoint itself switched its default in 2013 for the same reason.',
+          '4:3 is still worth having for a specific case: older fixed installations in lecture theatres and some conference rooms, where the projector itself is 4:3 and a widescreen deck ends up letterboxed instead.',
+          'If your pictures are all the same shape and you are making something to be read rather than projected — a set of scanned pages, a contact sheet, a portfolio — the third option is better than either. Shaping the slides to the first picture means no bars anywhere, because the slide and the image agree.',
+        ],
+      },
+      {
+        heading: 'Fit, fill, and which one loses something',
+        body: [
+          'Fit places the whole picture inside the slide and shows the background colour wherever the shapes disagree. Nothing is lost and nothing is hidden, which makes it the safe default for anything where the edges of the image matter.',
+          'Fill scales the picture up until it covers the slide and lets the overflow run off the edges. It looks better for a full-bleed photograph, and the part that runs off is still inside the file — it is a layout decision, not a crop, so anyone can drag the picture back into view. If the aim is to genuinely remove part of an image, crop it before it goes into the deck.',
+          'The background colour only appears under fit, which is why the control disappears in the other two modes. White is conventional, but a dark grey behind photographs looks markedly better in a dimly lit room and costs nothing to try.',
+        ],
+      },
+    ],
+    related: ['image-to-pdf', 'image-compressor', 'image-resizer', 'pdf-to-pptx'],
+    isNew: true,
+    updated: '2026-09-12',
   },
 ];

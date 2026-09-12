@@ -106,7 +106,7 @@ function dosStamp(when: Date): DosStamp {
   };
 }
 
-/** One file in the archive. The archive is flat: names never describe folders. */
+/** One file in the archive. Flat by default; see `keepPaths` on `writeZip`. */
 export interface ZipEntry {
   name: string;
   data: Uint8Array;
@@ -140,6 +140,33 @@ function entryNames(entries: readonly ZipEntry[]): string[] {
   return uniqueNames(flat);
 }
 
+/**
+ * A path safe to write verbatim into an archive, or null.
+ *
+ * The flattening above exists because an archive of a user's files is extracted
+ * by software that has historically been willing to follow `../../` out of the
+ * target directory. That reasoning does not apply to an archive whose every
+ * name the program itself wrote — an Office package, say, where each path is
+ * referenced by a relationship and renaming one breaks the document.
+ *
+ * So `keepPaths` is allowed, and it is checked rather than trusted: forward
+ * slashes only (the ZIP specification's own separator), no leading slash, no
+ * empty, `.` or `..` segment, no backslash or drive letter, no control
+ * characters. Anything else is refused, so a caller cannot opt out of the
+ * safety net by accident.
+ */
+function checkedPath(name: string): string | null {
+  if (typeof name !== 'string' || name === '' || name.length > 1000) return null;
+  if (name.startsWith('/') || name.includes('\\') || /^[A-Za-z]:/.test(name)) return null;
+  // eslint-disable-next-line no-control-regex
+  if (/[\u0000-\u001f\u007f]/.test(name)) return null;
+  const segments = name.split('/');
+  for (const segment of segments) {
+    if (segment === '' || segment === '.' || segment === '..') return null;
+  }
+  return name;
+}
+
 const TOO_BIG =
   'The archive would be too large to build in the browser. Downloading the files individually still works.';
 
@@ -151,7 +178,20 @@ const TOO_BIG =
  * act on. Neither is reachable by any tool currently shipped, which is the point
  * of checking rather than trusting.
  */
-export function writeZip(entries: readonly ZipEntry[], opts?: { modified?: Date }): ZipResult {
+export function writeZip(
+  entries: readonly ZipEntry[],
+  opts?: {
+    modified?: Date;
+    /**
+     * Write each `name` as given, folders and all, instead of flattening it to
+     * its last segment. For archives the program itself composed — an Office
+     * package, whose parts are addressed by path — where a renamed entry is a
+     * broken document rather than a tidy one. Every path is still validated;
+     * see `checkedPath`.
+     */
+    keepPaths?: boolean;
+  },
+): ZipResult {
   if (entries.length === 0) {
     return { ok: false, reason: 'invalid_input', error: 'There are no files to download yet.' };
   }
@@ -160,7 +200,31 @@ export function writeZip(entries: readonly ZipEntry[], opts?: { modified?: Date 
   }
 
   const encoder = new TextEncoder();
-  const names = entryNames(entries);
+  let names: string[];
+  if (opts?.keepPaths === true) {
+    const checked: string[] = [];
+    for (const entry of entries) {
+      const path = checkedPath(entry.name);
+      if (path === null) {
+        return {
+          ok: false,
+          reason: 'invalid_input',
+          error: 'One of the entries in this archive has an unusable path.',
+        };
+      }
+      checked.push(path);
+    }
+    if (new Set(checked).size !== checked.length) {
+      return {
+        ok: false,
+        reason: 'invalid_input',
+        error: 'Two entries in this archive would have the same path.',
+      };
+    }
+    names = checked;
+  } else {
+    names = entryNames(entries);
+  }
   const fallbackStamp = dosStamp(opts?.modified ?? new Date());
 
   let total = END_RECORD_BYTES;

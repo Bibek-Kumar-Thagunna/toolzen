@@ -926,4 +926,117 @@ export const pdfTools: Tool[] = [
     isNew: true,
     updated: '2026-09-10',
   },
+  {
+    slug: 'pdf-to-pptx',
+    name: 'PDF to PowerPoint',
+    h1: 'Convert PDF to PowerPoint',
+    tagline: 'Every page becomes a slide, looking exactly like the page — ready to present, reorder or draw on.',
+    category: 'pdf',
+    icon: 'presentation',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'PDF to PowerPoint (PPTX)',
+    metaDescription:
+      'Turn a PDF into a PowerPoint deck, one slide per page, with the layout exactly preserved. Choose the sharpness and the pages. Nothing is uploaded.',
+    primaryKeyword: 'pdf to ppt',
+    secondaryKeywords: [
+      'pdf to pptx',
+      'pdf to powerpoint',
+      'pdf to slides',
+      'convert pdf to presentation',
+      'pdf pages as slides',
+    ],
+    synonyms: [
+      'pdf into powerpoint',
+      'make slides from a pdf',
+      'pdf to keynote',
+      'present a pdf',
+      'pdf slideshow',
+      'turn a pdf into a deck',
+      'pdf to google slides',
+    ],
+    accepts: PDF_ONE,
+    howTo: {
+      title: 'How to convert a PDF to PowerPoint',
+      steps: [
+        'Drop in your PDF.',
+        'Choose whether the slides match the shape of the pages or take a standard 16:9 or 4:3 size.',
+        'Pick the sharpness — balanced is right for a projector — and narrow to a page range if you only need part of the document.',
+        'Build the presentation and download the .pptx.',
+      ],
+    },
+    features: [
+      {
+        title: 'The layout is exactly right',
+        body: 'Each page is rendered and placed on its own slide as an image, so nothing reflows, no font substitutes itself, and no table falls apart. The slide looks precisely like the page, which is the one thing most converters cannot promise.',
+      },
+      {
+        title: 'The text is not editable, and the page says so before you start',
+        body: 'That warning sits above the build button rather than in the small print afterwards. Converting a PDF back into real text boxes means guessing at the original layout, and the guess goes wrong in ways you discover halfway through presenting.',
+      },
+      {
+        title: 'Sharpness you choose',
+        body: 'A rendered page is blown up to full screen on a projector, far past its size on a laptop, so the resolution matters more here than for an image. Balanced at 150 DPI is comfortable in a meeting room; the sharpest setting is there for detailed diagrams and small print.',
+      },
+      {
+        title: 'Slides shaped to the pages',
+        body: 'A4 and Letter are portrait, and forcing them onto a 16:9 slide leaves two thick bars. Matching the pages avoids that entirely; the standard sizes are still there for a deck that has to be widescreen.',
+      },
+      {
+        title: 'Only the pages you want',
+        body: 'Give a range — 1-5, 9 — and only those pages are rendered and only those become slides. A three-hundred-page report you need six pages out of does not have to be converted whole.',
+      },
+      {
+        title: 'The document never leaves your device',
+        body: 'The pages are drawn in your browser and the .pptx is assembled there too. A contract, a payslip or an internal report is not uploaded to anyone, which is the part most online converters cannot say.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Will I be able to edit the text in the slides?',
+        a: 'No. Each slide holds a picture of the page, so the text is part of that picture. This is stated plainly because it is the honest trade: what you get in exchange is a deck that looks exactly like the document, with nothing shifted, resized or re-flowed.',
+      },
+      {
+        q: 'Why not convert it into real text boxes and shapes?',
+        a: 'Because a PDF does not contain paragraphs, headings or tables — it contains glyphs at coordinates. Reconstructing editable slides means inferring which glyph runs are a heading and which rectangles are a table, and that inference is wrong often enough that the result needs more fixing than rebuilding the slides by hand. A tool that claimed otherwise in a browser tab would be overselling.',
+      },
+      {
+        q: 'Can I still add my own notes and titles?',
+        a: 'Yes. The slides are ordinary slides, so you can put text boxes, arrows, highlights and speaker notes on top of them, reorder them, delete the ones you do not need, and animate them.',
+      },
+      {
+        q: 'Why is my presentation so much bigger than the PDF?',
+        a: 'Because a page of text stored as instructions is tiny, and the same page stored as a picture is not. Dropping to the smaller setting roughly halves it; if the deck only ever gets shown on a laptop, that setting is perfectly sharp.',
+      },
+      {
+        q: 'Does it work on a scanned PDF?',
+        a: 'Yes, and it is one of the better cases. A scan is already a picture of a page, so turning it into a slide loses nothing that was not already lost at the scanner.',
+      },
+      {
+        q: 'What about a password-protected PDF?',
+        a: 'It has to be decrypted first. Open it in a reader with the password, save an unprotected copy, and convert that.',
+      },
+    ],
+    content: [
+      {
+        heading: 'What people actually need when they convert a PDF to slides',
+        body: [
+          'The common case is not redesigning the document. Someone has been handed a PDF — a report, a paper, a deck exported by somebody else — and has to stand up and talk through it. What they need is to advance through the pages one at a time, skip a few, reorder a couple, and maybe draw on one while talking.',
+          'For that, a slide that is a faithful picture of the page is not a compromise; it is better than an approximate rebuild, because nothing has quietly moved since the version everyone else has read. You can still add a title slide, your own notes, and a summary at the end.',
+          'The case this does not serve is wanting to restyle the content — change the fonts, swap the colours, re-cut the charts. There, the honest route is to go back to whatever produced the PDF, because that file still has the real text and the real data in it.',
+        ],
+      },
+      {
+        heading: 'Choosing the sharpness for the room',
+        body: [
+          'Resolution here is not about looking good on your screen — it is about how far the page gets enlarged when it is thrown onto a wall. A page shown at 150 DPI has roughly twice the detail of the same page at 110, and on a projector two metres wide that difference is the boundary between crisp text and slightly soft text.',
+          'The trade is file size, and it is close to linear in the number of pixels: the sharpest setting produces a file around four times the size of the smallest. A twenty-page document is comfortable at any setting; a two-hundred-page one is worth thinking about.',
+          'The practical rule is to pick balanced unless you know the document has small print or fine diagram lines, in which case go up one, and unless the deck will only ever be shown on a laptop or shared over a video call, in which case go down one and save the megabytes.',
+        ],
+      },
+    ],
+    related: ['pdf-to-jpg', 'images-to-pptx', 'split-pdf', 'compress-pdf'],
+    isNew: true,
+    updated: '2026-09-12',
+  },
 ];
