@@ -1,8 +1,10 @@
 import Script from 'next/script';
 
 import {
+  analyticsHasCustomEvents,
   analyticsProvider,
   analyticsScriptSrc,
+  cloudflareBeaconToken,
   plausibleDomain,
   umamiWebsiteId,
 } from '@/lib/analytics-config';
@@ -24,7 +26,19 @@ export function Analytics() {
 
   return (
     <>
-      {analyticsProvider === 'plausible' ? (
+      {analyticsProvider === 'cloudflare' ? (
+        // The token travels as JSON in a data attribute, which is the shape
+        // Cloudflare's loader reads. Only needed on the manual path — a proxied
+        // domain can have this injected at the edge instead, with no script of
+        // ours on the page at all.
+        <Script
+          id="analytics"
+          src={src}
+          strategy="afterInteractive"
+          data-cf-beacon={JSON.stringify({ token: cloudflareBeaconToken })}
+          defer
+        />
+      ) : analyticsProvider === 'plausible' ? (
         <Script
           id="analytics"
           src={src}
@@ -41,7 +55,9 @@ export function Analytics() {
           defer
         />
       )}
-      <AnalyticsSink />
+      {/* Not mounted for a provider with no custom-event API: see
+          `analyticsHasCustomEvents`. */}
+      {analyticsHasCustomEvents ? <AnalyticsSink /> : null}
     </>
   );
 }

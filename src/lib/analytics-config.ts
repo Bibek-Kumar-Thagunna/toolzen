@@ -22,11 +22,11 @@
  * ============================================================================
  */
 
-export type AnalyticsProvider = 'none' | 'plausible' | 'umami';
+export type AnalyticsProvider = 'none' | 'plausible' | 'umami' | 'cloudflare';
 
 function readProvider(): AnalyticsProvider {
   const value = process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER;
-  if (value === 'plausible' || value === 'umami') return value;
+  if (value === 'plausible' || value === 'umami' || value === 'cloudflare') return value;
   return 'none';
 }
 
@@ -47,6 +47,36 @@ export const umamiWebsiteId: string | undefined =
   process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID?.trim() || undefined;
 
 /**
+ * Cloudflare Web Analytics.
+ *
+ * Free, cookieless, and sets no per-visitor identifier, so it keeps the privacy
+ * page true without a consent banner — the same test the other two providers
+ * had to pass.
+ *
+ * ── The trade it makes, which is not obvious ──────────────────────────────
+ * It records page views and Core Web Vitals and **nothing else**. There is no
+ * custom-event API, so the typed vocabulary in `analytics.ts` — which tool was
+ * started, which run failed and why, what people searched for — has nowhere to
+ * go. `Analytics.tsx` therefore does not mount the event sink for this
+ * provider, rather than mounting a sink that silently drops everything.
+ *
+ * That is the right starting choice for a site with no revenue: it costs
+ * nothing, needs no code to deploy (Cloudflare can inject the beacon at the
+ * edge for a proxied domain), and page popularity plus Search Console queries
+ * answer most of what tool-level events would. Switch the variable to
+ * `plausible` or `umami` when knowing *which* tools get finished is worth
+ * paying for.
+ *
+ * This constant is only needed for the manual path. If the beacon is injected
+ * automatically by the proxy, leave the provider unset and nothing here runs.
+ */
+export const cloudflareBeaconToken: string | undefined =
+  process.env.NEXT_PUBLIC_CF_BEACON_TOKEN?.trim() || undefined;
+
+/** Where the Cloudflare beacon is served from. Fixed by the vendor. */
+export const CLOUDFLARE_BEACON_HOST = 'https://static.cloudflareinsights.com';
+
+/**
  * The script URL, or `undefined` when analytics are off or half-configured.
  *
  * `script.tagged-events.js` is the Plausible build that also honours declarative
@@ -59,8 +89,21 @@ export function analyticsScriptSrc(): string | undefined {
   if (analyticsProvider === 'umami' && umamiHost !== undefined && umamiWebsiteId !== undefined) {
     return `${umamiHost}/script.js`;
   }
+  if (analyticsProvider === 'cloudflare' && cloudflareBeaconToken !== undefined) {
+    return `${CLOUDFLARE_BEACON_HOST}/beacon.min.js`;
+  }
   return undefined;
 }
+
+/**
+ * Whether this provider can receive the typed events in `analytics.ts`.
+ *
+ * False for Cloudflare, which has no custom-event API. The sink is not mounted
+ * in that case, so the events are never constructed rather than being built and
+ * thrown away.
+ */
+export const analyticsHasCustomEvents: boolean =
+  analyticsProvider === 'plausible' || analyticsProvider === 'umami';
 
 export const analyticsEnabled: boolean = analyticsScriptSrc() !== undefined;
 
@@ -72,5 +115,6 @@ export const analyticsEnabled: boolean = analyticsScriptSrc() !== undefined;
 export const analyticsOrigins: readonly string[] = (() => {
   if (analyticsProvider === 'plausible') return [plausibleHost];
   if (analyticsProvider === 'umami' && umamiHost !== undefined) return [umamiHost];
+  if (analyticsProvider === 'cloudflare') return [CLOUDFLARE_BEACON_HOST];
   return [];
 })();
