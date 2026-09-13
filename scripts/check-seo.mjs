@@ -472,6 +472,31 @@ for (const guide of guides) {
   }
 }
 
+/**
+ * Every guide must be reachable from a tool page.
+ *
+ * This check exists because its absence hid a real bug. Guides declare the
+ * tools they hand off to, so links ran one way — guides to tools — and nothing
+ * anywhere pointed back. The guides were reachable only from the footer while
+ * the 48 tool pages, which carry almost all of this site's internal links,
+ * pointed at none of them. Nothing failed, because the inbound-link floor above
+ * only applied to tools.
+ *
+ * The tool page now derives its guide links by inverting `Guide.tools`, so this
+ * is really a check that a guide names at least one tool that exists — but
+ * stating it as reachability is what makes the failure legible to whoever
+ * trips it.
+ */
+for (const guide of guides) {
+  const linkedFrom = guide.tools.filter((slug) => tools.some((tool) => tool.slug === slug));
+  if (linkedFrom.length === 0) {
+    fail(
+      `guides/${guide.slug}`,
+      'no tool page links to it, so it is reachable only from the footer — the tool pages hold this site\'s internal links and an orphan guide gets none of them',
+    );
+  }
+}
+
 /** Guides compete with each other if their answers say the same thing. */
 for (let i = 0; i < guides.length; i += 1) {
   for (let j = i + 1; j < guides.length; j += 1) {

@@ -162,6 +162,9 @@ export type {
   ToolSurface,
 } from './types.ts';
 
+import { guides as guideList } from './guides.ts';
+import type { Guide } from './guides.ts';
+
 export { guides, guideSlugs, getGuide, relatedGuides } from './guides.ts';
 export type { Guide } from './guides.ts';
 
@@ -174,4 +177,22 @@ export type { Guide } from './guides.ts';
  */
 export function guideTools(slugs: readonly string[]): Tool[] {
   return slugs.map((slug) => bySlug.get(slug)).filter((tool): tool is Tool => tool !== undefined);
+}
+
+/**
+ * The guides that hand off to a given tool — the inverse of `Guide.tools`.
+ *
+ * Derived rather than declared, and that is the point. The obvious design is a
+ * `guides: string[]` field on `Tool`, which would state the same relationship
+ * twice and let the two halves drift: a guide pointing at a tool that does not
+ * point back is invisible from the side that has the inbound links, and nothing
+ * would complain.
+ *
+ * Inverting the one declaration means a guide becomes reachable from its tools
+ * the moment it names them, and stops being reachable the moment it stops —
+ * which is the behaviour you would want a second field to have and would not
+ * get from one.
+ */
+export function guidesForTool(slug: string): Guide[] {
+  return guideList.filter((guide) => guide.tools.includes(slug));
 }

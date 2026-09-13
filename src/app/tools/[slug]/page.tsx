@@ -62,6 +62,7 @@ import { cn } from '@/lib/cn';
 import {
   getCategory,
   getTool,
+  guidesForTool,
   isRecentlyAdded,
   relatedTools,
   toolSlugs,
@@ -138,6 +139,7 @@ export default async function ToolPage({ params }: PageProps) {
   const trail = toolTrail(tool);
   const category = getCategory(tool.category);
   const related = relatedTools(tool, 4);
+  const guides = guidesForTool(tool.slug);
   /** No rail column unless something can actually occupy it. */
   const showRail = adsEnabled || adsDebug;
 
@@ -204,6 +206,36 @@ export default async function ToolPage({ params }: PageProps) {
               content={tool.content}
               faq={tool.faq}
             />
+
+            {/*
+              Guides that explain this tool's subject.
+
+              Above the ad and above the related tools, because a reader who has
+              finished the FAQ and is still here has a question the widget did
+              not answer — which is exactly what these pages are for. It is also
+              the only route from a tool page into the guides: links otherwise
+              run one way, guides to tools, leaving the guides reachable only
+              from the footer while the tool pages hold all the internal links.
+            */}
+            {guides.length > 0 ? (
+              <section aria-labelledby="guides" className="space-y-3">
+                <h2 id="guides" className="text-xl font-semibold tracking-tight text-fg">
+                  Read more about this
+                </h2>
+                <ul className="space-y-2">
+                  {guides.map((guide) => (
+                    <li key={guide.slug}>
+                      <Link
+                        href={routes.guide(guide.slug)}
+                        className="font-medium text-accent-fg hover:underline"
+                      >
+                        {guide.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
             {/* Ad two of two. Below the FAQ, above the cross-links: reading is
                 finished and there is no workflow left to interrupt. */}

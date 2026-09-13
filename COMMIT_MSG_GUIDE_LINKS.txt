@@ -1,0 +1,30 @@
+guides: link them from the tool pages, and check that they are
+
+Links ran one way. A guide declares the tools it hands off to, so guides
+pointed at tools and nothing pointed back — leaving six new pages reachable
+only from the footer while the 48 tool pages, which carry nearly all of this
+site's internal links, pointed at none of them.
+
+Nothing failed, because the inbound-link floor in check-seo only applied to
+tools. An auditor that enforces a rule for one page type and not the one added
+last week is how this goes unnoticed, so the check is extended rather than the
+oversight simply fixed.
+
+The tool page derives its guide links by inverting `Guide.tools` instead of
+taking a `guides: string[]` field on `Tool`. The declared version would state
+one relationship twice and let the halves drift: a guide pointing at a tool
+that does not point back is invisible from the side holding the inbound links,
+and nothing would complain. Inverting the single declaration means a guide
+becomes reachable from its tools the moment it names them, and stops being
+reachable the moment it stops.
+
+The section sits above the ad and above the related tools. A reader who has
+finished the FAQ and is still on the page has a question the widget did not
+answer, which is what these pages are for.
+
+Verified in the built export rather than in the source: unlock-file carries all
+three zip guides, jwt-decoder carries the JWT one, merge-pdf carries both
+privacy guides.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U41YvzQDL8k1vw9GvA1By9
