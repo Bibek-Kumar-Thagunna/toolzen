@@ -91,6 +91,15 @@ const registry: Record<string, ComponentType> = {
     { loading },
   ),
 
+  'compress-image-to-size': dynamic(
+    () => import('./CompressToSizeTool').then((m) => m.CompressToSizeTool),
+    { loading },
+  ),
+  'resize-signature': dynamic(
+    () => import('./CompressToSizeTool').then((m) => m.SignatureResizerTool),
+    { loading },
+  ),
+
   'compress-jpeg': dynamic(() => import('./FormatVariants').then((m) => m.CompressJpegTool), {
     loading,
   }),

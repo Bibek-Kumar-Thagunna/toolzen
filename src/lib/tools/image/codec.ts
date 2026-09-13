@@ -730,3 +730,127 @@ export async function encodeWithinBudget(
     attempts,
   };
 }
+
+/* ─────────────────── encode to a size budget, at any cost ───────────────── */
+
+export interface TargetSizeResult {
+  ok: true;
+  blob: Blob;
+  format: EncodableFormat;
+  size: Size;
+  quality: number;
+  attempts: number;
+  /** 1 when the original dimensions were kept; below 1 when it had to shrink. */
+  scale: number;
+  /** The dimensions it started from, so the UI can say what changed. */
+  originalSize: Size;
+}
+
+/**
+ * The scales tried, in order, when quality alone will not reach the target.
+ *
+ * Geometric rather than linear: file size follows pixel *count*, so halving the
+ * scale quarters the pixels. A linear walk (0.9, 0.8, 0.7 …) spends most of its
+ * attempts in the range where almost nothing changes, and a phone pays for every
+ * one of them.
+ *
+ * It stops at 0.2 rather than continuing to zero. Below a fifth of the original
+ * width a signature or a passport photo has stopped being legible, and returning
+ * an unreadable file that happens to weigh 20 KB is not a success — the form it
+ * gets uploaded to will reject it, or a human will.
+ */
+const TARGET_SCALES = [1, 0.75, 0.55, 0.4, 0.28, 0.2] as const;
+
+/**
+ * "Make this exactly fit under 20 KB", the way a government form means it.
+ *
+ * {@link encodeWithinBudget} searches quality and gives up when the floor is
+ * still too big, advising the caller to reduce the width. That advice is
+ * correct and it is also the whole remaining job, which is why this exists:
+ * every online "compress to 20KB" tool that fails does so at precisely this
+ * step, telling the user to go and resize the image somewhere else first.
+ *
+ * The two dials are searched in the right order. Quality is tried first at full
+ * size, because a picture that fits at 70% quality and full resolution is
+ * strictly better than the same picture at 100% quality and half the width —
+ * the detail is still there. Only when the quality floor has been reached does
+ * this start removing pixels, and then it removes as few as will do.
+ *
+ * `scale` and `originalSize` come back so the interface can say "1600×1200 →
+ * 880×660" instead of silently handing back a smaller picture. Users uploading
+ * to an exam portal are usually also bound by a minimum dimension, and a tool
+ * that shrinks without saying so will get them rejected at the other end.
+ */
+export async function encodeToTargetSize(
+  image: DecodedImage,
+  opts: BudgetOptions,
+): Promise<TargetSizeResult | CodecFailure> {
+  /**
+   * What the scales are a fraction *of*.
+   *
+   * Not `image.width` — that is the whole frame, and when a region is given the
+   * encode only ever draws that region. Scaling the frame instead of the region
+   * asks for an output larger than the pixels being drawn into it, so the first
+   * step down from a cropped 600×280 signature was a 2250×3000 upscale: slower
+   * at every attempt, and bigger rather than smaller, which is the opposite of
+   * what the search is for. An explicit `target` wins over both, since a caller
+   * who named output dimensions meant them.
+   */
+  const base = opts.target ??
+    (opts.region === undefined
+      ? { width: image.width, height: image.height }
+      : { width: opts.region.width, height: opts.region.height });
+  const originalSize = normaliseSize(base);
+  let attempts = 0;
+  let smallestSoFar: { bytes: number; scale: number } | null = null;
+
+  for (const scale of TARGET_SCALES) {
+    if (aborted(opts.signal)) return fail('cancelled', CANCELLED);
+
+    const target =
+      scale === 1
+        ? opts.target
+        : normaliseSize({
+            width: Math.max(1, Math.round(originalSize.width * scale)),
+            height: Math.max(1, Math.round(originalSize.height * scale)),
+          });
+
+    const attempt = await encodeWithinBudget(image, { ...opts, target });
+    attempts += attempt.ok ? attempt.attempts : BUDGET_ATTEMPTS;
+
+    if (attempt.ok) {
+      return {
+        ok: true,
+        blob: attempt.blob,
+        format: attempt.format,
+        size: attempt.size,
+        quality: attempt.quality,
+        attempts,
+        scale,
+        originalSize,
+      };
+    }
+
+    // A failure that is not "too big" — an unsupported format, a dead canvas,
+    // a cancelled run — will not be fixed by trying a smaller version of the
+    // same thing, so it is returned rather than looped over.
+    if (attempt.reason !== 'encode_unsupported') return attempt;
+
+    const quoted = /about (\d+) KB/.exec(attempt.error);
+    if (quoted?.[1] !== undefined) {
+      const bytes = Number(quoted[1]) * 1024;
+      if (smallestSoFar === null || bytes < smallestSoFar.bytes) {
+        smallestSoFar = { bytes, scale };
+      }
+    }
+  }
+
+  const floorScale = TARGET_SCALES[TARGET_SCALES.length - 1] ?? 0.2;
+  const smallest =
+    smallestSoFar === null ? '' : ` The smallest it reached was about ${Math.round(smallestSoFar.bytes / 1024)} KB.`;
+
+  return fail(
+    'encode_unsupported',
+    `This will not reach ${Math.round(opts.maxBytes / 1024)} KB, even at ${Math.round(floorScale * 100)}% of its original size.${smallest} Either the target is smaller than the format can go, or the picture has too much fine detail — a JPEG or WebP target will get further than a PNG one.`,
+  );
+}

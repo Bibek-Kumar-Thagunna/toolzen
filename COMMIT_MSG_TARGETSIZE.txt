@@ -1,0 +1,55 @@
+tools: compress to an exact file size, and a signature resizer
+
+Fifty queries were checked against live search results before anything was
+built. The weakest competition found anywhere was the exact-KB image cluster:
+"signature size 20kb online" is led by a GitHub Pages hobby project, and
+"passport size photo in kb online" has no major tool company on the page at
+all. By contrast the exact-KB *PDF* queries are fully covered by Adobe,
+Zamzar, Smallpdf and pdfFiller with dedicated landing pages, so those are not
+targeted here.
+
+encodeWithinBudget already existed in codec.ts and was dead code — no UI ever
+called it. It also stopped one step short of the job: when the quality floor
+was still too heavy it returned an error advising the caller to reduce the
+width, which is the entire remaining work handed back to the person who came
+to avoid doing it. That is precisely where every competing tool fails.
+
+encodeToTargetSize finishes it. Quality is searched first at full resolution,
+because a picture that fits at 70% quality and full size beats the same
+picture at 100% quality and half the width. Only at the floor does it start
+removing pixels, geometrically (1, 0.75, 0.55, 0.4, 0.28, 0.2) because size
+follows pixel count rather than width. It stops at a fifth: below that a
+signature is no longer legible, and a 20 KB file nobody can read is not a
+success. scale and originalSize come back so the UI can say what changed.
+
+trim.ts crops to the ink before compressing, which is the signature page's
+reason to exist rather than a preset. A signature photographed on A4 is about
+eight percent writing, and paper costs exactly as many bytes as ink — which is
+why these uploads come out smudged elsewhere. The background is measured as
+the median of the four corners rather than assumed to be white, because
+photographed paper is a drifting grey-beige and a fixed threshold either keeps
+the whole page or eats the thin end of a stroke. Median of four survives one
+bad corner (a thumb, a shadow). Light-on-dark works for free. Nine unit tests.
+
+A bug found by the e2e run and fixed: the scale search computed its target
+dimensions from the whole frame rather than from the region being drawn, so
+the first step down from a cropped 600x280 signature asked for a 2250x3000
+upscale — slower at every attempt and larger rather than smaller.
+
+The first e2e photo fixture was uniform random noise, which was a bad test
+rather than a hard one: noise is genuinely incompressible, and the tool was
+correctly reporting that it could not reach 20 KB. Replaced with a
+photograph-shaped fixture. All six checks now pass, including the one that
+matters: at the same 20 KB ceiling the signature comes out ~497px wide with
+the trim on versus ~240px with it off — 2.07x the resolution on the writing.
+
+Two pages, not six. A page per KB value would be a doorway page by the
+standard FormatVariants.tsx already sets in this codebase ("a synonym is not a
+page"), and these two differ in behaviour: one takes any ceiling, the other
+crops to the ink first and defaults to the 20 KB limit exam portals enforce.
+
+check-seo rejected the first draft of both pages for keyword mismatch and for
+a signup answer 69% identical between them. Both fixed rather than waived.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U41YvzQDL8k1vw9GvA1By9

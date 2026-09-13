@@ -147,7 +147,7 @@ export const imageTools: Tool[] = [
         ],
       },
     ],
-    related: ['image-resizer', 'png-to-webp', 'image-to-pdf', 'png-to-jpg', 'webp-to-jpg', 'images-to-pptx', 'compress-jpeg'],
+    related: ['image-resizer', 'png-to-webp', 'image-to-pdf', 'png-to-jpg', 'webp-to-jpg', 'images-to-pptx', 'compress-jpeg', 'compress-image-to-size'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -269,7 +269,7 @@ export const imageTools: Tool[] = [
         ],
       },
     ],
-    related: ['image-compressor', 'image-cropper', 'png-to-webp', 'image-to-pdf', 'images-to-pptx', 'compress-jpeg'],
+    related: ['image-compressor', 'image-cropper', 'png-to-webp', 'image-to-pdf', 'images-to-pptx', 'compress-jpeg', 'compress-image-to-size'],
     popular: true,
     updated: '2026-09-03',
   },
@@ -389,7 +389,7 @@ export const imageTools: Tool[] = [
         ],
       },
     ],
-    related: ['image-resizer', 'image-compressor', 'jpg-to-png', 'image-to-pdf'],
+    related: ['image-resizer', 'image-compressor', 'jpg-to-png', 'image-to-pdf', 'resize-signature'],
     updated: '2026-09-03',
   },
   {
@@ -1216,7 +1216,7 @@ export const imageTools: Tool[] = [
         ],
       },
     ],
-    related: ['compress-png', 'image-compressor', 'image-resizer', 'jpg-to-png'],
+    related: ['compress-png', 'image-compressor', 'image-resizer', 'jpg-to-png', 'compress-image-to-size'],
     isNew: true,
     updated: '2026-09-12',
   },
@@ -1328,5 +1328,223 @@ export const imageTools: Tool[] = [
     related: ['compress-jpeg', 'image-compressor', 'png-to-jpg', 'png-to-webp'],
     isNew: true,
     updated: '2026-09-12',
+  },
+  {
+    slug: 'compress-image-to-size',
+    name: 'Compress Image to a Size',
+    h1: 'Compress image to 20KB, 50KB or 100KB',
+    tagline:
+      'Give it a ceiling in KB and it gets under it — by trading quality first, and resolution only if it has to.',
+    category: 'image',
+    icon: 'compress',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'Compress Image to 20KB, 50KB or 100KB',
+    metaDescription:
+      'Compress image to 20KB, 50KB, 100KB or any limit you type. It trades quality first and resolution only if it must. Free, no watermark, nothing uploaded.',
+    primaryKeyword: 'compress image to 20kb',
+    secondaryKeywords: [
+      'compress image to 50kb',
+      'compress image to size',
+      'compress image to 100kb',
+      'resize image to 200kb',
+      'reduce photo size in kb',
+      'image size reducer in kb',
+    ],
+    synonyms: [
+      'photo compressor kb',
+      'reduce image to exact size',
+      'compress jpg to kb',
+      'image size reducer',
+      'make photo fit upload limit',
+      'shrink image to target size',
+      'compress photo for form',
+    ],
+    accepts: RASTER_IMAGES,
+    howTo: {
+      title: 'How to compress an image to an exact size',
+      steps: [
+        'Drop in the picture, or pick it with the file chooser.',
+        'Type the limit the form asks for, or choose one of the common ceilings.',
+        'Leave the format on JPG unless you know the destination accepts WebP.',
+        'Press compress. The result panel names the size it landed on, and says if the picture had to shrink as well.',
+      ],
+    },
+    features: [
+      {
+        title: 'It searches, rather than guessing',
+        body: 'There is no formula that turns "100 KB" into a quality number. A flat screenshot and a leafy photograph at the same quality can differ tenfold in size, so the only honest method is to encode, measure and adjust. This runs a binary search over quality — about six encodes — and keeps the highest quality that still fits.',
+      },
+      {
+        title: 'It finishes the job when quality is not enough',
+        body: 'A large photograph cannot reach 20 KB on quality alone; below about 40% the picture turns to mush and it is still too big. Most tools stop here and tell you to go and resize the image first. This one keeps going, reducing the dimensions in steps until the target is met, and tells you which step it used.',
+      },
+      {
+        title: 'It tells you when the picture got small',
+        body: 'Upload forms usually enforce a minimum width as well as a maximum weight, and a file that meets the byte limit by becoming 90 pixels wide will be rejected at the other end. If any output drops below 120 pixels on a side, the result panel says so before you upload it.',
+      },
+      {
+        title: 'A file already under the limit is left alone',
+        body: 'If the picture already meets the ceiling, you get the original back untouched rather than a re-encoded copy. Re-compressing a file that already satisfies the requirement only throws away quality for nothing.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Why does the result say 96 KB when I asked for 100 KB?',
+        a: 'Because the search stops at the highest quality that fits under your ceiling, and quality moves in steps. Landing a little under is correct — a form that says "maximum 100 KB" rejects 100.4 KB, so aiming to hit the number exactly would be the wrong target.',
+      },
+      {
+        q: 'Can any image be compressed to 20 KB?',
+        a: 'Almost any, but not by quality alone. A detailed photograph at full resolution has a floor well above 20 KB, so reaching it means fewer pixels as well as lower quality. If even the smallest step will not fit, the tool says what the smallest size it reached was instead of handing back something that misses the target.',
+      },
+      {
+        q: 'Is this free, and does it add a watermark?',
+        a: 'It is free, and it adds nothing to the picture. There is no watermark, no corner logo and no metadata stamp — the output is your image, re-encoded, and nothing else.',
+      },
+      {
+        q: 'Do I need to sign up or give an email address?',
+        a: 'No. Nothing on this page is held back behind a registration step — the size box, the format choice and the batch are simply there when you arrive. There is no account system anywhere in this site to sign up to.',
+      },
+      {
+        q: 'Are my photos uploaded to a server?',
+        a: 'No. All six encode attempts of the search run on your own processor inside this tab. The picture goes from disk into the page and the finished bytes come back as a download, and there is no request anywhere in the code carrying an image off the device. Disconnect from the network once the page has loaded and you will find the tool still works.',
+      },
+      {
+        q: 'Is there a limit on how many images I can do?',
+        a: 'Twenty at a time, at up to 30 MB each, and there is no daily cap or hourly quota. The batch limit is about your device rather than our policy: each file needs its own canvas, and queueing a hundred large photographs is how a phone browser runs out of memory.',
+      },
+      {
+        q: 'Which format should I choose?',
+        a: 'JPG unless you have a reason not to. It is accepted by every upload form that exists. WebP reaches the same target at visibly higher quality, but a number of older government and university portals still reject it, and a rejected upload costs more than the quality gained.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why "compress to 100 KB" is harder than it sounds',
+        body: [
+          'File size is not a setting you can dial. When a JPEG encoder is given a quality of 70, it is being told how aggressively to discard detail, not how many bytes to produce — and how many bytes that discarding saves depends entirely on what is in the picture. A screenshot of a spreadsheet is mostly flat colour and compresses to almost nothing. A photograph of a tree is fine detail in every direction and resists compression at the same setting by a factor of ten or more.',
+          'So a tool that promises an exact ceiling has to work backwards: encode at some quality, look at the result, and adjust. This one narrows the range by half each time, which resolves the right quality to about one percent in six attempts. On a phone that is roughly a second for a large photograph, which is why it shows progress rather than pretending the answer is instant.',
+          'The second half of the problem is the one most tools leave to you. Quality has a floor — below roughly 40% a photograph stops being a photograph and starts being coloured blocks — and for a large picture with a small target, that floor is still too heavy. The only remaining lever is pixel count, because the bytes follow the number of pixels rather than the dimensions: halving the width quarters the area, and roughly quarters the size. Reducing resolution is therefore the correct next step, and doing it automatically is the difference between a tool that answers the question and one that hands it back.',
+        ],
+      },
+      {
+        heading: 'What the form is really asking for',
+        body: [
+          'Upload requirements almost always come in pairs: a maximum file size and a minimum dimension. "Photograph: 20 KB to 50 KB, minimum 200 by 230 pixels" is a typical line. The two pull against each other, which is the entire reason these uploads are frustrating — satisfying the byte limit by shrinking the picture can breach the pixel limit, and nothing on the form warns you.',
+          'That is why this tool reports the output dimensions and flags anything that has become very small. If your file met the size ceiling only by dropping under the minimum width, you want to know before the portal tells you, not after. When that happens the fix is usually to crop the picture tighter rather than scale it down, so the pixels you keep are the ones that matter.',
+        ],
+      },
+    ],
+    related: ['resize-signature', 'image-compressor', 'image-resizer', 'compress-jpeg', 'image-cropper'],
+    isNew: true,
+    updated: '2026-09-13',
+  },
+  {
+    slug: 'resize-signature',
+    name: 'Signature Resizer',
+    h1: 'Resize signature to 20KB for an upload form',
+    tagline:
+      'Crops away the blank paper around a signature first, so a 20 KB limit is spent on the writing instead of the sheet.',
+    category: 'image',
+    icon: 'crop',
+    surface: 'files',
+    processing: 'browser',
+    metaTitle: 'Resize Signature to 20KB for Forms',
+    metaDescription:
+      'Resize signature to 20KB, or whatever limit your application form sets. Trims the blank paper first so the writing stays sharp. Free, no upload, no sign-up.',
+    primaryKeyword: 'resize signature to 20kb',
+    secondaryKeywords: [
+      'signature resizer',
+      'signature size 20kb',
+      'signature photo resize for form',
+      'scanned signature too large',
+      'signature upload size limit',
+    ],
+    synonyms: [
+      'compress signature image',
+      'signature converter for exam form',
+      'reduce signature file size',
+      'signature 10kb to 20kb',
+      'crop signature white background',
+      'signature image resizer online',
+    ],
+    accepts: RASTER_IMAGES,
+    howTo: {
+      title: 'How to resize a signature for a form',
+      steps: [
+        'Sign on plain white paper and photograph it straight on, in even light.',
+        'Drop the photo here. The blank-border trim is already on.',
+        'Set the ceiling the form asks for — 20 KB is the usual one.',
+        'Compress, then check the reported dimensions against the form’s minimum before you upload.',
+      ],
+    },
+    features: [
+      {
+        title: 'It crops to the ink before it compresses',
+        body: 'A signature photographed on A4 is perhaps eight percent writing and ninety-two percent paper, and paper costs exactly as many bytes as ink does. Trimming to the edge of the writing first means the whole 20 KB budget is spent on the part that has to stay legible. This is the single biggest reason signature uploads come out unreadable elsewhere.',
+      },
+      {
+        title: 'It measures the paper rather than assuming white',
+        body: 'Paper photographed under a room light is not white — it is a grey-beige that drifts across the sheet. A tool that crops by looking for pure white either keeps the whole page or eats the thin end of a pen stroke. This one reads the four corners, takes the median as the paper colour, and trims relative to that, so a phone photo on a desk works as well as a flatbed scan.',
+      },
+      {
+        title: 'Light pen on dark paper works too',
+        body: 'Because the background is measured from the corners rather than assumed, the logic does not care which way round the contrast runs. A white signature on dark card is trimmed exactly the same way as black ink on a white sheet.',
+      },
+      {
+        title: 'It warns when the signature has become too small',
+        body: 'Forms that cap a signature at 20 KB usually also set a minimum width. If meeting the byte limit pushed the image under 120 pixels on a side, the result says so, because at that point the portal will reject it and a human reading it would struggle too.',
+      },
+    ],
+    faq: [
+      {
+        q: 'Why is my scanned signature 4 MB when it is just a few lines?',
+        a: 'Because the file is not storing a few lines — it is storing a photograph of a whole sheet of paper, and the paper is where nearly all the bytes are. A 12-megapixel camera records twelve million pixels whether they show ink or an empty page, and the faint grain and shadow across a blank sheet compress surprisingly badly. Cropping to the writing is what fixes it.',
+      },
+      {
+        q: 'My signature looks smudged after compressing. What went wrong?',
+        a: 'The budget was almost certainly spent on blank paper. With the border trim off, a 20 KB ceiling has to cover the whole sheet, so the writing gets a small fraction of it. Turn the trim on, or crop close to the signature before you start, and the same 20 KB will hold a far sharper result.',
+      },
+      {
+        q: 'Should I photograph my signature or scan it?',
+        a: 'Either works. A scan at 200 to 300 DPI is cleaner and needs no trimming logic at all. A phone photo is fine if you shoot straight down in even light, avoid casting your own shadow across the page, and use plain unlined paper — ruled lines are content as far as any cropping tool is concerned, so they get kept and they cost bytes.',
+      },
+      {
+        q: 'Is it free, and will it put a watermark on my signature?',
+        a: 'Free, and no. Nothing is drawn onto the image. A watermark on a signature would make it useless for the purpose people need it for, and this site does not add one to any output.',
+      },
+      {
+        q: 'Do I have to create an account?',
+        a: 'Never — and it would be strange if it did. Registration exists so a service can tie work to a person, and this tool retains nothing to tie: your file leaves memory the moment you close the tab. No login, no email field, no free tier to exhaust.',
+      },
+      {
+        q: 'Is it safe to put my signature into an online tool?',
+        a: 'This is a fair thing to worry about, and the honest answer matters: your signature is never uploaded. The cropping and compression both run inside this browser tab on your own device, and there is no server involved to receive the file. You can disconnect from the internet after the page loads and the tool still works, which is the simplest way to verify the claim yourself.',
+      },
+      {
+        q: 'Is there a size or usage limit?',
+        a: 'Files up to 30 MB, twenty at a time, and no daily quota — you can come back as often as you need. Most people do one signature, but a batch is there if you are preparing several applications at once.',
+      },
+    ],
+    content: [
+      {
+        heading: 'Why examination portals set a 20 KB signature limit',
+        body: [
+          'The number looks arbitrary and is not. Application systems store a signature alongside a photograph for every candidate, and at national scale that is millions of image pairs that must be served back quickly during verification, often over a poor connection at a test centre. A 20 KB ceiling keeps the whole archive small enough to serve and cheap enough to keep, and it has stayed at roughly that figure for two decades because the constraint has not changed much.',
+          'What has changed is the cameras. A limit set when people scanned at 100 DPI is now being met by phones that produce a 4 MB photograph of the same sheet of paper. The gap between what the form wants and what the device produces is two hundredfold, and closing it by quality alone is not possible — which is why so many candidates end up uploading something illegible and hoping.',
+        ],
+      },
+      {
+        heading: 'The order of operations that keeps a signature readable',
+        body: [
+          'There are three ways to make an image smaller and they are not interchangeable. Cropping removes pixels that were never wanted. Scaling removes pixels that were. Lowering quality keeps every pixel but describes each one less precisely. For a signature, that ranking is also the right order to apply them in.',
+          'Crop first, because blank paper carries no information at all and every byte it takes is wasted outright. Then lower the quality, because a signature is high-contrast line work on a plain ground, which is the easiest possible subject for a lossy encoder — ink stays black and paper stays pale long after a photograph of a face would have fallen apart. Only when quality reaches its floor does it make sense to start scaling, because that is the step where stroke detail genuinely goes.',
+          'A tool that skips straight to scaling, which is what "resize to 20KB" usually means elsewhere, throws away stroke detail while keeping a large area of paper that did not need to be there. The result meets the byte limit and fails the purpose.',
+        ],
+      },
+    ],
+    related: ['compress-image-to-size', 'image-cropper', 'image-compressor', 'image-resizer'],
+    isNew: true,
+    updated: '2026-09-13',
   },
 ];
