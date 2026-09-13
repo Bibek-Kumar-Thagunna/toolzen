@@ -238,7 +238,7 @@ export function LockFilesTool() {
                 checked={format === 'tzlock'}
                 disabled={run.busy}
                 onSelect={() => setFormat('tzlock')}
-                title="Only on Toolzen"
+                title="Only on The Toolzen"
                 detail="Our own .tzlock file. The recipient opens it on this site — and the password is 600× harder to guess."
               />
             </div>
@@ -341,7 +341,7 @@ export function LockFilesTool() {
         <ToolResult
           slug={SLUG}
           title="Your file is locked"
-          summary={`${result.fileCount} ${result.fileCount === 1 ? 'file' : 'files'} · ${humanBytes(result.bytes.length)} · ${result.format === 'zip' ? 'AES-256 zip' : 'Toolzen locked file'}`}
+          summary={`${result.fileCount} ${result.fileCount === 1 ? 'file' : 'files'} · ${humanBytes(result.bytes.length)} · ${result.format === 'zip' ? 'AES-256 zip' : 'Toolzen-locked file'}`}
           download={{
             label: result.format === 'zip' ? 'Download .zip' : 'Download .tzlock',
             format: result.format,

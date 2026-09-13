@@ -366,6 +366,92 @@ function checkPrivacyClaims(file, src) {
   }
 }
 
+/**
+ * ============================================================================
+ * BRAND LITERALS
+ * ============================================================================
+ * `src/lib/brand.ts` opens with "To rebrand the entire product, change the
+ * values in this file only. Nothing else in the codebase hardcodes the name."
+ *
+ * That was not true. When the brand changed from "Toolzen" to "The Toolzen",
+ * the name turned out to be written out by hand in eleven other files —
+ * component copy, registry prose, a PowerPoint theme name, the standalone
+ * unlocker's `<title>`. Each one silently kept the old brand while everything
+ * derived from `brand.name` moved, which is the worst possible failure mode
+ * for a rename: no error, no visual break, just a site that calls itself two
+ * different things and asks a search engine to work out which entity it is.
+ *
+ * So the claim is now checked rather than asserted. A string literal in `src/`
+ * containing the brand name has to be either derived from `brand` or listed
+ * below with a reason.
+ *
+ * ── Why an allowlist and not an inline marker ─────────────────────────────
+ * A `// brand-literal-ok` comment next to each occurrence would put the reason
+ * where the reader is, which is usually right. Here it is not: the point of
+ * the list is to be *read in one go* by whoever is doing the next rename, as
+ * the definitive answer to "what else says the name". Ten markers scattered
+ * across six files cannot be read in one go.
+ *
+ * ── Why comments are not scanned ──────────────────────────────────────────
+ * The opposite of `codeOnly`: this needs the strings and not the prose. Module
+ * headers discuss the brand at length — this one does — and flagging them
+ * would make the check noise.
+ * ============================================================================
+ */
+
+/**
+ * Files permitted to write the name by hand, and why. Anything not here must
+ * go through `brand`.
+ */
+const BRAND_LITERAL_ALLOWED = new Map([
+  ['src/lib/brand.ts', 'the source of truth itself'],
+  [
+    'src/lib/registry/tools/files.ts',
+    'prose about the .tzlock format, which is named for the product and reads ' +
+      'ungrammatically with the article ("a The Toolzen-locked file")',
+  ],
+  ['src/components/tools/LockFilesTool.tsx', 'same, in the lock tool UI'],
+  ['src/components/tools/UnlockFileTool.tsx', 'same, in the unlock tool UI'],
+  ['src/lib/tools/secure/tzlock.ts', 'same, in the format reader error text'],
+  [
+    'src/lib/tools/office/pptx.ts',
+    'the theme name embedded in generated .pptx files; PowerPoint stores it in ' +
+      'the document, so changing it is a file-format change and not a copy change',
+  ],
+]);
+
+/** Source with comments removed but string literals kept — the inverse of codeOnly. */
+function stringsOnly(src) {
+  return src.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1 ');
+}
+
+function checkBrandLiterals(file, src) {
+  const relative = file.slice(root.length + 1);
+  if (relative.endsWith('.test.ts') || relative.endsWith('.test.tsx')) return;
+  if (BRAND_LITERAL_ALLOWED.has(relative)) return;
+
+  // Read the live values rather than hardcoding them, so this check cannot
+  // itself go stale at the next rename.
+  const brandSrc = read(join(root, 'src/lib/brand.ts'));
+  const names = [
+    /\bname:\s*'([^']+)'/.exec(brandSrc)?.[1],
+    /\bshortName:\s*'([^']+)'/.exec(brandSrc)?.[1],
+  ].filter(Boolean);
+
+  const body = stringsOnly(src);
+  for (const name of names) {
+    if (body.includes(name)) {
+      fail(
+        file,
+        `writes the brand name "${name}" out by hand. Import { brand } from '@/lib/brand' ` +
+          'and use brand.name, or add this file to BRAND_LITERAL_ALLOWED in ' +
+          'scripts/check-integrity.mjs with the reason it is deliberate',
+      );
+      return;
+    }
+  }
+}
+
 const files = walk(join(root, 'src')).filter((file) => /\.tsx?$/.test(file));
 
 for (const file of files) {
@@ -382,6 +468,7 @@ for (const file of files) {
   for (const match of src.matchAll(EXPORT_STAR)) checkEdge(file, match[1], [], false);
   checkClientBoundary(file);
   checkPrivacyClaims(file, src);
+  checkBrandLiterals(file, src);
 }
 
 checkToolCoverage();

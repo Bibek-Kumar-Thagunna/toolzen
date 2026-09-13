@@ -297,7 +297,7 @@ export function readTzlockHeader(
       return {
         ok: false,
         reason: 'unsupported_type',
-        error: 'This is not a Toolzen locked file. If it is a password-protected .zip, it opens here too.',
+        error: 'This is not a Toolzen-locked file. If it is a password-protected .zip, it opens here too.',
       };
     }
   }

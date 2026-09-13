@@ -224,7 +224,7 @@ export function UnlockFileTool() {
               </span>
               <span className="shrink-0">
                 · {humanBytes(opened.file.size)} ·{' '}
-                {opened.kind === 'tzlock' ? 'Toolzen locked file' : 'zip archive'}
+                {opened.kind === 'tzlock' ? 'Toolzen-locked file' : 'zip archive'}
               </span>
             </p>
             <Button variant="ghost" size="sm" iconLeft="x" onClick={reset} disabled={run.busy}>

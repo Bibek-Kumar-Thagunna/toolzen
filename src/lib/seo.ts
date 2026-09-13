@@ -63,12 +63,21 @@ function warnIfOverBudget(kind: string, value: string, max: number): void {
  * whole SERP budget, and spending seven of them on a word already in the title
  * pushes something useful off the end.
  *
- * `includes` rather than a word-boundary test because the brand is one token
- * and a false positive costs only a missing suffix, while a false negative is
- * the duplication this exists to stop.
+ * Both the full name and the short one are checked. Since the brand became
+ * "The Toolzen" a title containing only "Toolzen" — which several tool pages
+ * do, describing the lock format — would miss a `brand.name` test and earn a
+ * suffix, reproducing the exact duplication above in a new disguise
+ * ("… a Toolzen-locked file · The Toolzen"). Testing `shortName` catches the
+ * full name too, since the full name contains it.
+ *
+ * `includes` rather than a word-boundary test because a false positive costs
+ * only a missing suffix, while a false negative is the duplication this exists
+ * to stop.
  */
 export function pageTitle(title: string): string {
-  const composed = title.includes(brand.name) ? title : `${title}${TITLE_SEPARATOR}${brand.name}`;
+  const composed = title.includes(brand.shortName)
+    ? title
+    : `${title}${TITLE_SEPARATOR}${brand.name}`;
   warnIfOverBudget('title', composed, MAX_TITLE);
   return composed;
 }
@@ -219,6 +228,22 @@ const WEBSITE_ID = `${siteUrl}/#website`;
  * The two nodes present on every page. Kept small on purpose: an Organization
  * node stuffed with an address and a phone number we do not have would be
  * fiction, and `sameAs` links are omitted rather than pointed at empty handles.
+ *
+ * ── What `alternateName` is doing here ────────────────────────────────────
+ * Previously this emitted `name: legalName` and `alternateName: name`, which
+ * were the same string — a node asserting that "Toolzen" is also known as
+ * "Toolzen". Harmless, and worth nothing.
+ *
+ * Now it carries real information. The entity is "The Toolzen"; it is also
+ * genuinely known as "Toolzen" and "TheToolzen", and the bare word is the one
+ * four unrelated sites already rank for (see the note in `brand.ts`). Stating
+ * the relationship in both nodes is how a consumer building a knowledge graph
+ * learns that a page about "Toolzen" here and a page about "The Toolzen" here
+ * describe one thing, rather than treating the variants as separate weak
+ * entities that each earn a fraction of the signal.
+ *
+ * It is emitted as an array because there is more than one, and a
+ * comma-joined string would be read as a single odd name.
  */
 function siteNodes(): JsonLdNode[] {
   const sameAs = [
@@ -226,12 +251,14 @@ function siteNodes(): JsonLdNode[] {
     brand.social.github ? `https://github.com/${brand.social.github}` : '',
   ].filter((value) => value !== '');
 
+  const alternateName = [...brand.alternateNames];
+
   return [
     {
       '@type': 'Organization',
       '@id': ORGANIZATION_ID,
       name: brand.legalName,
-      alternateName: brand.name,
+      alternateName,
       url: `${siteUrl}/`,
       email: brand.contact.email,
       foundingDate: String(brand.foundedYear),
@@ -243,6 +270,7 @@ function siteNodes(): JsonLdNode[] {
       '@id': WEBSITE_ID,
       url: `${siteUrl}/`,
       name: site.name,
+      alternateName,
       description: brand.tagline,
       inLanguage: site.lang,
       publisher: { '@id': ORGANIZATION_ID },

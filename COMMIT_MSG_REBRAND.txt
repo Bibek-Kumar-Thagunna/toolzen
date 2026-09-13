@@ -1,0 +1,50 @@
+brand: the entity is "The Toolzen", not "Toolzen"
+
+Searching "toolzen" returns four entities before this site: toolszen.com
+(established, carries sitelinks), tool-zen.com ("PDF Merge - ToolZen"),
+toolzenweb.com ("Merge PDF | Free Online Tool - Toolzen") and a Toolzen
+Android app. Two of them are direct competitors. A brand query is resolved
+by consensus rather than by on-page work, so competing for the bare word
+means outranking four incumbents for a string none of them will give up.
+
+"thetoolzen" as an exact string returns nobody. It is unclaimed, it is
+already the domain, and an unclaimed brand string can rank first for itself
+quickly because there is nothing to outrank.
+
+So the entity becomes "The Toolzen", with brand.shortName holding "Toolzen"
+for prose where the article reads badly ("a Toolzen-locked file"), and
+brand.alternateNames declaring the variants.
+
+Structured data now carries real information. The Organization and WebSite
+nodes previously emitted name and alternateName as the same string — a node
+asserting that "Toolzen" is also known as "Toolzen". They now state that
+"The Toolzen" is also known as "Toolzen" and "TheToolzen", which is how a
+knowledge-graph consumer learns the variants describe one entity instead of
+treating each as a separate weak one. Only genuine variants are listed;
+plausible misspellings would be a claim to an entity we are not.
+
+pageTitle now tests brand.shortName rather than brand.name. A title
+containing only "Toolzen" would have missed a brand.name test and earned a
+suffix, reproducing the exact duplication that guard exists to stop
+("... a Toolzen-locked file · The Toolzen").
+
+The generators category title was shortened to "QR Code, Password and Colour
+Generators" — the old one plus the longer suffix came to 63 characters,
+over the 60-character SERP budget, and leading with the keywords is better
+than leading with "Online".
+
+checkBrandLiterals added to scripts/check-integrity.mjs. brand.ts has always
+opened with "Nothing else in the codebase hardcodes the name". That was
+false: eleven files wrote "Toolzen" out by hand, and every one of them would
+have kept saying it after this change, with no error and nothing visibly
+broken — a site calling itself two different names while asking a search
+engine to work out which entity it is. The claim is now enforced against a
+documented allowlist, and the check was confirmed to fire by introducing a
+violation in Logo.tsx and watching the build fail.
+
+Verified: check, typecheck, 784 tests, lint and a clean static export with
+all titles inside budget and no stale brand string outside the deliberate
+alternateName entries.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U41YvzQDL8k1vw9GvA1By9

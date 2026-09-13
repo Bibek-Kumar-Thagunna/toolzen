@@ -32,7 +32,7 @@ export const fileTools: Tool[] = [
     processing: 'browser',
     metaTitle: 'Password Protect Files — AES-256',
     metaDescription:
-      'Password protect files with AES-256, in your browser. Produce a standard encrypted zip, or a file only openable on Toolzen. Nothing is uploaded, ever.',
+      'Password protect files with AES-256, in your browser. Produce a standard encrypted zip, or a file only openable on The Toolzen. Nothing is uploaded, ever.',
     primaryKeyword: 'password protect files',
     secondaryKeywords: [
       'encrypt a file',
@@ -97,7 +97,7 @@ export const fileTools: Tool[] = [
         a: 'Windows Explorer only understands the old, broken ZipCrypto encryption. It has never supported the AES kind, which is what this writes. Your recipient needs 7-Zip on Windows, or Keka or The Unarchiver on a Mac — all free. If that is a problem, the .tzlock option needs no software at all, only this website.',
       },
       {
-        q: 'Is “only openable on Toolzen” actually more secure?',
+        q: 'Is “only openable on The Toolzen” actually more secure?',
         a: 'No, and it would be dishonest to imply otherwise. The code that reads the format is public JavaScript, so someone determined could write their own reader. What they still could not do is open the file without the password. The real advantage of that format is a much higher work factor, which makes guessing the password genuinely harder.',
       },
       {
@@ -163,7 +163,7 @@ export const fileTools: Tool[] = [
     slug: 'unlock-file',
     name: 'Unlock a File',
     h1: 'Open a password-protected zip or locked file',
-    tagline: 'Open an encrypted zip or a Toolzen locked file with its password, straight in your browser.',
+    tagline: 'Open an encrypted zip or a Toolzen-locked file with its password, straight in your browser.',
     category: 'files',
     icon: 'key',
     surface: 'files',

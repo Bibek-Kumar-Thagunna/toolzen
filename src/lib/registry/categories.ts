@@ -88,7 +88,7 @@ export const categories: Category[] = [
     tagline: 'QR codes, strong passwords and colour palettes.',
     description:
       'Generators that produce a real, downloadable artefact rather than a preview. Passwords are produced with your browser’s cryptographic random source, never a seeded pseudo-random function.',
-    metaTitle: 'Online Generators — QR Code, Password, Colours',
+    metaTitle: 'QR Code, Password and Colour Generators',
     metaDescription:
       'Free online generators: QR codes as PNG or SVG, cryptographically strong passwords, and colour palettes. Everything is generated locally in your browser.',
   },
