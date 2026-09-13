@@ -1,0 +1,53 @@
+guides: the privacy cluster, including the part we usually leave out
+
+Three more guides, on the queries where the site's own positioning is the
+answer. The results for these are unusually weak: "online tools that don't
+upload your files" returns DEV.to and Medium posts plus unknown micro-domains
+with no established brand anywhere, and "client side file conversion privacy"
+is led by three separate developers' "I built this" show-and-tell posts.
+
+The flagship page says the thing these pages almost never say. A site can
+process your files locally and still load fonts, count a page view and talk to
+an ad network — this one does — and "your file is never uploaded" and "this
+page makes no network requests" are different claims. Conflating them is why a
+reader who opens developer tools, sees requests, and concludes the whole claim
+was marketing is being reasonable. Saying it plainly costs nothing and is the
+only version of the argument that survives being checked, which is the entire
+point of the section.
+
+It also states the limits of the build check rather than waving at it. What
+checkPrivacyClaims does is refuse to compile a browser-processed tool whose
+code references fetch, XMLHttpRequest, WebSocket, EventSource or sendBeacon,
+with a stricter storage rule for the two encryption tools. That is static
+analysis of this project's own tool code, not a formal proof and not an audit
+of every dependency. What it removes is the specific way these claims go
+stale: someone adding a well-meaning "send this to our server" feature in two
+years while the privacy page still says otherwise.
+
+The converter guide is built on the FBI Denver warning of 7 March 2025, and on
+the detail in it that actually changes behaviour: the malicious converters
+work. They return a correct converted file — which is what keeps them from
+being reported — while harvesting the original for social security numbers,
+dates of birth, banking details, wallet information and passwords. So "it
+worked" is evidence about the conversion and nothing else, and the obvious
+safety test most people apply is the one test these sites are built to pass.
+
+The JWT guide treats the token as what it is: a bearer credential, where
+possession is the whole of the authorisation. Decoding needs no server at all —
+the header and payload are base64url, not encrypted — so a decoder that posts
+your token somewhere has no technical reason to, and has just been handed a
+working credential. Cited to RFC 7519 and RFC 6750 rather than to a blog.
+
+Two fixes found while wiring it up: a guide may cite a page on this site (the
+privacy page, which these guides make claims about), and both the rendered link
+and the schema.org citation handled that wrongly. Relative URLs in JSON-LD are
+not resolvable by a consumer holding the graph alone, so citations are now
+absolutised; and internal sources render as ordinary links rather than
+nofollow-and-new-tab, which would have discarded an internal link and opened a
+tab to go nowhere.
+
+check-seo caught an over-length description twice and a primary keyword absent
+from both metaTitle and metaDescription. Fixed rather than waived.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U41YvzQDL8k1vw9GvA1By9

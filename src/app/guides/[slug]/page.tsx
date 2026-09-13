@@ -154,23 +154,41 @@ export default async function GuidePage({ params }: PageProps) {
                 Every technical claim above comes from one of these. They are listed so you can
                 check them rather than take our word for it.
               </p>
+              {/*
+                A source may be a page on this site — several of these guides
+                cite /privacy, which is the document they are making claims
+                about. Those are linked as ordinary internal links: `nofollow`
+                on our own page would discard the internal link it represents,
+                and opening a new tab to move somewhere within the same site is
+                a small annoyance with nothing to justify it. Only genuinely
+                external references get the new tab and the rel attributes.
+              */}
               <ul className="space-y-2 text-sm">
-                {guide.sources.map((source) => (
-                  <li key={source.url}>
-                    <a
-                      href={source.url}
-                      className="text-accent-fg hover:underline"
-                      // `noreferrer` as well as `noopener`: the latter is what
-                      // actually matters, but older browsers only honour the
-                      // former, and a source list points at sites we do not
-                      // control.
-                      rel="nofollow noopener noreferrer"
-                      target="_blank"
-                    >
-                      {source.title}
-                    </a>
-                  </li>
-                ))}
+                {guide.sources.map((source) => {
+                  const external = source.url.startsWith('http');
+                  return (
+                    <li key={source.url}>
+                      {external ? (
+                        <a
+                          href={source.url}
+                          className="text-accent-fg hover:underline"
+                          // `noreferrer` as well as `noopener`: the latter is
+                          // what actually matters, but older browsers only
+                          // honour the former, and this list points at sites we
+                          // do not control.
+                          rel="nofollow noopener noreferrer"
+                          target="_blank"
+                        >
+                          {source.title}
+                        </a>
+                      ) : (
+                        <Link href={source.url} className="text-accent-fg hover:underline">
+                          {source.title}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           ) : null}

@@ -312,6 +312,263 @@ export const guides: Guide[] = [
     related: ['windows-cannot-open-password-protected-zip', 'open-encrypted-zip-without-7-zip'],
     updated: '2026-09-13',
   },
+  {
+    slug: 'tools-that-dont-upload-your-files',
+    name: "Tools that don't upload your files",
+    title: "Online tools that don't upload your files, and how to check",
+    metaTitle: "Tools That Don't Upload Your Files",
+    metaDescription:
+      'Plenty of sites say your files are private. Here is what the claim actually means, the ten-second test that settles it, and what a site cannot fake.',
+    primaryKeyword: "tools that don't upload your files",
+    secondaryKeywords: [
+      'client side file conversion privacy',
+      'convert files without uploading them',
+      'browser based file tools',
+      'no upload image converter',
+      'offline alternative to online converters',
+    ],
+    answer:
+      'A genuinely local tool does the work in your browser, using code that arrived with the page, and your file never crosses the network. A remote one uploads the file to a server and sends the result back. Marketing copy for the two is nearly identical — both say "private" and "secure" — but the difference is absolute, and you can settle it yourself in ten seconds: load the page, disconnect from the internet, and try the tool. A local one still works.',
+    body: [
+      {
+        heading: 'The words that sound the same and are not',
+        body: [
+          'Read the privacy claims on file-tool sites and they blur together: secure, private, encrypted, your files are safe with us, deleted after one hour. Almost all of those are claims about what happens to your file *after* it reaches somebody else’s computer.',
+          '"Deleted after one hour" is the clearest tell. It is a promise of good behaviour, and it is only meaningful if the file was uploaded in the first place — you cannot delete what you never received. The same goes for "encrypted in transit", which describes a file travelling to a server, and "we never look at your files", which describes a policy rather than a capability.',
+          'A local tool makes a different kind of statement. It is not promising to behave well with your file; it is saying there is no copy of your file anywhere but your own machine, so behaviour does not come into it. That distinction survives a change of ownership, a policy update, a breach and a subpoena, and a promise does not.',
+        ],
+      },
+      {
+        heading: 'The ten-second test, which cannot be faked',
+        body: [
+          'Load the tool’s page and let it finish loading. Then turn off your Wi-Fi, or switch your browser to offline mode, and use the tool on a real file.',
+          'A local tool carries on working, because everything it needs is already in the tab. A remote one fails, because it cannot reach its server. There is no clever engineering that lets a site pass this test while still uploading — the upload is the thing the test removes.',
+          'If you want to be more thorough, open your browser’s developer tools before using the tool, go to the Network tab, and watch while you process a file. A local tool shows no request carrying your data. You will still see requests: fonts, scripts, images, and on most sites analytics and advertising. What matters is whether any of them is large enough and timed right to be your file leaving.',
+        ],
+      },
+      {
+        heading: 'What "no upload" does not mean, including here',
+        body: [
+          'This is the part most pages making the claim leave out, and leaving it out is what makes a reader with developer tools open conclude the whole claim is a lie.',
+          'A page that processes your files locally can still make network requests, and most do. Fonts and scripts load. Analytics may record that a page was viewed. Advertising, where a site runs it, talks to an ad network and may set cookies. This site is in that category: the tools do not send your files anywhere, and the page around them may still load an advert and count a page view.',
+          'Those are separate claims and they deserve separate words. "Your file is never uploaded" is about the file. "This page makes no network requests at all" is a much stronger statement, it is false for almost every site including this one, and anybody making it should be checked rather than believed.',
+          'The practical consequence is the one worth holding on to: a local tool cannot leak the contents of your document, because the contents never leave. It can still be part of a page that knows somebody visited.',
+        ],
+      },
+      {
+        heading: 'Checking the claim in the code, not the copy',
+        body: [
+          'Copy drifts. A sentence written honestly in January survives a rewrite in June that quietly makes it false, and nobody notices because nothing breaks.',
+          'The approach taken here is to make the claim a build failure instead of a paragraph. A check in this repository reads the source of every tool marked as browser-processed and refuses to compile if that code references fetch, XMLHttpRequest, WebSocket, EventSource or sendBeacon — the APIs a browser has for sending data somewhere. The two encryption tools are held to a stricter rule again: their code may not touch local storage, session storage or cookies either, because the privacy page says a password is never written to storage of any kind, including on your own device.',
+          'Be clear about what that does and does not prove. It is a static check over this project’s own tool code; it is not a formal proof, and it does not audit every dependency. What it does is remove the specific failure that makes these claims go stale — somebody adding a well-meaning "send this to our server for better results" feature two years from now, and the privacy page still saying otherwise. That change does not ship. It stops at the build.',
+        ],
+      },
+      {
+        heading: 'When a remote tool is the right answer anyway',
+        body: [
+          'Local processing is not automatically better and it is worth knowing where it runs out.',
+          'A browser is bounded by the memory of the device it is on, so very large files are genuinely better handled by a server or a desktop program. Some work needs models or software too big to ship to a page — high-quality OCR on a poor scan, speech transcription, heavy video encoding. And a format nobody has implemented in JavaScript will not appear in a browser tool just because it would be nice.',
+          'The reasonable rule is to match the tool to the document. For anything you would not be relaxed about a stranger reading — identity documents, contracts, medical letters, anything with a signature on it — use something local and verify it with the offline test. For a holiday photo you are resizing for a forum post, the stakes are low enough that convenience can win.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'How can I be sure a site is not uploading my files?',
+        a: 'Load the page, go offline, and use the tool. That is the whole test, and it cannot be worked around — if the file had to reach a server, removing the network removes the tool. Watching the Network tab in developer tools while you process a file is the more detailed version of the same check.',
+      },
+      {
+        q: 'Does "deleted after one hour" mean my file is private?',
+        a: 'It means your file was uploaded and somebody is promising to delete it later. That may well be true and honestly intended, but it is a promise about conduct rather than a fact about where your file is. Between the upload and the deletion the file exists on a machine you do not control, and it may exist in logs and backups for longer than the headline figure.',
+      },
+      {
+        q: 'Why does this site make any network requests at all if nothing is uploaded?',
+        a: 'Because a page is more than its tool. Fonts, scripts and images load like any website, an anonymous page view may be counted, and advertising — when it is switched on — talks to an ad network. None of that carries your file. We would rather say this plainly than have you find the requests yourself and reasonably conclude the whole claim was marketing.',
+      },
+      {
+        q: 'Is a local tool slower?',
+        a: 'It is usually faster for ordinary files, because nothing is uploaded or queued: a 5 MB photo does not spend ten seconds travelling to a server and back before anything begins. It is slower for jobs that genuinely need more computer than you have in front of you, which mostly means very large files and heavy media work.',
+      },
+      {
+        q: 'Do I need to install anything to use a local tool?',
+        a: 'No. That is the point of doing it in a browser rather than in an application — it works on a machine where you cannot install software, which is exactly the situation where people reach for an online tool and end up uploading something they should not have.',
+      },
+    ],
+    sources: [
+      { title: 'MDN — Web Crypto API, the browser cryptography these tools use', url: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API' },
+      { title: 'This site’s privacy page, which these checks exist to keep true', url: '/privacy' },
+    ],
+    tools: ['image-compressor', 'merge-pdf', 'password-protect-files'],
+    related: ['do-online-converters-keep-your-files', 'is-it-safe-to-paste-a-jwt-into-an-online-decoder'],
+    updated: '2026-09-13',
+  },
+  {
+    slug: 'do-online-converters-keep-your-files',
+    name: 'Do online converters keep your files?',
+    title: 'Do online PDF converters keep your files?',
+    metaTitle: 'Do Online PDF Converters Keep Your Files?',
+    metaDescription:
+      'What actually happens to a document you upload to a converter, why "it worked" proves nothing about safety, and the FBI warning that made this concrete.',
+    primaryKeyword: 'do online pdf converters keep your files',
+    secondaryKeywords: [
+      'is it safe to upload pdf to online converter',
+      'are online file converters safe',
+      'online converter privacy',
+      'do converters store documents',
+    ],
+    answer:
+      'If a converter uploads your file, it has your file — and what happens next depends entirely on the operator. Reputable services process it, return the result and delete it on a stated schedule. Malicious ones return a perfectly good converted file and quietly harvest what was inside the original, which is why "it worked" tells you nothing. The FBI issued a public warning about exactly this pattern in March 2025.',
+    body: [
+      {
+        heading: 'What uploading actually commits you to',
+        body: [
+          'When a file reaches a converter’s server it exists, at minimum, on that machine’s disk for as long as the job runs. In practice it usually touches more than that: a request log, an error report if something goes wrong, a queue if the service is busy, a temporary directory, and whatever backup process covers those. A deletion policy applies to the copy the service knows about.',
+          'None of this implies bad intent. It is simply what handling somebody else’s file involves, and it is why the retention promise — an hour, a day, immediately after download — is the thing a careful operator publishes and a careless one does not.',
+          'The part worth thinking about is what you are handing over. A payslip carries your salary and your employer. A scanned passport carries a document number and a date of birth. A signed contract carries a signature, which is reusable. A medical letter carries a diagnosis. These are not abstractions about privacy; they are the specific contents of the files people most often need to convert in a hurry.',
+        ],
+      },
+      {
+        heading: 'The FBI warning, and the detail that matters in it',
+        body: [
+          'On 7 March 2025 the FBI’s Denver field office published a warning about free online file converters being used to distribute malware and to harvest data. It is worth reading the mechanism rather than the headline.',
+          'The malicious sites *work*. They genuinely convert the document — .doc to .pdf, images into a single PDF — and hand back a correct-looking file, which may carry embedded malware. While they have your original, they scrape it for what it contains: the warning names social security numbers, dates of birth, phone numbers, banking details, cryptocurrency wallet information, email addresses and passwords.',
+          'That is the detail that changes how you should judge these tools. The obvious safety test most people apply — did it do what it said? — is the one test a malicious converter is designed to pass. A site that returned a broken file would be reported and shut down; returning a good one is how it stays open long enough to be worth running.',
+          'It also means the harm is silent and delayed. Nothing looks wrong at the moment of use, and the consequence arrives weeks later as an account compromise, with nothing to connect it back to the PDF you converted.',
+        ],
+      },
+      {
+        heading: 'How to tell a careful operator from a careless one',
+        body: [
+          'Look for a specific retention period rather than an adjective. "Files are deleted one hour after processing" is a claim someone has thought about. "We take your privacy seriously" is not a claim at all.',
+          'Look for a company behind the site — a name, a jurisdiction, a legal entity. If the operator cannot be identified, there is nobody for the promise to bind and nobody to complain to.',
+          'Be suspicious of a domain you found through an advertisement for a very common search. The FBI warning describes malicious converters advertised for exactly the queries people type when they are stuck, which is when nobody is inspecting the address bar.',
+          'And notice that all three of those checks are attempts to answer the same question — how much do I trust these people — which is a question you only have to ask because the file left your machine.',
+        ],
+      },
+      {
+        heading: 'The way to not need the answer',
+        body: [
+          'A tool that does the conversion in your browser never receives the file, so there is no retention policy to read, no operator to assess and nothing to harvest. That is not a stronger promise than the good services make; it is a different kind of statement, about capability rather than conduct.',
+          'It is also checkable in a way a policy is not: load the page, disconnect from the internet, and convert something. If it works offline, the file was never going anywhere. The related guide below goes through that test and its limits in detail — including the honest part most pages making this claim leave out, which is that a page can process your files locally and still load adverts and count a visit.',
+          'For very large files or for work that genuinely needs more computer than a browser has, a reputable server-side service with a published retention policy and an identifiable operator is a reasonable choice. The mistake is not using an online converter; it is uploading a passport scan to whichever result was at the top.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Is it safe to upload a PDF to an online converter?',
+        a: 'It depends on who runs it, which is usually not something you can establish from the page you landed on. For an ordinary document with nothing sensitive in it the risk is low. For anything carrying identity details, financial information, a signature or medical information, the safer answer is a tool that does not upload it at all.',
+      },
+      {
+        q: 'The converter worked fine, so it was safe — right?',
+        a: 'No, and this is the specific trap the FBI warning describes. Malicious converters do the conversion correctly and return a usable file; that is what keeps them from being reported. The working output is evidence about the conversion, not about what happened to your original while they had it.',
+      },
+      {
+        q: 'Do reputable converters really delete my file?',
+        a: 'Most publish a retention period and there is no particular reason to think they ignore their own policy. Be aware that a deletion policy covers the copies the service manages, and that logs, error reports and backups are a different system with their own schedule. The promise is about conduct, and conduct can change with ownership, a breach or a legal demand.',
+      },
+      {
+        q: 'What about GDPR — does that not protect me?',
+        a: 'It gives you rights against an identifiable operator subject to it, which helps with a European company you can name and helps very little with an anonymous site. It is a remedy after the fact rather than a barrier at the moment of upload, and it does nothing at all about a site that was set up to harvest what you sent.',
+      },
+      {
+        q: 'How would I even know if a converter had taken my data?',
+        a: 'Usually you would not, and not for a long time. There is no notification and nothing visibly wrong — the effect shows up later as an account compromise or a fraudulent application, by which point nothing connects it to a file you converted weeks earlier. That delay is why the decision has to be made before uploading rather than after.',
+      },
+    ],
+    sources: [
+      { title: 'FBI Denver — Warning of Online File Converter Scam (7 March 2025)', url: 'https://www.fbi.gov/contact-us/field-offices/denver/news/fbi-denver-warns-of-online-file-converter-scam' },
+      { title: 'Malwarebytes — free online file converters that install malware', url: 'https://www.malwarebytes.com/blog/news/2025/03/warning-over-free-online-file-converters-that-actually-install-malware' },
+      { title: 'BleepingComputer — confirming the FBI warning with observed samples', url: 'https://www.bleepingcomputer.com/news/security/fbi-warnings-are-true-fake-file-converters-do-push-malware/' },
+    ],
+    tools: ['merge-pdf', 'compress-pdf', 'pdf-to-jpg'],
+    related: ['tools-that-dont-upload-your-files', 'is-it-safe-to-paste-a-jwt-into-an-online-decoder'],
+    updated: '2026-09-13',
+  },
+  {
+    slug: 'is-it-safe-to-paste-a-jwt-into-an-online-decoder',
+    name: 'Is it safe to paste a JWT into an online decoder?',
+    title: 'Is it safe to paste a JWT into an online decoder?',
+    metaTitle: 'Is It Safe to Paste a JWT Online?',
+    metaDescription:
+      'Is it safe to paste a JWT into an online decoder? Only if it decodes in your browser. A JWT is a bearer credential, so pasting one is like pasting a password.',
+    primaryKeyword: 'is it safe to paste jwt into online decoder',
+    secondaryKeywords: [
+      'jwt decoder privacy',
+      'online jwt decoder safe',
+      'decode jwt without website',
+      'is it safe to use online json formatter with sensitive data',
+    ],
+    answer:
+      'Treat it like pasting a password, because functionally it is one. A JWT is a bearer token: anyone holding it can act as you until it expires, without needing anything else. A decoder that runs in your browser never sees it. A decoder that posts it to a server has just been given a working credential — and decoding needs no server, because the readable part is only base64.',
+    body: [
+      {
+        heading: 'What "bearer" means in practice',
+        body: [
+          'A JWT is three base64url-encoded parts separated by dots: a header, a payload of claims, and a signature. The signature proves the token was issued by someone holding the signing key and has not been altered since.',
+          'What it does not do is prove anything about who is presenting it. That is what bearer means — the token is the credential, and possession is the whole of the authorisation. A service receiving a valid, unexpired JWT has no way to distinguish you from anybody else who has a copy of it.',
+          'So a leaked JWT is not like a leaked username. It is like a leaked session: whoever has it can do what it permits, for as long as it is valid, and nothing about the theft is visible to you.',
+        ],
+      },
+      {
+        heading: 'Why the risk depends on one thing you cannot see',
+        body: [
+          'Decoding a JWT is trivial work. The header and payload are base64url — not encrypted, just encoded — so turning them into readable JSON is a few lines of code and needs no network, no account and no server.',
+          'That means an online decoder has no technical reason to send your token anywhere. Many do not: they decode in the page, and your token never leaves the tab. Some do, because it was simpler to write that way or because the site wants the analytics.',
+          'From the outside the two are identical. Same box, same output, same claim that it is secure. The difference is invisible in the interface and decisive in effect, and it is settled the same way as any other local-versus-remote question: load the page, go offline, and paste a token. A local decoder still works, because base64 does not require the internet.',
+          'Developer tools give you the precise version. Open the Network tab before you paste and watch whether a request goes out carrying the token.',
+        ],
+      },
+      {
+        heading: 'What an attacker actually gets',
+        body: [
+          'Assume a token you pasted was logged somewhere it should not have been. What follows depends on the token, and it is worth being specific rather than alarmed.',
+          'If it is a short-lived access token that has since expired, the practical risk is low — the window closed. What remains is the payload, which is often more revealing than people expect: user and tenant identifiers, email addresses, roles and scopes, and the issuer, which names the system it belongs to. That is a useful map for someone deciding what to attack next, even after the token is dead.',
+          'If it is long-lived, or a refresh token, the situation is different and worse: a refresh token exists specifically to obtain new access tokens, so a copy of one is durable access rather than a closing window.',
+          'The signature is the one part that does not help an attacker. It cannot be verified without the key and cannot be forged without it either, so a leaked token is a leaked *token* — it does not expose the secret that signed it, and it does not let anybody mint new ones.',
+        ],
+      },
+      {
+        heading: 'The working practice',
+        body: [
+          'Use a decoder that runs locally, and check it with the offline test once rather than trusting the wording.',
+          'Better still, for a production token, do not paste it into anything. Decoding base64 is a one-line job in any language, your terminal, or the browser console on a page you already trust — and a token from your own staging environment is usually just as good for whatever you were trying to understand.',
+          'If a real token has already gone into something you are unsure about, the response is the same as for any exposed credential and the cost is usually small: revoke it or let it expire, and rotate the session it belongs to. That is cheap now and expensive to have skipped.',
+          'The same reasoning covers the neighbouring tools. A JSON formatter given an API response, a base64 decoder given a config blob, a URL decoder given a callback containing a token — all of them are places where a credential gets pasted into a text box without it feeling like a credential, because it arrived looking like data.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: 'Can an online decoder steal my session?',
+        a: 'If it sends the token to its server and the token is still valid, then whoever controls that server can present it and be treated as you for as long as it lasts. A decoder that works entirely in your browser cannot, because the token never leaves your machine.',
+      },
+      {
+        q: 'Is decoding a JWT the same as decrypting it?',
+        a: 'No, and the difference surprises people. The header and payload are base64url-encoded, not encrypted — anybody holding the token can read the claims without any key at all. The signature protects against tampering and forgery, not against reading. If a JWT carries something that must stay secret, it is in the wrong place.',
+      },
+      {
+        q: 'What if the token has already expired?',
+        a: 'Then it cannot be used to authenticate, and the remaining exposure is the contents of the payload — identifiers, email address, roles, scopes, the issuing system. That is reconnaissance value rather than access, which is a real downgrade but not nothing.',
+      },
+      {
+        q: 'How do I decode a JWT without any website?',
+        a: 'Split it on the dots and base64url-decode the first two parts. Every language has a one-liner for it, most shells can do it with base64 after converting the URL-safe characters, and the browser console on a page you already trust will do it with atob. It is genuinely easier than finding a decoder you trust.',
+      },
+      {
+        q: 'Does this apply to JSON formatters and base64 decoders too?',
+        a: 'Yes, and arguably more, because the danger is less obvious. An API response pasted into a formatter routinely contains tokens, keys and personal data, and a config blob pasted into a base64 decoder routinely contains credentials. The question is the same one every time: does this page do the work here, or does it send my text somewhere first?',
+      },
+    ],
+    sources: [
+      { title: 'RFC 7519 — JSON Web Token (JWT)', url: 'https://datatracker.ietf.org/doc/html/rfc7519' },
+      { title: 'RFC 6750 — The OAuth 2.0 Authorization Framework: Bearer Token Usage', url: 'https://datatracker.ietf.org/doc/html/rfc6750' },
+      { title: 'OWASP — JSON Web Token security cheat sheet', url: 'https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html' },
+    ],
+    tools: ['jwt-decoder', 'base64-encoder', 'json-formatter'],
+    related: ['tools-that-dont-upload-your-files', 'do-online-converters-keep-your-files'],
+    updated: '2026-09-13',
+  },
 ];
 
 export const guideSlugs: string[] = guides.map((guide) => guide.slug);

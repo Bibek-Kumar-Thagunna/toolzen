@@ -590,12 +590,16 @@ export function guideGraph(guide: Guide, trail: readonly TrailItem[]): JsonLdNod
     // `citation` is the schema.org property for "this work references that
     // work". Emitting the same sources the page shows a reader keeps the
     // machine-readable claim and the human-readable one identical.
+    // `absoluteUrl` rather than the raw value: a source may be a page on this
+    // site (the privacy page, which is the thing several of these guides are
+    // making claims about), and a relative `url` in JSON-LD is not resolvable
+    // by a consumer that received the graph on its own.
     ...(guide.sources.length > 0
       ? {
           citation: guide.sources.map((source) => ({
             '@type': 'CreativeWork',
             name: source.title,
-            url: source.url,
+            url: source.url.startsWith('http') ? source.url : absoluteUrl(source.url),
           })),
         }
       : {}),
