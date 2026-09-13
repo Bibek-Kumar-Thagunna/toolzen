@@ -61,6 +61,9 @@ const privacyLine = everyToolRunsInBrowser
 const siteLinks = [
   { href: routes.tools, label: `All ${toolCount} tools` },
   { href: routes.categories, label: 'Browse categories' },
+  // Sitewide, so every guide is two clicks from every page. A section reachable
+  // only from its own index is a section a crawler visits once.
+  { href: routes.guides, label: 'Guides' },
   { href: routes.about, label: 'About' },
   { href: routes.privacy, label: 'Privacy' },
   { href: routes.terms, label: 'Terms' },

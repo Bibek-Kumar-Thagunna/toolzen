@@ -161,3 +161,17 @@ export type {
   ProcessingMode,
   ToolSurface,
 } from './types.ts';
+
+export { guides, guideSlugs, getGuide, relatedGuides } from './guides.ts';
+export type { Guide } from './guides.ts';
+
+/**
+ * The tools a guide hands off to, resolved and filtered to ones that exist.
+ *
+ * Lives here rather than in `guides.ts` because it needs the tool lookup, and
+ * a guide file that imported the tool registry would make the two impossible
+ * to reason about separately.
+ */
+export function guideTools(slugs: readonly string[]): Tool[] {
+  return slugs.map((slug) => bySlug.get(slug)).filter((tool): tool is Tool => tool !== undefined);
+}

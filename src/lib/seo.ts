@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { brand } from './brand.ts';
 import { absoluteUrl, site, siteUrl } from './site.ts';
 import type { Category, Tool } from './registry/types.ts';
+import type { Guide } from './registry/guides.ts';
 
 /**
  * ============================================================================
@@ -524,3 +525,85 @@ export function serialiseJsonLd(graph: JsonLdNode): string {
 
 
 
+
+/* ──────────────────────────── guides ────────────────────────────────────── */
+
+/**
+ * Metadata and structured data for a guide.
+ *
+ * ── Why these are Articles and the tool pages are not ─────────────────────
+ * A tool page is a `WebApplication`: the thing the page is *about* is software
+ * you operate. A guide is prose that answers a question, and describing it as
+ * an application would be a plain misstatement of what the URL contains.
+ *
+ * `Article` also carries the two properties that matter for this kind of page
+ * and have nowhere to live on a `WebPage`: `datePublished`/`dateModified`, and
+ * an explicit `author`/`publisher`. Search engines have been increasingly
+ * explicit that they want to know who is making a factual claim, and these
+ * pages exist precisely to make factual claims that the alternatives get
+ * wrong, so declining to sign them would be an odd choice.
+ *
+ * ── The FAQPage type is combined, not separate ────────────────────────────
+ * Emitting a second, standalone `FAQPage` node with its own `@id` for the same
+ * URL is a common pattern and a wrong one: it asserts that one URL is two
+ * pages. The page node carries both types instead, which is what the page
+ * actually is — an article that also contains a question-and-answer section.
+ *
+ * ── `speakable` is not claimed ────────────────────────────────────────────
+ * It is tempting on a page whose whole shape is "the answer, then the
+ * explanation". It is also limited to news content in Google's own
+ * documentation, so claiming it here would be marking up a capability the page
+ * is not eligible for — the kind of small dishonesty in structured data this
+ * codebase avoids everywhere else.
+ */
+export function guideMetadata(guide: Guide): Metadata {
+  return buildMetadata({
+    title: guide.metaTitle,
+    description: guide.metaDescription,
+    path: `/guides/${guide.slug}`,
+    updated: guide.updated,
+  });
+}
+
+export function guideGraph(guide: Guide, trail: readonly TrailItem[]): JsonLdNode {
+  const url = absoluteUrl(`/guides/${guide.slug}`);
+  const hasFaq = guide.faq.length > 0;
+
+  const page: JsonLdNode = {
+    '@type': hasFaq ? ['Article', 'FAQPage'] : 'Article',
+    '@id': `${url}#article`,
+    url,
+    mainEntityOfPage: url,
+    headline: guide.title,
+    name: pageTitle(guide.metaTitle),
+    description: guide.metaDescription,
+    // The answer-first paragraph, which is genuinely an abstract of the page
+    // rather than a restatement of the title.
+    abstract: guide.answer,
+    inLanguage: site.lang,
+    isPartOf: { '@id': WEBSITE_ID },
+    breadcrumb: { '@id': `${url}#breadcrumb` },
+    datePublished: guide.updated,
+    dateModified: guide.updated,
+    author: { '@id': ORGANIZATION_ID },
+    publisher: { '@id': ORGANIZATION_ID },
+    // `citation` is the schema.org property for "this work references that
+    // work". Emitting the same sources the page shows a reader keeps the
+    // machine-readable claim and the human-readable one identical.
+    ...(guide.sources.length > 0
+      ? {
+          citation: guide.sources.map((source) => ({
+            '@type': 'CreativeWork',
+            name: source.title,
+            url: source.url,
+          })),
+        }
+      : {}),
+    ...(hasFaq ? { mainEntity: faqEntities(guide.faq) } : {}),
+  };
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [...siteNodes(), page, breadcrumbNode(url, trail)],
+  };
+}

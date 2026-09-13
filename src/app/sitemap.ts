@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import { routes, siteUrl, isIndexableDeployment } from '@/lib/site';
 import { categories } from '@/lib/registry/categories';
-import { tools, toolsInCategory } from '@/lib/registry';
+import { guides, tools, toolsInCategory } from '@/lib/registry';
 
 /**
  * Marked static explicitly.
@@ -107,12 +107,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: url(routes.guides),
+      lastModified: newestUpdate(guides),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
       url: url(routes.categories),
       lastModified: newestUpdate(tools),
       changeFrequency: 'monthly',
       priority: 0.6,
     },
   ];
+
+  /**
+   * Guides. Priority sits just under a tool page: these are real destinations
+   * that answer a question in full, but the tools are what the site is for and
+   * a guide's job includes sending the reader to one.
+   */
+  const guideEntries: MetadataRoute.Sitemap = guides.map((guide) => ({
+    url: url(routes.guide(guide.slug)),
+    lastModified: newestUpdate([guide]),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
 
   // No `lastModified`: see the note above. These change when someone edits
   // them, and nothing in the codebase records when that was.
@@ -122,5 +140,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: url(routes.terms), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
-  return [...indexEntries, ...categoryEntries, ...toolEntries, ...staticEntries];
+  return [...indexEntries, ...categoryEntries, ...toolEntries, ...guideEntries, ...staticEntries];
 }

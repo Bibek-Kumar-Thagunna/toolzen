@@ -1,0 +1,62 @@
+guides: a page type for problems, and the encrypted-zip cluster
+
+Every one of the 48 tool pages targets a head term — "merge pdf", "compress
+image" — and those are owned by companies with a decade of links. The site had
+no page type at all for the other half of the same demand: the questions people
+type before they know which tool they need.
+
+Checking the live results for that cluster is what justified building it. The
+top of "windows explorer encrypted zip not supported" is a Directory Opus forum
+thread, a SourceForge 7-Zip thread, a Microsoft Q&A post and elevenforum —
+people describing the symptom, nobody explaining the cause. "zip file password
+not working windows" is 100% Microsoft Q&A and Windows help forums. That is a
+gap fillable with knowledge rather than authority, which is the only kind of gap
+open to a site that has none yet.
+
+Three guides, not five. "windows 11 cannot open password protected zip", "zip
+file password not working windows" and "windows explorer encrypted zip not
+supported" are one question asked three ways, and answering it three times
+would be the doorway pattern the tool variants are already held away from.
+
+Every technical claim was checked against a primary source before it was
+written, and the sources are shown to the reader as well as emitted as
+schema.org `citation`:
+
+  - Windows File Explorer supports only ZipCrypto. Windows 11 24H2 added
+    native reading of more archive formats via libarchive; it still cannot
+    create or open an encrypted archive of any kind.
+  - ZipCrypto was broken by Biham and Kocher at FSE 1994. Michael Stay reduced
+    the known-plaintext requirement in 2001. bkcrack implements it today and
+    needs about twelve known bytes — which common file signatures supply for
+    free. A longer password does not help, because the password is not what is
+    attacked.
+  - WinZip AES: PBKDF2-HMAC-SHA1 at 1000 iterations, 16-byte salt at 256-bit,
+    a two-byte password check with a 1-in-65,536 false accept, HMAC-SHA1-80.
+    Confirmed against the specification, and matching what this codebase
+    already implements.
+  - Kohno (2004) found AE-1 leaked via the plaintext CRC, which is why AE-2
+    stores zero there, and showed an attack on fields the tag does not cover.
+
+The answer comes first on the page, in full, before any explanation. Pages
+currently ranking for these queries make the reader scroll past an
+introduction to find out why their file will not open. The tool hand-off sits
+directly under the answer rather than at the bottom, because at that point the
+reader knows what is wrong and wants it fixed — burying it under two thousand
+words would be optimising for time-on-page rather than for the person reading.
+
+Guides are Articles, not WebApplications, carrying dateModified, an author
+bound to the Organization node, and `citation` for each source. FAQPage is
+combined into the same node rather than emitted separately, because one URL is
+one page. `speakable` is not claimed: Google restricts it to news, so marking
+it up here would assert an eligibility the page does not have.
+
+check-seo now audits guides on the same title and description budgets as the
+tools, plus four floors of their own: the short answer must be 30-120 words (a
+shorter one restates the title, a longer one is not a glance), 500 words of
+body, at least one source, and at least one tool to hand off to. It also
+compares answers between guides, since two pages answering one question compete
+with each other. It caught three over-length descriptions and an H1 that had
+drifted from its keyword on the first run.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U41YvzQDL8k1vw9GvA1By9

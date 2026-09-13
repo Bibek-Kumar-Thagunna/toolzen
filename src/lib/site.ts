@@ -54,6 +54,8 @@ export const routes = {
   tools: '/tools',
   tool: (slug: string) => `/tools/${slug}`,
   categories: '/categories',
+  guides: '/guides',
+  guide: (slug: string) => `/guides/${slug}`,
   category: (id: string) => `/categories/${id}`,
   about: '/about',
   privacy: '/privacy',

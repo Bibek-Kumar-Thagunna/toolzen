@@ -194,7 +194,7 @@ function overlap(a, b) {
 
 /* ── load the registry ─────────────────────────────────────────────────── */
 
-const { tools } = await import(join(root, 'src/lib/registry/index.ts'));
+const { tools, guides } = await import(join(root, 'src/lib/registry/index.ts'));
 
 if (!Array.isArray(tools) || tools.length === 0) {
   console.error('check-seo: no tools found — has the registry moved?');
@@ -389,9 +389,107 @@ for (const page of pagesWithoutMetadata(APP_DIR)) {
   fail(page, 'no metadata export — this page ships with no title or description');
 }
 
+/* ── guides ────────────────────────────────────────────────────────────── */
+
+/**
+ * The guides are held to the same floors as the tool pages, plus two of their
+ * own.
+ *
+ * They exist because the SERPs they target are full of thin pages, so shipping
+ * a thin page of our own would be self-defeating in a way that is easy to do
+ * and hard to notice: a guide has no widget to make it obviously useful, which
+ * means nothing about the page complains when the prose is filler.
+ *
+ * `answer` is length-checked in both directions. Too short and it is a
+ * restatement of the title rather than an answer; too long and it is no longer
+ * the thing a reader can take in before deciding whether to stay, which is its
+ * only job.
+ *
+ * `sources` is required because the entire competitive argument for these
+ * pages is that they are checkable where the alternatives are vague. A guide
+ * making technical claims with nothing to check them against is the format
+ * this section was created to beat.
+ */
+const ANSWER_MIN_WORDS = 30;
+const ANSWER_MAX_WORDS = 120;
+const GUIDE_BODY_WORDS_MIN = 500;
+
+for (const guide of guides) {
+  const where = `guides/${guide.slug}`;
+
+  if (guide.metaTitle.length > TITLE_MAX) {
+    fail(where, `metaTitle is ${guide.metaTitle.length} chars; over ${TITLE_MAX} is truncated in the result`);
+  }
+  if (guide.metaDescription.length > DESCRIPTION_MAX) {
+    fail(where, `metaDescription is ${guide.metaDescription.length} chars; over ${DESCRIPTION_MAX} is truncated`);
+  }
+  if (guide.metaDescription.length < DESCRIPTION_MIN) {
+    fail(where, `metaDescription is only ${guide.metaDescription.length} chars; under ${DESCRIPTION_MIN} wastes space a competitor is using`);
+  }
+
+  if (!containsPhrase(guide.title, guide.primaryKeyword)) {
+    fail(where, `the H1 does not contain the primary keyword ${guide.primaryKeyword}`);
+  }
+  if (!containsPhrase(`${guide.metaTitle} ${guide.metaDescription}`, guide.primaryKeyword)) {
+    fail(where, `neither metaTitle nor metaDescription contains ${guide.primaryKeyword}`);
+  }
+
+  const answerWords = guide.answer.trim().split(/\s+/).length;
+  if (answerWords < ANSWER_MIN_WORDS) {
+    fail(where, `the short answer is ${answerWords} words; under ${ANSWER_MIN_WORDS} it restates the title instead of answering it`);
+  }
+  if (answerWords > ANSWER_MAX_WORDS) {
+    fail(where, `the short answer is ${answerWords} words; over ${ANSWER_MAX_WORDS} it is no longer something a reader takes in at a glance`);
+  }
+
+  const bodyWords = guide.body
+    .flatMap((section) => section.body)
+    .join(' ')
+    .split(/\s+/).length;
+  if (bodyWords < GUIDE_BODY_WORDS_MIN) {
+    fail(where, `${bodyWords} words of body copy; under ${GUIDE_BODY_WORDS_MIN} this is one more thin page in a SERP made of thin pages`);
+  }
+
+  if (guide.faq.length < FAQ_MIN) {
+    fail(where, `${guide.faq.length} FAQ entries; ${FAQ_MIN} is the floor for a FAQPage worth marking up`);
+  }
+  if (guide.sources.length === 0) {
+    fail(where, 'no sources — a guide making technical claims must name what they can be checked against');
+  }
+  if (guide.tools.length === 0) {
+    fail(where, 'links to no tool; a guide that cannot hand the reader a fix is an article, not a guide');
+  }
+  for (const slug of guide.tools) {
+    if (!tools.some((tool) => tool.slug === slug)) {
+      fail(where, `hands off to ${slug}, which is not a tool`);
+    }
+  }
+  for (const slug of guide.related) {
+    if (slug === guide.slug) fail(where, 'related links to itself');
+    if (!guides.some((entry) => entry.slug === slug)) {
+      fail(where, `related guide ${slug} does not exist`);
+    }
+  }
+}
+
+/** Guides compete with each other if their answers say the same thing. */
+for (let i = 0; i < guides.length; i += 1) {
+  for (let j = i + 1; j < guides.length; j += 1) {
+    const a = guides[i];
+    const b = guides[j];
+    const shared = overlap(a.answer, b.answer);
+    if (shared > MAX_ANSWER_OVERLAP) {
+      fail(
+        `guides/${a.slug}`,
+        `its short answer is ${Math.round(shared * 100)}% the same as ${b.slug}'s — two pages answering one question compete with each other`,
+      );
+    }
+  }
+}
+
 /* ── report ────────────────────────────────────────────────────────────── */
 
-console.log(`Audited ${tools.length} tool pages.`);
+console.log(`Audited ${tools.length} tool pages and ${guides.length} guides.`);
 if (warnings.length > 0) {
   console.log(`\nWARNINGS (${warnings.length}):`);
   for (const warning of warnings) console.log(`  · ${warning}`);
